@@ -1,0 +1,4 @@
+Data compra	tipo	título	TipoTitulo	Preço compra	Quantidade	Valor 
+18/03/2019	c	Aper3f	a	26,20	40	1047,83
+05/04/2019	c	also3f	a	26,20	39	1021,80
+15/01/2020	v	also3f	a	26,20	39	2103,66
