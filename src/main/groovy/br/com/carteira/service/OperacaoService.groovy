@@ -1,20 +1,22 @@
 package br.com.carteira.service
 
-import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.entity.TipoTituloEnum
 import br.com.carteira.entity.Titulo
+import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.TituloRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
+@Transactional(readOnly = true)
 class OperacaoService {
     OperacaoRepository operacaoRepository
     TituloRepository tituloRepository
@@ -128,5 +130,17 @@ class OperacaoService {
                 this.incluir(operacao)
             }
         }
+    }
+
+    void teste() {
+        def operacao = new Operacao(
+                tipoOperacao: TipoOperacaoEnum.c,
+                titulo: tituloRepository.fromTituloGroovyRow(tituloRepository.listAll().get(0)),
+                qtde: 100,
+                valorTotalOperacao: BigDecimal.valueOf(5000),
+                data: LocalDate.now()
+        )
+        operacaoRepository.incluir(operacao)
+        println('Sim! Ainda aqui')
     }
 }
