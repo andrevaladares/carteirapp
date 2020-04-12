@@ -5,6 +5,7 @@ import br.com.carteira.entity.Titulo
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.datasource.DataSourceUtils
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.stereotype.Repository
 
@@ -21,7 +22,7 @@ class TituloRepository {
     }
 
     List listAll() {
-        List resultado = new Sql(dataSource).rows('select * from titulo')
+        List resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows('select * from titulo')
         return resultado
     }
 
@@ -30,22 +31,22 @@ class TituloRepository {
         def insertSql = """
                 insert into titulo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada)
                 values (${titulo.ticker}, $titulo.nome, ${titulo.tipo as String}, 
-                    $titulo.setor, $titulo.qtde, $titulo.valorTotalInvestido, $titulo.dataEntrada)
+                    $titulo.setor, $titulo.qtde, $titulo.valorTotalInvestido, ${titulo.dataEntrada})
             """
-        def keys = new Sql(dataSource).executeInsert insertSql
+        def keys = new Sql(DataSourceUtils.getConnection(dataSource)).executeInsert insertSql
 
         keys[0][0] as Long
     }
 
     Titulo getById(Long idTitulo) {
         def query = 'select * from titulo where id = :idTitulo'
-        def resultado = new Sql(dataSource).firstRow(['idTitulo': idTitulo], query)
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['idTitulo': idTitulo], query)
         return fromTituloGroovyRow(resultado)
     }
 
     Titulo getByTicker(String ticker) {
         def query = 'select * from titulo where ticker = :ticker'
-        def resultado = new Sql(dataSource).firstRow(['ticker': ticker], query)
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker], query)
         return fromTituloGroovyRow(resultado)
     }
 
@@ -55,7 +56,7 @@ class TituloRepository {
             data_entrada = $titulo.dataEntrada where ticker = $titulo.ticker 
         """
 
-        new Sql(dataSource).executeUpdate(updateQuery)
+        new Sql(DataSourceUtils.getConnection(dataSource)).executeUpdate(updateQuery)
     }
 
     Titulo fromTituloGroovyRow(GroovyRowResult tituloGroovyRow) {

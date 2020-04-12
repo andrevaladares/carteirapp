@@ -27,7 +27,7 @@ class Main {
         }
         switch (args[0]) {
             case ComandosEnum.importar_carteira as String:
-                operacaoService.teste()
+//                operacaoService.teste()
                 importarCarteira(args)
                 break
             default:

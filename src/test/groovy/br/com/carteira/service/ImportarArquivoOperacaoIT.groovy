@@ -10,6 +10,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
+import java.time.LocalDate
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
 @Sql(scripts = ["classpath:limpaDados.sql"])
@@ -36,8 +38,10 @@ class ImportarArquivoOperacaoIT {
         def also3f = tituloRepository.getByTicker('also3f')
         Assert.assertEquals(0, also3f.qtde)
         Assert.assertEquals(new BigDecimal('0.00'), also3f.valorTotalInvestido)
+        Assert.assertEquals(LocalDate.of(2019, 4, 5), also3f.dataEntrada)
         Assert.assertEquals(40, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('1047.83'), aper3f.valorTotalInvestido)
+        Assert.assertEquals(LocalDate.of(2019, 3, 18), aper3f.dataEntrada)
     }
 
 }

@@ -4,6 +4,7 @@ import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.entity.TipoTituloEnum
 import br.com.carteira.entity.Titulo
+import br.com.carteira.exception.ArquivoInvalidoException
 import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.TituloRepository
@@ -109,13 +110,19 @@ class OperacaoService {
         tituloParaAtualizacao
     }
 
+    @Transactional
     void importarArquivoOperacao(String caminho, String nomeArquivo) {
         def linhaAberta
         def operacao
+        def qtdeLinhasProcessadas = 0
         def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
         new File(caminho, nomeArquivo).eachLine { linha, numeroLinha ->
-            if(numeroLinha > 1) {
-                linhaAberta = linha.split('\\t')
+            linhaAberta = linha.split('\\t')
+            if(numeroLinha == 1) {
+                if(linhaAberta[0] != 'Data compra')
+                    throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
+            }
+            else {
                 operacao = new Operacao(
                         data: LocalDate.parse(linhaAberta[0], dateFormatter),
                         tipoOperacao: linhaAberta[1],
@@ -128,19 +135,10 @@ class OperacaoService {
                 )
 
                 this.incluir(operacao)
+                qtdeLinhasProcessadas+=1
             }
         }
+        println "Concluido processamento de ${qtdeLinhasProcessadas} linhas"
     }
 
-    void teste() {
-        def operacao = new Operacao(
-                tipoOperacao: TipoOperacaoEnum.c,
-                titulo: tituloRepository.fromTituloGroovyRow(tituloRepository.listAll().get(0)),
-                qtde: 100,
-                valorTotalOperacao: BigDecimal.valueOf(5000),
-                data: LocalDate.now()
-        )
-        operacaoRepository.incluir(operacao)
-        println('Sim! Ainda aqui')
-    }
 }

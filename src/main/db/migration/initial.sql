@@ -23,7 +23,7 @@ create table operacao
     valor_total_operacao decimal(12, 2) not null,
     custo_medio_venda    decimal(14, 4) null comment 'novo custo médio, após a operação',
     resultado_venda      decimal(12, 2) null,
-    data                 date           null
+    data                 date           not null
 )
     comment 'representa uma operacao (compra/venda) realizada sobre um titulo ';
 

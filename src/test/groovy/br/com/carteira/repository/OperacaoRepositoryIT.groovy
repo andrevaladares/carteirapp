@@ -10,6 +10,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
+import java.time.LocalDate
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
 @Sql(scripts = ["classpath:operacao.sql"])
@@ -27,7 +29,8 @@ class OperacaoRepositoryIT {
                 titulo: tituloRepository.fromTituloGroovyRow(tituloGroovyRow),
                 qtde: 100,
                 valorTotalOperacao: BigDecimal.valueOf(1200),
-                custoMedioVenda: BigDecimal.valueOf(12)
+                custoMedioVenda: BigDecimal.valueOf(12),
+                data: LocalDate.of(2019, 12, 30)
         )
 
         def idOperacao = operacaoRepository.incluir(operacao)
@@ -44,7 +47,8 @@ class OperacaoRepositoryIT {
                 titulo: tituloRepository.fromTituloGroovyRow(tituloGroovyRow),
                 qtde: 50,
                 valorTotalOperacao: BigDecimal.valueOf(600),
-                custoMedioVenda: BigDecimal.valueOf(12)
+                custoMedioVenda: BigDecimal.valueOf(12),
+                data: LocalDate.of(2020, 2, 10)
         )
 
         def idOperacao = operacaoRepository.incluir(operacao)
