@@ -2,13 +2,12 @@ create table nota_negociacao
 (
     id                   int auto_increment
         primary key,
-    taxa_liquidacao      double null,
-    emolumentos          double null,
-    taxa_operacional     double null,
-    impostos             double null,
-    irpf_vendas          double null,
-    `outros_custos-oper` double null,
-    titulo               int    not null
+    taxa_liquidacao      decimal(12, 2) null,
+    emolumentos          decimal(12, 2) null,
+    taxa_operacional     decimal(12, 2) null,
+    impostos             decimal(12, 2) null,
+    irpf_vendas          decimal(12, 2) null,
+    outros_custos_oper decimal(12, 2) null
 )
     comment 'representa as notas de corretagem com as operacoes em renda variável';
 

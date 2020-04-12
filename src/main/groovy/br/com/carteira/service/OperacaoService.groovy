@@ -1,5 +1,6 @@
 package br.com.carteira.service
 
+import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.entity.TipoTituloEnum
@@ -141,4 +142,20 @@ class OperacaoService {
         println "Concluido processamento de ${qtdeLinhasProcessadas} linhas"
     }
 
+    List<String[]> carregarArquivoNotaNegociacao(String caminhoArquivo, String nomeArquivo) {
+        def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect {it -> it.split('\\t')}
+
+        def notaNegociacao = obterDadosNotaNegociacao(linhasArquivo)
+    }
+
+    NotaNegociacao obterDadosNotaNegociacao(List<String[]> linhasArquivoNota) {
+        new NotaNegociacao(
+                taxaLiquidacao: new BigDecimal(linhasArquivoNota[2][1]),
+                emolumentos: new BigDecimal(linhasArquivoNota[3][1]),
+                taxaOperacional: new BigDecimal(linhasArquivoNota[4][1]),
+                impostos: new BigDecimal(linhasArquivoNota[5][1]),
+                irpfVendas: new BigDecimal(linhasArquivoNota[6][1]),
+                outrosCustos: new BigDecimal(linhasArquivoNota[7][1])
+        )
+    }
 }

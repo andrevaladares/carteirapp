@@ -16,7 +16,7 @@ class ImportarOperacoes {
         println 'Iniciando importação de operações'
         println '==============='
 
-        operacaoService.importarArquivoOperacao('C:\\Users\\AndreValadares\\Documents', 'operacoesBolsa1.txt')
+        operacaoService.importarArquivoOperacao('C:\\Users\\AndreValadares\\Documents', 'operacoesBolsa2.txt')
 
         println '==============='
         println 'Encerrada importação de operações'
@@ -25,7 +25,7 @@ class ImportarOperacoes {
 }
 
 ApplicationContext context =
-        new ClassPathXmlApplicationContext('applicationContext.xml');
+        new ClassPathXmlApplicationContext('applicationContext.xml')
 
 ImportarOperacoes importarOperaces = context.getBean(ImportarOperacoes.class)
 importarOperaces.executar()
