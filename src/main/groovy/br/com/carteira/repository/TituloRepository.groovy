@@ -10,6 +10,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.stereotype.Repository
 
 import java.sql.Date
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Repository
 class TituloRepository {
@@ -28,6 +31,7 @@ class TituloRepository {
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     Long incluir(Titulo titulo) {
+
         def insertSql = """
                 insert into titulo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada)
                 values (${titulo.ticker}, $titulo.nome, ${titulo.tipo as String}, 
@@ -60,8 +64,9 @@ class TituloRepository {
     }
 
     Titulo fromTituloGroovyRow(GroovyRowResult tituloGroovyRow) {
+        def titulo
         if (tituloGroovyRow != null) {
-            new Titulo(
+            titulo = new Titulo(
                     id: tituloGroovyRow['id'],
                     ticker: tituloGroovyRow['ticker'],
                     nome: tituloGroovyRow['nome'],
@@ -72,5 +77,6 @@ class TituloRepository {
                     dataEntrada: ((Date) tituloGroovyRow['data_entrada']).toLocalDate()
             )
         }
+        titulo
     }
 }
