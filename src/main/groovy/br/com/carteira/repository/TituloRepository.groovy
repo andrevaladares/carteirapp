@@ -34,7 +34,7 @@ class TituloRepository {
 
         def insertSql = """
                 insert into titulo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada)
-                values (${titulo.ticker}, $titulo.nome, ${titulo.tipo as String}, 
+                values (${titulo.ticker.toLowerCase()}, $titulo.nome, ${titulo.tipo as String}, 
                     $titulo.setor, $titulo.qtde, $titulo.valorTotalInvestido, ${titulo.dataEntrada})
             """
         def keys = new Sql(DataSourceUtils.getConnection(dataSource)).executeInsert insertSql
@@ -64,7 +64,7 @@ class TituloRepository {
     }
 
     Titulo fromTituloGroovyRow(GroovyRowResult tituloGroovyRow) {
-        def titulo
+        def titulo = null
         if (tituloGroovyRow != null) {
             titulo = new Titulo(
                     id: tituloGroovyRow['id'],

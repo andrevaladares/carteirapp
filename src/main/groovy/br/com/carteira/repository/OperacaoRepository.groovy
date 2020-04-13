@@ -21,11 +21,11 @@ class OperacaoRepository {
     }
 
     Long incluir(Operacao operacao) {
-        def keys = new ArrayList<Long>()
+        def keys
         def insertSql = """
                 insert into operacao (nota_negociacao, tipo_operacao, titulo, qtde,
                     valor_total_operacao, custo_medio_venda, resultado_venda, data)
-                values (${operacao.notaNegociacao}, ${operacao.tipoOperacao as String}, ${operacao.titulo.id}, 
+                values (${operacao.idNotaNegociacao}, ${operacao.tipoOperacao as String}, ${operacao.titulo.id}, 
                     ${operacao.qtde}, ${operacao.valorTotalOperacao}, ${operacao.custoMedioVenda}, ${operacao.resultadoVenda},
                     ${operacao.data})
             """

@@ -7,6 +7,7 @@ import br.com.carteira.entity.TipoTituloEnum
 import br.com.carteira.entity.Titulo
 import br.com.carteira.exception.ArquivoInvalidoException
 import br.com.carteira.exception.OperacaoInvalidaException
+import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.TituloRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,11 +23,15 @@ import java.time.format.DateTimeFormatter
 class OperacaoService {
     OperacaoRepository operacaoRepository
     TituloRepository tituloRepository
+    NotaNegociacaoRepository notaNegociacaoRepository
 
     @Autowired
-    OperacaoService(OperacaoRepository operacaoRepository, TituloRepository tituloRepository) {
+    OperacaoService(OperacaoRepository operacaoRepository,
+                    TituloRepository tituloRepository,
+                    NotaNegociacaoRepository notaNegociacaoRepository) {
         this.operacaoRepository = operacaoRepository
         this.tituloRepository = tituloRepository
+        this.notaNegociacaoRepository = notaNegociacaoRepository
     }
 
     /**
@@ -113,49 +118,64 @@ class OperacaoService {
 
     @Transactional
     void importarArquivoOperacao(String caminho, String nomeArquivo) {
+        //todo a princípio não é mais útil já que tenho a importação da nota de negociação
+/*
         def linhaAberta
-        def operacao
         def qtdeLinhasProcessadas = 0
-        def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
         new File(caminho, nomeArquivo).eachLine { linha, numeroLinha ->
             linhaAberta = linha.split('\\t')
-            if(numeroLinha == 1) {
-                if(linhaAberta[0] != 'Data compra')
-                    throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
-            }
-            else {
-                operacao = new Operacao(
-                        data: LocalDate.parse(linhaAberta[0], dateFormatter),
-                        tipoOperacao: linhaAberta[1],
-                        titulo: new Titulo(
-                                ticker: linhaAberta[2],
-                                tipo: linhaAberta[3].toLowerCase() as TipoTituloEnum
-                        ),
-                        qtde: Integer.valueOf(linhaAberta[5]),
-                        valorTotalOperacao: new BigDecimal(linhaAberta[6].replace(',', '.'))
-                )
-
-                this.incluir(operacao)
-                qtdeLinhasProcessadas+=1
-            }
+            incluiOperacoes(linhaAberta, numeroLinha, null, '20/02/2020')
+            qtdeLinhasProcessadas+=1
         }
         println "Concluido processamento de ${qtdeLinhasProcessadas} linhas"
+*/
     }
 
-    List<String[]> carregarArquivoNotaNegociacao(String caminhoArquivo, String nomeArquivo) {
+    @Transactional
+    void importarArquivoNotaNegociacao(String caminhoArquivo, String nomeArquivo) {
         def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect {it -> it.split('\\t')}
 
         def notaNegociacao = obterDadosNotaNegociacao(linhasArquivo)
+        def idNotaNegociacao = notaNegociacaoRepository.incluir(notaNegociacao)
+        def dataPregao = linhasArquivo[1][1]
+
+        linhasArquivo.subList(9, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+            incluiOperacoes(linha, numeroLinha, idNotaNegociacao, dataPregao)
+        }
+    }
+
+    void incluiOperacoes(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao) {
+        def operacao
+        def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+        if(numeroLinha == 0) {
+            if(linhaAberta[0] != 'tipo')
+                throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
+        }
+        else {
+            operacao = new Operacao(
+                    data: LocalDate.parse(dataNegociacao, dateFormatter),
+                    idNotaNegociacao: idNotaNegociacao,
+                    tipoOperacao: linhaAberta[0],
+                    titulo: new Titulo(
+                            ticker: linhaAberta[1],
+                            tipo: linhaAberta[2].toLowerCase() as TipoTituloEnum
+                    ),
+                    qtde: Integer.valueOf(linhaAberta[4]),
+                    valorTotalOperacao: new BigDecimal(linhaAberta[5].replace(',', '.'))
+            )
+
+            this.incluir(operacao)
+        }
     }
 
     NotaNegociacao obterDadosNotaNegociacao(List<String[]> linhasArquivoNota) {
         new NotaNegociacao(
-                taxaLiquidacao: new BigDecimal(linhasArquivoNota[2][1]),
-                emolumentos: new BigDecimal(linhasArquivoNota[3][1]),
-                taxaOperacional: new BigDecimal(linhasArquivoNota[4][1]),
-                impostos: new BigDecimal(linhasArquivoNota[5][1]),
-                irpfVendas: new BigDecimal(linhasArquivoNota[6][1]),
-                outrosCustos: new BigDecimal(linhasArquivoNota[7][1])
+                taxaLiquidacao: new BigDecimal(linhasArquivoNota[2][1].replace(',', '.')),
+                emolumentos: new BigDecimal(linhasArquivoNota[3][1].replace(',', '.')),
+                taxaOperacional: new BigDecimal(linhasArquivoNota[4][1].replace(',', '.')),
+                impostos: new BigDecimal(linhasArquivoNota[5][1].replace(',', '.')),
+                irpfVendas: new BigDecimal(linhasArquivoNota[6][1].replace(',', '.')),
+                outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.'))
         )
     }
 }

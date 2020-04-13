@@ -106,30 +106,39 @@ class OperacaoServiceTest {
 
     @Test
     void "obtem corretamente uma nota de negociacao a partir da lista de linhas do arquivo"(){
-        def linhasArquivo = [
-                ['Dados da nota'],
-                ['Data do pregão',	'03/02/2020'],
-                ['Taxa de liquidação',	'14,42'],
-                ['Emolumentos',	'1,92'],
-                ['Taxa operacional',	'170,1'],
-                ['Impostos',	'18,16'],
-                ['I.R.R.F. s/ operações',	'1,32'],
-                ['Outros',	'6,63'],
-                ['Dados das operações'],
-                ['tipo',	'título',	'TipoTitulo',	'Preço compra',	'Quantidade',	'Valor'],
-                ['c',	'Aper3f',	'a',	'26,20',	'40',	'1047,83'],
-                ['c',	'Enev3f',	'a',	'18,91',	'55',	'1039,93'],
-                ['c',	'Jpsa3f',	'a',	'25,35',	'40',	'1013,83'],
-                ['c',	'Bpan4',	'a',	'3,51',	'300',	'1053,83']
-        ]
+        ArrayList<String[]> linhasArquivo = montaArquivoNota()
 
         def notaNegociacao = operacaoService.obterDadosNotaNegociacao(linhasArquivo)
         def notaNegociacaoEsperada = new NotaNegociacao(
-                taxaLiquidacao: new BigDecimal('14,42'),
-                emolumentos: new BigDecimal('1,92')
+                taxaLiquidacao: new BigDecimal('14.42'),
+                emolumentos: new BigDecimal('1.92'),
+                taxaOperacional: new BigDecimal('170.1'),
+                impostos: new BigDecimal('18.16'),
+                irpfVendas: new BigDecimal('1.32'),
+                outrosCustos: new BigDecimal('6.63')
         )
 
-        Assert.assertEquals()
+        Assert.assertEquals(notaNegociacaoEsperada, notaNegociacao)
+    }
+
+    private ArrayList<String[]> montaArquivoNota() {
+        def linhasArquivo = new ArrayList<String[]>([
+                ['Dados da nota'],
+                ['Data do pregão', '03/02/2020'],
+                ['Taxa de liquidação', '14,42'],
+                ['Emolumentos', '1,92'],
+                ['Taxa operacional', '170,1'],
+                ['Impostos', '18,16'],
+                ['I.R.R.F. s/ operações', '1,32'],
+                ['Outros', '6,63'],
+                ['Dados das operações'],
+                ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
+                ['c', 'Aper3f', 'a', '26,20', '40', '1047,83'],
+                ['c', 'Enev3f', 'a', '18,91', '55', '1039,93'],
+                ['c', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
+                ['c', 'Bpan4', 'a', '3,51', '300', '1053,83']
+        ])
+        linhasArquivo
     }
 
     private Operacao obterOperacaoDeVenda() {
