@@ -16,8 +16,6 @@ import java.time.LocalDate
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
 @Sql(scripts = ["classpath:limpaDados.sql"])
-@Ignore
-//todo a principio nao mais necessario ja que tenho a importacao da nota de negociacao
 class ImportarArquivoOperacaoIT {
 
     @Autowired

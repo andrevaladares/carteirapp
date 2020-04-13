@@ -118,17 +118,36 @@ class OperacaoService {
 
     @Transactional
     void importarArquivoOperacao(String caminho, String nomeArquivo) {
-        //todo a princípio não é mais útil já que tenho a importação da nota de negociação
-/*
         def linhaAberta
         def qtdeLinhasProcessadas = 0
         new File(caminho, nomeArquivo).eachLine { linha, numeroLinha ->
             linhaAberta = linha.split('\\t')
-            incluiOperacoes(linhaAberta, numeroLinha, null, '20/02/2020')
+            incluiOperacoesAPartirArquivoOperacoes(numeroLinha, linhaAberta)
             qtdeLinhasProcessadas+=1
         }
-        println "Concluido processamento de ${qtdeLinhasProcessadas} linhas"
-*/
+        println "Concluido processamento de ${qtdeLinhasProcessadas - 1} linhas" // Desconta a linha de títulos
+    }
+
+    private void incluiOperacoesAPartirArquivoOperacoes(int numeroLinha, String[] linhaAberta) {
+        def operacao
+        def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+        if (numeroLinha == 1) {
+            if (linhaAberta[0] != 'Data compra')
+                throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
+        } else {
+            operacao = new Operacao(
+                    data: LocalDate.parse(linhaAberta[0], dateFormatter),
+                    tipoOperacao: linhaAberta[1],
+                    titulo: new Titulo(
+                            ticker: linhaAberta[2],
+                            tipo: linhaAberta[3].toLowerCase() as TipoTituloEnum
+                    ),
+                    qtde: Integer.valueOf(linhaAberta[5]),
+                    valorTotalOperacao: new BigDecimal(linhaAberta[6].replace(',', '.'))
+            )
+
+            this.incluir(operacao)
+        }
     }
 
     @Transactional
@@ -138,13 +157,16 @@ class OperacaoService {
         def notaNegociacao = obterDadosNotaNegociacao(linhasArquivo)
         def idNotaNegociacao = notaNegociacaoRepository.incluir(notaNegociacao)
         def dataPregao = linhasArquivo[1][1]
-
+         println 'Iniciando processamento das operações da nota'
+        def qtdeProcessada = 0
         linhasArquivo.subList(9, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
-            incluiOperacoes(linha, numeroLinha, idNotaNegociacao, dataPregao)
+            incluiOperacaoAPartirDeNotaNegociacao(linha, numeroLinha, idNotaNegociacao, dataPregao)
+            qtdeProcessada+=1
         }
+        println "Concluído o processamento de ${qtdeProcessada-1} operações" //Desconta linha de títulos
     }
 
-    void incluiOperacoes(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao) {
+    void incluiOperacaoAPartirDeNotaNegociacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao) {
         def operacao
         def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
         if(numeroLinha == 0) {

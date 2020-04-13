@@ -26,7 +26,7 @@ class ImportarNotaEOperacaoIT {
     TituloRepository tituloRepository
 
     @Test
-    void "obtem dados da nota a partir do arquivo"(){
+    void "importa corretamente a nota e suas operacoes"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaOperacaoTeste.txt'
 
