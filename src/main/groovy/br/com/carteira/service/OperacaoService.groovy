@@ -67,7 +67,7 @@ class OperacaoService {
      */
     Operacao complementarOperacao(Operacao operacao) {
         if(operacao.tipoOperacao == TipoOperacaoEnum.v){
-            operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido / operacao.titulo.qtde
+            operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
         }
 
@@ -84,8 +84,7 @@ class OperacaoService {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             def valorInvestidoEquivalente = tituloParaAtualizacao
                     .valorTotalInvestido.divide(
-                    BigDecimal.valueOf(tituloParaAtualizacao.qtde), 2, RoundingMode.HALF_UP) * operacao.qtde
-            valorInvestidoEquivalente = valorInvestidoEquivalente.setScale(2, RoundingMode.HALF_UP)
+                    BigDecimal.valueOf(tituloParaAtualizacao.qtde), 4, RoundingMode.HALF_UP) * operacao.qtde
             tituloParaAtualizacao.qtde -= operacao.qtde
             tituloParaAtualizacao.valorTotalInvestido -= valorInvestidoEquivalente
 
@@ -159,14 +158,16 @@ class OperacaoService {
         def dataPregao = linhasArquivo[1][1]
          println 'Iniciando processamento das operações da nota'
         def qtdeProcessada = 0
+        def valorTaxaUnitaria = defineValorTaxaUnitaria(linhasArquivo, notaNegociacao)
+
         linhasArquivo.subList(9, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
-            incluiOperacaoAPartirDeNotaNegociacao(linha, numeroLinha, idNotaNegociacao, dataPregao)
+            incluiOperacaoAPartirDeNotaNegociacao(linha, numeroLinha, idNotaNegociacao, dataPregao, valorTaxaUnitaria)
             qtdeProcessada+=1
         }
         println "Concluído o processamento de ${qtdeProcessada-1} operações" //Desconta linha de títulos
     }
 
-    void incluiOperacaoAPartirDeNotaNegociacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao) {
+    void incluiOperacaoAPartirDeNotaNegociacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao, BigDecimal valorTaxaUnitaria) {
         def operacao
         def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
         if(numeroLinha == 0) {
@@ -174,6 +175,7 @@ class OperacaoService {
                 throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
         }
         else {
+            def quantidade = Integer.valueOf(linhaAberta[4])
             operacao = new Operacao(
                     data: LocalDate.parse(dataNegociacao, dateFormatter),
                     idNotaNegociacao: idNotaNegociacao,
@@ -182,8 +184,8 @@ class OperacaoService {
                             ticker: linhaAberta[1],
                             tipo: linhaAberta[2].toLowerCase() as TipoTituloEnum
                     ),
-                    qtde: Integer.valueOf(linhaAberta[4]),
-                    valorTotalOperacao: new BigDecimal(linhaAberta[5].replace(',', '.'))
+                    qtde: quantidade,
+                    valorTotalOperacao: new BigDecimal(linhaAberta[5].replace(',', '.')).add(valorTaxaUnitaria.multiply(quantidade as BigDecimal))
             )
 
             this.incluir(operacao)
@@ -199,5 +201,13 @@ class OperacaoService {
                 irpfVendas: new BigDecimal(linhasArquivoNota[6][1].replace(',', '.')),
                 outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.'))
         )
+    }
+
+    BigDecimal defineValorTaxaUnitaria(List<String[]> listaOperacoes, NotaNegociacao notaNegociacao) {
+        def valorTotalTaxas = notaNegociacao.getTotalTaxas()
+        BigDecimal qtdeTitulosCompra = listaOperacoes
+                .findAll {it[0] == 'c'}
+                .sum {it[4] as BigDecimal} as BigDecimal
+        valorTotalTaxas.divide(qtdeTitulosCompra, 4, RoundingMode.HALF_UP)
     }
 }

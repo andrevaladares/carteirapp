@@ -30,7 +30,7 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertEquals(BigDecimal.valueOf(17.5), operacaoCompleta.custoMedioVenda)
+        Assert.assertEquals(17.5000, operacaoCompleta.custoMedioVenda)
         Assert.assertEquals(BigDecimal.valueOf(37.5), operacaoCompleta.resultadoVenda)
     }
 
@@ -41,7 +41,7 @@ class OperacaoServiceTest {
         def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
 
         Assert.assertEquals(185, titulo.qtde)
-        Assert.assertEquals(new BigDecimal('3237.50'), titulo.valorTotalInvestido)
+        Assert.assertEquals(new BigDecimal('3237.5000'), titulo.valorTotalInvestido)
     }
 
     @Test
@@ -121,6 +121,14 @@ class OperacaoServiceTest {
         Assert.assertEquals(notaNegociacaoEsperada, notaNegociacao)
     }
 
+    @Test
+    void "calcula corretamente valor taxa unitária das operacoes de compra"() {
+        def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNota())
+        def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNota(), notaNegociacao)
+
+        Assert.assertEquals(new BigDecimal('0.5381'), valorUnitarioTaxas)
+    }
+
     private ArrayList<String[]> montaArquivoNota() {
         def linhasArquivo = new ArrayList<String[]>([
                 ['Dados da nota'],
@@ -135,7 +143,7 @@ class OperacaoServiceTest {
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['c', 'Aper3f', 'a', '26,20', '40', '1047,83'],
                 ['c', 'Enev3f', 'a', '18,91', '55', '1039,93'],
-                ['c', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
+                ['v', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
                 ['c', 'Bpan4', 'a', '3,51', '300', '1053,83']
         ])
         linhasArquivo

@@ -1,0 +1,12 @@
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro
+ALUP11	400	400	28,20	11280,00
+				
+APER3	80	80	26,16	2092,80
+				
+AZUL4	170	170	44,44	7554,80
+				
+BBAS3	200	200	46,86	9372,00
+				
+BPAC11	130	130	67,56	8782,80
+				
+BPAN4	1.100	1.100	9,00	9900,00

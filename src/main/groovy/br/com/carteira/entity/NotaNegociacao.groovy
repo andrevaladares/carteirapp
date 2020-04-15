@@ -9,6 +9,15 @@ class NotaNegociacao {
     BigDecimal irpfVendas
     BigDecimal outrosCustos
 
+    BigDecimal getTotalTaxas() {
+        taxaLiquidacao
+                .add(emolumentos)
+                .add(taxaOperacional)
+                .add(impostos)
+                .add(irpfVendas)
+                .add(outrosCustos)
+    }
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false

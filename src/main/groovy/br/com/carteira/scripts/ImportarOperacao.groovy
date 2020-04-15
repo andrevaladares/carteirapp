@@ -7,16 +7,27 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.springframework.stereotype.Component
 
 @Component
-class ImportarOperacoes {
+class ImportarDados {
 
     @Autowired
     OperacaoService operacaoService
 
-    void executar(){
+    void importarOperacoes(){
         println 'Iniciando importação de operações'
         println '==============='
 
-        operacaoService.importarArquivoOperacao('C:\\Users\\AndreValadares\\Documents', 'operacoesBolsa2.txt')
+        operacaoService.importarArquivoOperacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_CorrecaoVulc3.txt')
+
+        println '==============='
+        println 'Encerrada importação de operações'
+
+    }
+
+    void importarNotaNegociacao(){
+        println 'Iniciando importação de operações'
+        println '==============='
+
+        operacaoService.importarArquivoNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacao27022020.txt')
 
         println '==============='
         println 'Encerrada importação de operações'
@@ -27,5 +38,7 @@ class ImportarOperacoes {
 ApplicationContext context =
         new ClassPathXmlApplicationContext('applicationContext.xml')
 
-ImportarOperacoes importarOperaces = context.getBean(ImportarOperacoes.class)
-importarOperaces.executar()
+ImportarDados importarDados = context.getBean(ImportarDados.class)
+
+//========= Execute aqui o metodo que deseja
+importarDados.importarOperacoes()

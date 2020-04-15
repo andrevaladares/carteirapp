@@ -47,11 +47,11 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(LocalDate.of(2020, 2, 3), aper3f.dataEntrada)
         Assert.assertEquals(TipoTituloEnum.a, aper3f.tipo)
         Assert.assertEquals(30, aper3f.qtde)
-        Assert.assertEquals(new BigDecimal('786.00'), aper3f.valorTotalInvestido)
+        Assert.assertEquals(new BigDecimal('802.14'), aper3f.valorTotalInvestido)
         Assert.assertEquals(LocalDate.of(2020, 2, 3), bpan4.dataEntrada)
         Assert.assertEquals(TipoTituloEnum.a, bpan4.tipo)
         Assert.assertEquals(300, bpan4.qtde)
-        Assert.assertEquals(new BigDecimal('1053.83'), bpan4.valorTotalInvestido)
+        Assert.assertEquals(new BigDecimal('1215.26'), bpan4.valorTotalInvestido)
     }
 
 }
