@@ -43,15 +43,16 @@ class SituacaoCarteiraServiceIT {
     @Test
     void 'erro se quantidade no titulo nao bater com a quantidade na situacao atual' () {
         try {
-            def nomeArquivo = 'situacaoAcoesTeste.txt'
+            def nomeArquivo = 'situacaoQtdeInvalida.txt'
             def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
             def dataReferencia = LocalDate.of(2020, 2, 28)
 
             situacaoTituloService.
                     importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+            Assert.fail()
         }
         catch (QuantidadeTituloException e) {
-
+            Assert.assertEquals("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: alup11", e.getMessage())
         }
     }
 
