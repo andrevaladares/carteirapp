@@ -33,10 +33,13 @@ create table situacao_carteira
     data              date     not null,
     titulo            int      not null,
     qtde_disponivel   smallint not null,
-    `valor-investido` double   not null,
-    valor_atual       double   not null
+    valor_investido decimal(12,2)   not null,
+    valor_atual       decimal(12,2)   not null
 )
     comment 'representa a situação da carteira em uma daterminada data';
+
+create unique index situacao_carteira_titulo_data_uindex
+    on situacao_carteira (titulo, data);
 
 create table titulo
 (

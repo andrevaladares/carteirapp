@@ -10,9 +10,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.stereotype.Repository
 
 import java.sql.Date
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
 @Repository
 class TituloRepository {
@@ -20,7 +17,7 @@ class TituloRepository {
     DriverManagerDataSource dataSource
 
     @Autowired
-    OperacaoRepository(DriverManagerDataSource dataSource) {
+    TituloRepository(DriverManagerDataSource dataSource) {
         this.dataSource = dataSource
     }
 
@@ -50,7 +47,7 @@ class TituloRepository {
 
     Titulo getByTicker(String ticker) {
         def query = 'select * from titulo where ticker = :ticker'
-        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker], query)
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker.toLowerCase()], query)
         return fromTituloGroovyRow(resultado)
     }
 
