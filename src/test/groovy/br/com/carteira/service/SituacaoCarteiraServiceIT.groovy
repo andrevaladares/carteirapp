@@ -18,7 +18,7 @@ import java.time.LocalDate
 class SituacaoCarteiraServiceIT {
 
     @Autowired
-    SituacaoCarteiraService situacaoTituloService
+    SituacaoCarteiraService situacaoCarteiraService
     @Autowired
     SituacaoCarteiraRepository situacaoCarteiraRepository
 
@@ -28,7 +28,7 @@ class SituacaoCarteiraServiceIT {
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
-        situacaoTituloService.
+        situacaoCarteiraService.
                 importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
 
         def situacaoAlup11 = situacaoCarteiraRepository.getByTickerDataReferencia('alup11', LocalDate.of(2020, 2, 28))
@@ -47,7 +47,7 @@ class SituacaoCarteiraServiceIT {
             def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
             def dataReferencia = LocalDate.of(2020, 2, 28)
 
-            situacaoTituloService.
+            situacaoCarteiraService.
                     importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
             Assert.fail()
         }
