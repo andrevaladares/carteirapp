@@ -35,6 +35,26 @@ class OperacaoServiceTest {
     }
 
     @Test
+    void "atualiza operação a partir de venda short"() {
+        Operacao operacao = obterOperacaoDeVendaShort()
+
+        def operacaoCompleta = operacaoService.complementarOperacao(operacao)
+
+        Assert.assertNull(operacaoCompleta.custoMedioVenda)
+        Assert.assertNull(operacaoCompleta.resultadoVenda)
+    }
+
+    @Test
+    void "atualiza operação a partir de compra/redução short"() {
+        Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
+
+        def operacaoCompleta = operacaoService.complementarOperacao(operacao)
+
+        Assert.assertEquals(new BigDecimal('26.6667'), operacaoCompleta.custoMedioVenda)
+        Assert.assertEquals(new BigDecimal('116.667'), operacaoCompleta.resultadoVenda)
+    }
+
+    @Test
     void "atualiza titulo a partir de venda"() {
         Operacao operacao = obterOperacaoDeVenda()
 
@@ -42,6 +62,36 @@ class OperacaoServiceTest {
 
         Assert.assertEquals(185, titulo.qtde)
         Assert.assertEquals(new BigDecimal('3237.5000'), titulo.valorTotalInvestido)
+    }
+
+    @Test
+    void "atualiza titulo a partir de venda short"() {
+        Operacao operacao = obterOperacaoDeVendaShort()
+
+        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
+
+        Assert.assertEquals(-15, titulo.qtde)
+        Assert.assertEquals(new BigDecimal('-300'), titulo.valorTotalInvestido)
+    }
+
+    @Test
+    void "atualiza titulo a partir de compra short zerando posição"() {
+        Operacao operacao = obterOperacaoDeCompraShortZeraPosicao()
+
+        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
+
+        Assert.assertEquals(0, titulo.qtde)
+        Assert.assertEquals(new BigDecimal('0'), titulo.valorTotalInvestido)
+    }
+
+    @Test
+    void "atualiza titulo a partir de compra short sem zerar posição"() {
+        Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
+
+        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
+
+        Assert.assertEquals(-5, titulo.qtde)
+        Assert.assertEquals(new BigDecimal('-133.3330'), titulo.valorTotalInvestido)
     }
 
     @Test
@@ -93,15 +143,13 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "erro ao tentar incluir operacao de venda para titulo novo" () {
+    void "cria operação de short para título novo" () {
         def operacao = obterOperacaoDeVenda()
-        Mockito.when(tituloRepositoryMock.getByTicker(operacao.titulo.ticker)).thenReturn(null)
-        try {
-            operacaoService.incluir(operacao)
-        }
-        catch (OperacaoInvalidaException e) {
-            Assert.assertEquals('Se o título é novo a operação não pode ser de venda', e.getMessage())
-        }
+        def titulo = operacaoService.criarTituloAPartirDaOperacao(operacao)
+
+        Assert.assertEquals('visc11', titulo.ticker)
+        Assert.assertEquals(-15, titulo.qtde)
+        Assert.assertEquals(new BigDecimal('-300'), titulo.valorTotalInvestido)
     }
 
     @Test
@@ -159,6 +207,48 @@ class OperacaoServiceTest {
                 ),
                 qtde: 15,
                 valorTotalOperacao: 300
+        )
+        operacao
+    }
+
+    private Operacao obterOperacaoDeVendaShort() {
+        def operacao = new Operacao(
+                tipoOperacao: TipoOperacaoEnum.v,
+                titulo: new Titulo(
+                        ticker: 'visc11',
+                        qtde: 0,
+                        valorTotalInvestido: 0
+                ),
+                qtde: 15,
+                valorTotalOperacao: 300
+        )
+        operacao
+    }
+
+    private Operacao obterOperacaoDeCompraShortZeraPosicao() {
+        def operacao = new Operacao(
+                tipoOperacao: TipoOperacaoEnum.c,
+                titulo: new Titulo(
+                        ticker: 'visc11',
+                        qtde: -15,
+                        valorTotalInvestido: -400
+                ),
+                qtde: 15,
+                valorTotalOperacao: 300
+        )
+        operacao
+    }
+
+    private Operacao obterOperacaoDeCompraShortSemZerarPosicao() {
+        def operacao = new Operacao(
+                tipoOperacao: TipoOperacaoEnum.c,
+                titulo: new Titulo(
+                        ticker: 'visc11',
+                        qtde: -15,
+                        valorTotalInvestido: -400
+                ),
+                qtde: 10,
+                valorTotalOperacao: 150
         )
         operacao
     }

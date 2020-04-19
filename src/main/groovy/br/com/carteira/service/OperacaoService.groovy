@@ -66,9 +66,16 @@ class OperacaoService {
      * @return a operação atualizada
      */
     Operacao complementarOperacao(Operacao operacao) {
-        if(operacao.tipoOperacao == TipoOperacaoEnum.v){
+        if(operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.titulo.qtde > 0){
+            //operacao de venda comum (redução de posição comprada)
             operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
+        }
+
+        if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.titulo.qtde <=0) {
+            //Reducao de um short
+            operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)) * -1
         }
 
         operacao
@@ -81,6 +88,15 @@ class OperacaoService {
      */
     Titulo atualizarTituloAPartirDaOperacao(Operacao operacao) {
         def tituloParaAtualizacao = operacao.titulo
+        if(tituloParaAtualizacao.qtde < 0 || (tituloParaAtualizacao.qtde == 0 && operacao.tipoOperacao.equals(TipoOperacaoEnum.v))){
+            return atualizarTituloOperacaoShort(operacao, tituloParaAtualizacao)
+        }
+        else {
+            return atualizarTituloOperacaoComum(operacao, tituloParaAtualizacao)
+        }
+    }
+
+    private Titulo atualizarTituloOperacaoComum(Operacao operacao, Titulo tituloParaAtualizacao) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             def valorInvestidoEquivalente = tituloParaAtualizacao
                     .valorTotalInvestido.divide(
@@ -93,7 +109,7 @@ class OperacaoService {
             tituloParaAtualizacao.valorTotalInvestido += operacao.valorTotalOperacao
         }
 
-        tituloParaAtualizacao
+        return tituloParaAtualizacao
     }
 
     /**
@@ -105,7 +121,9 @@ class OperacaoService {
     Titulo criarTituloAPartirDaOperacao(Operacao operacao) {
         def tituloParaAtualizacao = operacao.titulo
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            throw new OperacaoInvalidaException('Se o título é novo a operação não pode ser de venda')
+            tituloParaAtualizacao.qtde = operacao.qtde * -1
+            tituloParaAtualizacao.valorTotalInvestido = operacao.valorTotalOperacao * -1
+            tituloParaAtualizacao.dataEntrada = operacao.data
         } else {
             tituloParaAtualizacao.qtde = operacao.qtde
             tituloParaAtualizacao.valorTotalInvestido = operacao.valorTotalOperacao
@@ -209,5 +227,25 @@ class OperacaoService {
                 .findAll {it[0] == 'c'}
                 .sum {it[4] as BigDecimal} as BigDecimal
         valorTotalTaxas.divide(qtdeTitulosCompra, 4, RoundingMode.HALF_UP)
+    }
+
+    Titulo atualizarTituloOperacaoShort(Operacao operacao, Titulo titulo) {
+        if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
+            titulo.qtde -= operacao.qtde
+            titulo.valorTotalInvestido -= operacao.valorTotalOperacao
+
+        } else {
+            def valorMedioShort = titulo.valorTotalInvestido.divide(titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            titulo.qtde += operacao.qtde
+            if(titulo.qtde == 0){
+                titulo.valorTotalInvestido = 0
+            }
+            else {
+                def valorAAbater = valorMedioShort * operacao.qtde
+                titulo.valorTotalInvestido += valorAAbater
+            }
+        }
+
+        return titulo
     }
 }
