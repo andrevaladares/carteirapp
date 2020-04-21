@@ -9,6 +9,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.stereotype.Repository
 
 import java.sql.Connection
+import java.time.LocalDate
 
 @Repository
 class OperacaoRepository {
@@ -44,6 +45,14 @@ class OperacaoRepository {
 
     List<GroovyRowResult> findAll(){
         def query = 'select * from operacao'
+        new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
+    }
+
+    List<GroovyRowResult> getByDataOperacaoTicker(LocalDate dataOperacao, String ticker) {
+        def query = """
+            select * from operacao o inner join titulo t on t.id =  o.titulo
+            where t.ticker = $ticker and o.data = $dataOperacao
+        """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
     }
 }

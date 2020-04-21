@@ -177,6 +177,14 @@ class OperacaoServiceTest {
         Assert.assertEquals(new BigDecimal('0.5381'), valorUnitarioTaxas)
     }
 
+    @Test
+    void "calcula corretamente valor taxa unitária das quando so ha operacao de venda"() {
+        def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNotaApenasVendas())
+        def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNotaApenasVendas(), notaNegociacao)
+
+        Assert.assertEquals(new BigDecimal('0.5593'), valorUnitarioTaxas)
+    }
+
     private ArrayList<String[]> montaArquivoNota() {
         def linhasArquivo = new ArrayList<String[]>([
                 ['Dados da nota'],
@@ -193,6 +201,25 @@ class OperacaoServiceTest {
                 ['c', 'Enev3f', 'a', '18,91', '55', '1039,93'],
                 ['v', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
                 ['c', 'Bpan4', 'a', '3,51', '300', '1053,83']
+        ])
+        linhasArquivo
+    }
+
+    private ArrayList<String[]> montaArquivoNotaApenasVendas() {
+        def linhasArquivo = new ArrayList<String[]>([
+                ['Dados da nota'],
+                ['Data do pregão', '03/02/2020'],
+                ['Taxa de liquidação', '14,42'],
+                ['Emolumentos', '1,92'],
+                ['Taxa operacional', '170,1'],
+                ['Impostos', '18,16'],
+                ['I.R.R.F. s/ operações', '1,32'],
+                ['Outros', '6,63'],
+                ['Dados das operações'],
+                ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
+                ['v', 'Aper3f', 'a', '26,20', '40', '1047,83'],
+                ['v', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
+                ['v', 'Bpan4', 'a', '3,51', '300', '1053,83']
         ])
         linhasArquivo
     }
