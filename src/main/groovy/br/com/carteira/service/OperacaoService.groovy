@@ -70,8 +70,7 @@ class OperacaoService {
             operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
         }
-
-        if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.titulo.qtde <= 0) {
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.titulo.qtde < 0) {
             //Reducao de um short
             operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)) * -1

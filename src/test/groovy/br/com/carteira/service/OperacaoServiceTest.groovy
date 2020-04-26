@@ -55,6 +55,16 @@ class OperacaoServiceTest {
     }
 
     @Test
+    void "atualiza operação a partir de compra em remontagem de posicao (ativo existente com saldo 0)"() {
+        Operacao operacao = obterOperacaoDeCompraAPartirDeAtivoComSaldoZero()
+
+        def operacaoCompleta = operacaoService.complementarOperacao(operacao)
+
+        Assert.assertNull(operacaoCompleta.custoMedioVenda)
+        Assert.assertNull(operacaoCompleta.resultadoVenda)
+    }
+
+    @Test
     void "atualiza titulo a partir de venda"() {
         Operacao operacao = obterOperacaoDeVenda()
 
@@ -273,6 +283,20 @@ class OperacaoServiceTest {
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400
+                ),
+                qtde: 10,
+                valorTotalOperacao: 150
+        )
+        operacao
+    }
+
+    private Operacao obterOperacaoDeCompraAPartirDeAtivoComSaldoZero() {
+        def operacao = new Operacao(
+                tipoOperacao: TipoOperacaoEnum.c,
+                titulo: new Titulo(
+                        ticker: 'visc11',
+                        qtde: 0,
+                        valorTotalInvestido: -0.4
                 ),
                 qtde: 10,
                 valorTotalOperacao: 150

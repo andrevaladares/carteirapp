@@ -28,9 +28,9 @@ class SituacaoCarteiraService {
     @Transactional
     void importarSituacaoTitulos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia) {
         new File(caminhoArquivo, nomeArquivo)
-                .collect {it -> it.split('\\t')}
-                .findAll {it.length == 5 && it[0] != 'Papel'}
-                .each {it ->
+                .collect { it -> it.split('\\t') }
+                .findAll { it.length == 5 && it[0] != 'Papel' }
+                .each { it ->
                     SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia)
                     incluir(situacaoCarteira)
                 }
@@ -38,11 +38,15 @@ class SituacaoCarteiraService {
 
     SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia) {
         def titulo = tituloRepository.getByTicker(linhaArquivo[0])
-        if(titulo == null) {
+        if (titulo == null) {
             throw new QuantidadeTituloException("O ativo ${linhaArquivo[0]} não foi encontrado")
         }
         def quantidadeInformadaEmCarteira = Integer.valueOf(linhaArquivo[2])
-        if(titulo.qtde != quantidadeInformadaEmCarteira) {
+        if (titulo.valorTotalInvestido < 0) {
+            //posicao short
+            quantidadeInformadaEmCarteira *= -1
+        }
+        if (titulo.qtde != quantidadeInformadaEmCarteira) {
             throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $titulo.ticker")
         }
         new SituacaoCarteira(
@@ -68,12 +72,18 @@ class SituacaoCarteiraService {
             situacaoCarteira.each { it ->
                 def valorInvestido = String.valueOf(it['valor_investido']).replace('.', ',')
                 def valorAtual = String.valueOf(it['valor_atual']).replace('.', ',')
-                def rentabilidade = String.valueOf((it['valor_atual'] / it['valor_investido'])-1).replace('.', ',')
+                Object rentabilidade = defineRentabilidade(it)
                 def alocacao = String.valueOf(it['valor_atual'] / valorTotalAtual).replace('.', ',')
 
                 writer.writeLine("${it['ticker']};${it['tipo']};${it['data_entrada']};${it['data']};${it['qtde_disponivel']};${valorInvestido};${valorAtual};${rentabilidade};${alocacao}")
             }
         }
+    }
+
+    private BigDecimal defineRentabilidade(GroovyRowResult situacaoRowResult) {
+        def rentabilidade = String.valueOf((situacaoRowResult['valor_atual'] / situacaoRowResult['valor_investido']) - 1).replace('.', ',')
+
+        rentabilidade
     }
 
 }
