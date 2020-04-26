@@ -23,8 +23,8 @@ class SituacaoCarteiraRepository {
 
     Long incluir(SituacaoCarteira situacaoCarteira) {
         def insertSql = """
-                insert into situacao_carteira (data, titulo, qtde_disponivel, valor_investido, valor_atual)
-                values ($situacaoCarteira.data, $situacaoCarteira.idTitulo, $situacaoCarteira.qtdeDisponivel, 
+                insert into situacao_carteira (data, ativo, qtde_disponivel, valor_investido, valor_atual)
+                values ($situacaoCarteira.data, $situacaoCarteira.idAtivo, $situacaoCarteira.qtdeDisponivel, 
                     $situacaoCarteira.valorInvestido, $situacaoCarteira.valorAtual)
             """
         def keys = new Sql(DataSourceUtils.getConnection(dataSource)).executeInsert insertSql
@@ -33,7 +33,7 @@ class SituacaoCarteiraRepository {
     }
 
     SituacaoCarteira getByTickerDataReferencia(String ticker, LocalDate dataReferencia) {
-        def sql = 'select * from situacao_carteira where titulo = (select id from titulo where ticker = :ticker) and data = :dataReferencia'
+        def sql = 'select * from situacao_carteira where ativo = (select id from ativo where ticker = :ticker) and data = :dataReferencia'
 
         def resultado =  new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker.toLowerCase(), 'dataReferencia': dataReferencia], sql)
 
@@ -44,7 +44,7 @@ class SituacaoCarteiraRepository {
         new SituacaoCarteira(
                 id: groovyRowResult['id'],
                 data: ((Date)groovyRowResult['data']).toLocalDate(),
-                idTitulo: groovyRowResult['titulo'],
+                idAtivo: groovyRowResult['ativo'],
                 qtdeDisponivel: groovyRowResult['qtde_disponivel'],
                 valorInvestido: groovyRowResult['valor_investido'],
                 valorAtual: groovyRowResult['valor_atual']

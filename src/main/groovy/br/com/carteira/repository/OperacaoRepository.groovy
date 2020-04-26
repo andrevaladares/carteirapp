@@ -24,9 +24,9 @@ class OperacaoRepository {
     Long incluir(Operacao operacao) {
         def keys
         def insertSql = """
-                insert into operacao (nota_negociacao, tipo_operacao, titulo, qtde,
+                insert into operacao (nota_negociacao, tipo_operacao, ativo, qtde,
                     valor_total_operacao, custo_medio_venda, resultado_venda, data)
-                values (${operacao.idNotaNegociacao}, ${operacao.tipoOperacao as String}, ${operacao.titulo.id}, 
+                values (${operacao.idNotaNegociacao}, ${operacao.tipoOperacao as String}, ${operacao.ativo.id}, 
                     ${operacao.qtde}, ${operacao.valorTotalOperacao}, ${operacao.custoMedioVenda}, ${operacao.resultadoVenda},
                     ${operacao.data})
             """
@@ -50,8 +50,8 @@ class OperacaoRepository {
 
     List<GroovyRowResult> getByDataOperacaoTicker(LocalDate dataOperacao, String ticker) {
         def query = """
-            select * from operacao o inner join titulo t on t.id =  o.titulo
-            where t.ticker = $ticker and o.data = $dataOperacao
+            select * from operacao o inner join ativo a on a.id =  o.ativo
+            where a.ticker = $ticker and o.data = $dataOperacao
         """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
     }

@@ -1,7 +1,7 @@
 package br.com.carteira.service
 
-import br.com.carteira.entity.Titulo
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.entity.Ativo
+import br.com.carteira.repository.AtivoRepository
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,15 +11,15 @@ import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner.class)
-class TituloServiceTest {
+class AtivoServiceTest {
     @Mock
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
     @InjectMocks
     TituloService tituloService
 
     @Test
     void incluirTituloSucesso() {
-        def tituloAIncluir = new Titulo(
+        def tituloAIncluir = new Ativo(
                 ticker: 'visc11',
                 nome: 'Vinci Shoppping',
                 tipo: 'f'

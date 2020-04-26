@@ -1,7 +1,7 @@
 package br.com.carteira.repository
 
-import br.com.carteira.entity.TipoTituloEnum
-import br.com.carteira.entity.Titulo
+import br.com.carteira.entity.TipoAtivoEnum
+import br.com.carteira.entity.Ativo
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,20 +15,20 @@ import java.time.LocalDate
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
 @Sql(scripts = ["classpath:titulos.sql"])
-class TituloRepositoryIT {
+class AtivoRepositoryIT {
     @Autowired
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
 
     @Test
     void testListAll() {
-        List<Titulo> resultado = tituloRepository.listAll()
+        List<Ativo> resultado = tituloRepository.listAll()
         Assert.assertEquals(1, resultado.size())
         Assert.assertEquals('visc11', resultado[0]['ticker'])
     }
 
     @Test
     void testIncluirTituloSucesso() {
-        def titulo = new Titulo (
+        def titulo = new Ativo (
                 ticker: 'bbas3',
                 nome: 'banco do brasil',
                 tipo: 'a',
@@ -46,7 +46,7 @@ class TituloRepositoryIT {
 
     @Test
     void testAtualizarTituloSucesso() {
-        def titulo = new Titulo (
+        def titulo = new Ativo (
                 ticker: 'visc11',
                 nome: 'vinci shoppings',
                 tipo: 'a',
@@ -61,7 +61,7 @@ class TituloRepositoryIT {
 
         Assert.assertEquals(1, qtdeAtualizacoes)
         Assert.assertEquals('vinci shoppings', tituloAtualizado.nome)
-        Assert.assertEquals(TipoTituloEnum.a, tituloAtualizado.tipo)
+        Assert.assertEquals(TipoAtivoEnum.a, tituloAtualizado.tipo)
         Assert.assertEquals('bancos', tituloAtualizado.setor)
         Assert.assertEquals(100, tituloAtualizado.qtde)
         Assert.assertEquals(new BigDecimal('1012.00'), tituloAtualizado.valorTotalInvestido)

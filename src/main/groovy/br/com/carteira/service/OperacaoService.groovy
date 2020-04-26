@@ -3,13 +3,12 @@ package br.com.carteira.service
 import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
-import br.com.carteira.entity.TipoTituloEnum
-import br.com.carteira.entity.Titulo
+import br.com.carteira.entity.TipoAtivoEnum
+import br.com.carteira.entity.Ativo
 import br.com.carteira.exception.ArquivoInvalidoException
-import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,12 +21,12 @@ import java.time.format.DateTimeFormatter
 @Transactional(readOnly = true)
 class OperacaoService {
     OperacaoRepository operacaoRepository
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
     NotaNegociacaoRepository notaNegociacaoRepository
 
     @Autowired
     OperacaoService(OperacaoRepository operacaoRepository,
-                    TituloRepository tituloRepository,
+                    AtivoRepository tituloRepository,
                     NotaNegociacaoRepository notaNegociacaoRepository) {
         this.operacaoRepository = operacaoRepository
         this.tituloRepository = tituloRepository
@@ -42,17 +41,17 @@ class OperacaoService {
      * @return o id da operação gravada
      */
     Operacao incluir(Operacao operacao) {
-        def titulo = tituloRepository.getByTicker(operacao.titulo.ticker.toLowerCase())
+        def titulo = tituloRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
         def operacaoAtualizada
         if (titulo != null) {
-            operacao.titulo = titulo
+            operacao.ativo = titulo
             operacaoAtualizada = complementarOperacao(operacao)
-            Titulo tituloParaAtualizacao = atualizarTituloAPartirDaOperacao(operacao)
+            Ativo tituloParaAtualizacao = atualizarTituloAPartirDaOperacao(operacao)
             tituloRepository.atualizar(tituloParaAtualizacao)
         } else {
-            operacao.titulo = criarTituloAPartirDaOperacao(operacao)
+            operacao.ativo = criarTituloAPartirDaOperacao(operacao)
             operacaoAtualizada = complementarOperacao(operacao)
-            operacaoAtualizada.titulo.id = tituloRepository.incluir(operacao.titulo)
+            operacaoAtualizada.ativo.id = tituloRepository.incluir(operacao.ativo)
         }
         operacaoRepository.incluir(operacaoAtualizada)
 
@@ -65,14 +64,14 @@ class OperacaoService {
      * @return a operação atualizada
      */
     Operacao complementarOperacao(Operacao operacao) {
-        if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.titulo.qtde > 0) {
+        if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
             //operacao de venda comum (redução de posição comprada)
-            operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            operacao.custoMedioVenda = operacao.ativo.valorTotalInvestido.divide(operacao.ativo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
         }
-        else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.titulo.qtde < 0) {
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
             //Reducao de um short
-            operacao.custoMedioVenda = operacao.titulo.valorTotalInvestido.divide(operacao.titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            operacao.custoMedioVenda = operacao.ativo.valorTotalInvestido.divide(operacao.ativo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
             operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)) * -1
         }
 
@@ -84,8 +83,8 @@ class OperacaoService {
      * @param operacao a operação de referência
      * @return o titulo atualizado
      */
-    Titulo atualizarTituloAPartirDaOperacao(Operacao operacao) {
-        def tituloParaAtualizacao = operacao.titulo
+    Ativo atualizarTituloAPartirDaOperacao(Operacao operacao) {
+        def tituloParaAtualizacao = operacao.ativo
         if (tituloParaAtualizacao.qtde < 0 || (tituloParaAtualizacao.qtde == 0 && operacao.tipoOperacao.equals(TipoOperacaoEnum.v))) {
             return atualizarTituloOperacaoShort(operacao, tituloParaAtualizacao)
         } else {
@@ -93,7 +92,7 @@ class OperacaoService {
         }
     }
 
-    private Titulo atualizarTituloOperacaoComum(Operacao operacao, Titulo tituloParaAtualizacao) {
+    private Ativo atualizarTituloOperacaoComum(Operacao operacao, Ativo tituloParaAtualizacao) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             def valorInvestidoEquivalente = tituloParaAtualizacao
                     .valorTotalInvestido.divide(
@@ -115,8 +114,8 @@ class OperacaoService {
      * @param operacao a operação de referência
      * @return o titulo atualizado
      */
-    Titulo criarTituloAPartirDaOperacao(Operacao operacao) {
-        def tituloParaAtualizacao = operacao.titulo
+    Ativo criarTituloAPartirDaOperacao(Operacao operacao) {
+        def tituloParaAtualizacao = operacao.ativo
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             tituloParaAtualizacao.qtde = operacao.qtde * -1
             tituloParaAtualizacao.valorTotalInvestido = operacao.valorTotalOperacao * -1
@@ -152,9 +151,9 @@ class OperacaoService {
             operacao = new Operacao(
                     data: LocalDate.parse(linhaAberta[0], dateFormatter),
                     tipoOperacao: linhaAberta[1],
-                    titulo: new Titulo(
+                    ativo: new Ativo(
                             ticker: linhaAberta[2],
-                            tipo: linhaAberta[3].toLowerCase() as TipoTituloEnum
+                            tipo: linhaAberta[3].toLowerCase() as TipoAtivoEnum
                     ),
                     qtde: Integer.valueOf(linhaAberta[5]),
                     valorTotalOperacao: new BigDecimal(linhaAberta[6].replace(',', '.'))
@@ -195,9 +194,9 @@ class OperacaoService {
                     data: LocalDate.parse(dataNegociacao, dateFormatter),
                     idNotaNegociacao: idNotaNegociacao,
                     tipoOperacao: linhaAberta[0],
-                    titulo: new Titulo(
+                    ativo: new Ativo(
                             ticker: linhaAberta[1],
-                            tipo: linhaAberta[2].toLowerCase() as TipoTituloEnum
+                            tipo: linhaAberta[2].toLowerCase() as TipoAtivoEnum
                     ),
                     qtde: Integer.valueOf(linhaAberta[4]),
                     valorTotalOperacao: valorTotalOperacao
@@ -235,7 +234,7 @@ class OperacaoService {
         valorTotalTaxas.divide(qtdeParaDivisao, 4, RoundingMode.HALF_UP)
     }
 
-    Titulo atualizarTituloOperacaoShort(Operacao operacao, Titulo titulo) {
+    Ativo atualizarTituloOperacaoShort(Operacao operacao, Ativo titulo) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             titulo.qtde -= operacao.qtde
             titulo.valorTotalInvestido -= operacao.valorTotalOperacao

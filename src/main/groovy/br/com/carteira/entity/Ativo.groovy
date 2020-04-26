@@ -2,11 +2,11 @@ package br.com.carteira.entity
 
 import java.time.LocalDate
 
-class Titulo {
+class Ativo {
     Long id
     String ticker
     String nome
-    TipoTituloEnum tipo
+    TipoAtivoEnum tipo
     String setor
     Integer qtde
     BigDecimal valorTotalInvestido

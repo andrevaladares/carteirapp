@@ -1,7 +1,7 @@
 package br.com.carteira.service
 
 
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class TituloService {
 
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
 
     @Autowired
-    TituloService(TituloRepository tituloRepository) {
+    TituloService(AtivoRepository tituloRepository) {
         this.tituloRepository = tituloRepository
     }
 

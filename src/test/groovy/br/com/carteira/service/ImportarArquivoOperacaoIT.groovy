@@ -1,9 +1,8 @@
 package br.com.carteira.service
 
 import br.com.carteira.repository.OperacaoRepository
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +22,7 @@ class ImportarArquivoOperacaoIT {
     @Autowired
     OperacaoRepository operacaoRepository
     @Autowired
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
 
     @Test
     void importaArquivoSucesso(){

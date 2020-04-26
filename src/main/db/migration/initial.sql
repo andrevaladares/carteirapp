@@ -17,7 +17,7 @@ create table operacao
         primary key,
     nota_negociacao      int            null,
     tipo_operacao        char           not null comment 'compra ou venda',
-    titulo               int            not null,
+    ativo               int            not null,
     qtde                 smallint       not null,
     valor_total_operacao decimal(12, 2) not null,
     custo_medio_venda    decimal(14, 4) null comment 'novo custo médio, após a operação',
@@ -31,7 +31,7 @@ create table situacao_carteira
     id                int auto_increment
         primary key,
     data              date     not null,
-    titulo            int      not null,
+    ativo            int      not null,
     qtde_disponivel   smallint not null,
     valor_investido decimal(12,2)   not null,
     valor_atual       decimal(12,2)   not null
@@ -39,9 +39,9 @@ create table situacao_carteira
     comment 'representa a situação da carteira em uma daterminada data';
 
 create unique index situacao_carteira_titulo_data_uindex
-    on situacao_carteira (titulo, data);
+    on situacao_carteira (ativo, data);
 
-create table titulo
+create table ativo
 (
     id                    int auto_increment
         primary key,
@@ -52,7 +52,7 @@ create table titulo
     qtde                  int            default 0    not null,
     valor_total_investido decimal(12, 2) default 0.00 not null,
     data_entrada          date                        not null,
-    constraint titulo_ticker_uindex
+    constraint ativo_ticker_uindex
         unique (ticker)
 )
     comment 'Representa qualquer titulo (ações, tesouro direto, ouro, fundos etc)';

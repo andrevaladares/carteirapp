@@ -5,7 +5,7 @@ import java.time.LocalDate
 class SituacaoCarteira {
     Long id
     LocalDate data
-    Long idTitulo
+    Long idAtivo
     Integer qtdeDisponivel
     BigDecimal valorInvestido
     BigDecimal valorAtual

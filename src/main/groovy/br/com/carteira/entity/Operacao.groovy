@@ -7,7 +7,7 @@ class Operacao {
     Long idNotaNegociacao
     TipoOperacaoEnum tipoOperacao
     LocalDate data
-    Titulo titulo
+    Ativo ativo
     Integer qtde
     BigDecimal valorTotalOperacao
     BigDecimal custoMedioVenda

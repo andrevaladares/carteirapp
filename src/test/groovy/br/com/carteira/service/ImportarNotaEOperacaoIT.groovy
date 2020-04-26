@@ -1,12 +1,11 @@
 package br.com.carteira.service
 
-import br.com.carteira.entity.TipoTituloEnum
+import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import groovy.sql.GroovyRowResult
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +25,7 @@ class ImportarNotaEOperacaoIT {
     @Autowired
     NotaNegociacaoRepository notaNegociacaoRepository
     @Autowired
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
     @Autowired
     OperacaoRepository operacaoRepository
 
@@ -53,11 +52,11 @@ class ImportarNotaEOperacaoIT {
         def dataOperacoes = LocalDate.of(2020, 2, 3)
         //Saldos dos títulos determinados corretamente
         Assert.assertEquals(dataOperacoes, aper3f.dataEntrada)
-        Assert.assertEquals(TipoTituloEnum.a, aper3f.tipo)
+        Assert.assertEquals(TipoAtivoEnum.a, aper3f.tipo)
         Assert.assertEquals(30, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('802.14'), aper3f.valorTotalInvestido)
         Assert.assertEquals(dataOperacoes, bpan4.dataEntrada)
-        Assert.assertEquals(TipoTituloEnum.a, bpan4.tipo)
+        Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
         Assert.assertEquals(300, bpan4.qtde)
         Assert.assertEquals(new BigDecimal('1215.26'), bpan4.valorTotalInvestido)
 
@@ -81,11 +80,11 @@ class ImportarNotaEOperacaoIT {
 
         def dataOperacoes = LocalDate.of(2020, 2, 3)
         Assert.assertEquals(dataOperacoes, aper3f.dataEntrada)
-        Assert.assertEquals(TipoTituloEnum.a, aper3f.tipo)
+        Assert.assertEquals(TipoAtivoEnum.a, aper3f.tipo)
         Assert.assertEquals(-40, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('-1069.52'), aper3f.valorTotalInvestido)
         Assert.assertEquals(dataOperacoes, bpan4.dataEntrada)
-        Assert.assertEquals(TipoTituloEnum.a, bpan4.tipo)
+        Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
         Assert.assertEquals(-300, bpan4.qtde)
         Assert.assertEquals(new BigDecimal('-1215.26'), bpan4.valorTotalInvestido)
     }

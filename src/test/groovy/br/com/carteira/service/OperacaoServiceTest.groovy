@@ -1,12 +1,11 @@
 package br.com.carteira.service
 
 import br.com.carteira.entity.NotaNegociacao
-import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
-import br.com.carteira.entity.Titulo
+import br.com.carteira.entity.Ativo
 import br.com.carteira.repository.OperacaoRepository
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,7 +19,7 @@ class OperacaoServiceTest {
     @Mock
     OperacaoRepository operacaoRepositoryMock
     @Mock
-    TituloRepository tituloRepositoryMock
+    AtivoRepository tituloRepositoryMock
     @InjectMocks
     OperacaoService operacaoService
 
@@ -127,28 +126,28 @@ class OperacaoServiceTest {
     @Test
     void "inclui nova operacao"() {
         def operacao = obterOperacaoDeCompra()
-        def result = new Titulo(
+        def result = new Ativo(
                 ticker: 'visc11',
                 qtde: 2000,
                 valorTotalInvestido: 30000
         )
-        Mockito.when(tituloRepositoryMock.getByTicker(operacao.titulo.ticker)).thenReturn(result)
+        Mockito.when(tituloRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(result)
 
         operacaoService.incluir(operacao)
 
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacao)
-        Mockito.verify(tituloRepositoryMock, Mockito.times(1)).atualizar(operacao.titulo)
+        Mockito.verify(tituloRepositoryMock, Mockito.times(1)).atualizar(operacao.ativo)
     }
 
     @Test
     void "inclui titulo a partir da operação caso ainda não exista"() {
         def operacao = obterOperacaoDeCompra()
-        Mockito.when(tituloRepositoryMock.getByTicker(operacao.titulo.ticker)).thenReturn(null)
+        Mockito.when(tituloRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(null)
 
         operacaoService.incluir(operacao)
 
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacao)
-        Mockito.verify(tituloRepositoryMock, Mockito.times(1)).incluir(operacao.titulo)
+        Mockito.verify(tituloRepositoryMock, Mockito.times(1)).incluir(operacao.ativo)
 
     }
 
@@ -237,7 +236,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeVenda() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: 200,
                         valorTotalInvestido: 3500
@@ -251,7 +250,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeVendaShort() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: 0,
                         valorTotalInvestido: 0
@@ -265,7 +264,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeCompraShortZeraPosicao() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400
@@ -279,7 +278,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeCompraShortSemZerarPosicao() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400
@@ -293,7 +292,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeCompraAPartirDeAtivoComSaldoZero() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: 0,
                         valorTotalInvestido: -0.4
@@ -307,7 +306,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeCompra() {
         Operacao operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                titulo: new Titulo(
+                ativo: new Ativo(
                         ticker: 'visc11',
                         qtde: 2000,
                         valorTotalInvestido: 30000

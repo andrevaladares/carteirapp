@@ -3,7 +3,7 @@ package br.com.carteira.service
 import br.com.carteira.entity.SituacaoCarteira
 import br.com.carteira.exception.QuantidadeTituloException
 import br.com.carteira.repository.SituacaoCarteiraRepository
-import br.com.carteira.repository.TituloRepository
+import br.com.carteira.repository.AtivoRepository
 import groovy.sql.GroovyRowResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -15,11 +15,11 @@ import java.time.LocalDate
 @Transactional(readOnly = true)
 class SituacaoCarteiraService {
 
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
     SituacaoCarteiraRepository situacaoCarteiraRepository
 
     @Autowired
-    SituacaoCarteiraService(TituloRepository tituloRepository,
+    SituacaoCarteiraService(AtivoRepository tituloRepository,
                             SituacaoCarteiraRepository situacaoCarteiraRepository) {
         this.tituloRepository = tituloRepository
         this.situacaoCarteiraRepository = situacaoCarteiraRepository
@@ -51,7 +51,7 @@ class SituacaoCarteiraService {
         }
         new SituacaoCarteira(
                 data: dataReferencia,
-                idTitulo: titulo.id,
+                idAtivo: titulo.id,
                 qtdeDisponivel: quantidadeInformadaEmCarteira,
                 valorInvestido: titulo.valorTotalInvestido,
                 valorAtual: new BigDecimal(linhaArquivo[4].replace(',', '.'))

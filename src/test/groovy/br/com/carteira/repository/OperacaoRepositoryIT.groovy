@@ -19,14 +19,14 @@ class OperacaoRepositoryIT {
     @Autowired
     OperacaoRepository operacaoRepository
     @Autowired
-    TituloRepository tituloRepository
+    AtivoRepository tituloRepository
 
     @Test
     void testIncluirOperacaoCompra() {
         def tituloGroovyRow = tituloRepository.listAll()[0]
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                titulo: tituloRepository.fromTituloGroovyRow(tituloGroovyRow),
+                ativo: tituloRepository.fromAtivoGroovyRow(tituloGroovyRow),
                 qtde: 100,
                 valorTotalOperacao: BigDecimal.valueOf(1200),
                 custoMedioVenda: BigDecimal.valueOf(12),
@@ -44,7 +44,7 @@ class OperacaoRepositoryIT {
         def tituloGroovyRow = tituloRepository.listAll()[0]
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                titulo: tituloRepository.fromTituloGroovyRow(tituloGroovyRow),
+                ativo: tituloRepository.fromAtivoGroovyRow(tituloGroovyRow),
                 qtde: 50,
                 valorTotalOperacao: BigDecimal.valueOf(600),
                 custoMedioVenda: BigDecimal.valueOf(12),
