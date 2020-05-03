@@ -8,6 +8,8 @@ class NotaNegociacao {
     BigDecimal impostos
     BigDecimal irpfVendas
     BigDecimal outrosCustos
+    BigDecimal taxaRegistroBmf
+    BigDecimal taxasBmfEmolFgar
 
     BigDecimal getTotalTaxas() {
         taxaLiquidacao
@@ -16,6 +18,8 @@ class NotaNegociacao {
                 .add(impostos)
                 .add(irpfVendas)
                 .add(outrosCustos)
+                .add(taxaRegistroBmf)
+                .add(taxasBmfEmolFgar)
     }
 
     boolean equals(o) {

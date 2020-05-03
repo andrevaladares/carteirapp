@@ -64,46 +64,6 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "atualiza titulo a partir de venda"() {
-        Operacao operacao = obterOperacaoDeVenda()
-
-        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
-
-        Assert.assertEquals(185, titulo.qtde)
-        Assert.assertEquals(new BigDecimal('3237.5000'), titulo.valorTotalInvestido)
-    }
-
-    @Test
-    void "atualiza titulo a partir de venda short"() {
-        Operacao operacao = obterOperacaoDeVendaShort()
-
-        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
-
-        Assert.assertEquals(-15, titulo.qtde)
-        Assert.assertEquals(new BigDecimal('-300'), titulo.valorTotalInvestido)
-    }
-
-    @Test
-    void "atualiza titulo a partir de compra short zerando posição"() {
-        Operacao operacao = obterOperacaoDeCompraShortZeraPosicao()
-
-        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
-
-        Assert.assertEquals(0, titulo.qtde)
-        Assert.assertEquals(new BigDecimal('0'), titulo.valorTotalInvestido)
-    }
-
-    @Test
-    void "atualiza titulo a partir de compra short sem zerar posição"() {
-        Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
-
-        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
-
-        Assert.assertEquals(-5, titulo.qtde)
-        Assert.assertEquals(new BigDecimal('-133.3330'), titulo.valorTotalInvestido)
-    }
-
-    @Test
     void "atualiza operação a partir de compra"() {
         Operacao operacao = obterOperacaoDeCompra()
 
@@ -111,16 +71,6 @@ class OperacaoServiceTest {
 
         Assert.assertNull(operacaoCompleta.custoMedioVenda)
         Assert.assertNull(operacaoCompleta.resultadoVenda)
-    }
-
-    @Test
-    void "atualiza titulo a partir de compra"() {
-        Operacao operacao = obterOperacaoDeCompra()
-
-        def titulo = operacaoService.atualizarTituloAPartirDaOperacao(operacao)
-
-        Assert.assertEquals(2100, titulo.qtde)
-        Assert.assertEquals(BigDecimal.valueOf(31200), titulo.valorTotalInvestido)
     }
 
     @Test
@@ -172,7 +122,9 @@ class OperacaoServiceTest {
                 taxaOperacional: new BigDecimal('170.1'),
                 impostos: new BigDecimal('18.16'),
                 irpfVendas: new BigDecimal('1.32'),
-                outrosCustos: new BigDecimal('6.63')
+                outrosCustos: new BigDecimal('6.63'),
+                taxaRegistroBmf: new BigDecimal('2.38'),
+                taxasBmfEmolFgar: new BigDecimal('0.78')
         )
 
         Assert.assertEquals(notaNegociacaoEsperada, notaNegociacao)
@@ -183,15 +135,15 @@ class OperacaoServiceTest {
         def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNota())
         def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNota(), notaNegociacao)
 
-        Assert.assertEquals(new BigDecimal('0.5381'), valorUnitarioTaxas)
+        Assert.assertEquals(new BigDecimal('0.5461'), valorUnitarioTaxas)
     }
 
     @Test
-    void "calcula corretamente valor taxa unitária das quando so ha operacao de venda"() {
+    void "calcula corretamente valor taxa unitaria das quando so ha operacao de venda"() {
         def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNotaApenasVendas())
         def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNotaApenasVendas(), notaNegociacao)
 
-        Assert.assertEquals(new BigDecimal('0.5593'), valorUnitarioTaxas)
+        Assert.assertEquals(new BigDecimal('0.5677'), valorUnitarioTaxas)
     }
 
     private ArrayList<String[]> montaArquivoNota() {
@@ -204,6 +156,8 @@ class OperacaoServiceTest {
                 ['Impostos', '18,16'],
                 ['I.R.R.F. s/ operações', '1,32'],
                 ['Outros', '6,63'],
+                ['Taxa Registro BM&F', '2,38'],
+                ['Taxas BM&F (emol+f.gar)',	'0,78'],
                 ['Dados das operações'],
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['c', 'Aper3f', 'a', '26,20', '40', '1047,83'],
@@ -224,6 +178,8 @@ class OperacaoServiceTest {
                 ['Impostos', '18,16'],
                 ['I.R.R.F. s/ operações', '1,32'],
                 ['Outros', '6,63'],
+                ['Taxa Registro BM&F', '2,38'],
+                ['Taxas BM&F (emol+f.gar)',	'0,78'],
                 ['Dados das operações'],
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['v', 'Aper3f', 'a', '26,20', '40', '1047,83'],
@@ -254,20 +210,6 @@ class OperacaoServiceTest {
                         ticker: 'visc11',
                         qtde: 0,
                         valorTotalInvestido: 0
-                ),
-                qtde: 15,
-                valorTotalOperacao: 300
-        )
-        operacao
-    }
-
-    private Operacao obterOperacaoDeCompraShortZeraPosicao() {
-        def operacao = new Operacao(
-                tipoOperacao: TipoOperacaoEnum.c,
-                ativo: new Ativo(
-                        ticker: 'visc11',
-                        qtde: -15,
-                        valorTotalInvestido: -400
                 ),
                 qtde: 15,
                 valorTotalOperacao: 300

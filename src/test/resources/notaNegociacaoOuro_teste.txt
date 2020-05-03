@@ -1,0 +1,14 @@
+Dados da nota					
+Data do pregão	09/03/2020				
+Taxa de liquidação	0,00				
+Emolumentos	0,00				
+Taxa operacional	260,00				
+Impostos	27,76				
+I.R.R.F. s/ operações	0,00				
+Outros	0,00				
+Taxa Registro BM&F	2,38				
+Taxas BM&F (emol+f.gar)	0,78				
+Dados das operações					
+tipo	título	TipoTitulo	Preço compra	Quantidade	Valor 
+c	oz2	o		9	23106,87
+c	oz2	o		4	10249,72

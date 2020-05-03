@@ -24,10 +24,12 @@ class NotaNegociacaoRepository {
         def keys
         def insertSql = """
                 insert into nota_negociacao (taxa_liquidacao, emolumentos, 
-                taxa_operacional, impostos, irpf_vendas, outros_custos_oper)
+                taxa_operacional, impostos, irpf_vendas, outros_custos_oper, taxa_registro_bmf,
+                taxas_bmf_emol_fgar)
                 values ($notaNegociacao.taxaLiquidacao, $notaNegociacao.emolumentos, 
                         $notaNegociacao.taxaOperacional, $notaNegociacao.impostos, 
-                        $notaNegociacao.irpfVendas, $notaNegociacao.outrosCustos)
+                        $notaNegociacao.irpfVendas, $notaNegociacao.outrosCustos,
+                        $notaNegociacao.taxaRegistroBmf, $notaNegociacao.taxasBmfEmolFgar)
             """
 
         Connection conn = DataSourceUtils.getConnection(dataSource)

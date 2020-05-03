@@ -11,7 +11,7 @@ enum TipoAtivoEnum {
         this.nomeAtivo = nomeAtivo
     }
 
-    String getNomeTitulo() {
+    String getNomeAtivo() {
         return nomeAtivo
     }
 

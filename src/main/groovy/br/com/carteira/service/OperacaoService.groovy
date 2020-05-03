@@ -41,12 +41,12 @@ class OperacaoService {
      * @return o id da operação gravada
      */
     Operacao incluir(Operacao operacao) {
-        def titulo = tituloRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
+        def ativo = tituloRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
         def operacaoAtualizada
-        if (titulo != null) {
-            operacao.ativo = titulo
+        if (ativo != null) {
+            operacao.ativo = ativo
             operacaoAtualizada = complementarOperacao(operacao)
-            Ativo tituloParaAtualizacao = atualizarTituloAPartirDaOperacao(operacao)
+            Ativo tituloParaAtualizacao = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
             tituloRepository.atualizar(tituloParaAtualizacao)
         } else {
             operacao.ativo = criarTituloAPartirDaOperacao(operacao)
@@ -60,52 +60,23 @@ class OperacaoService {
 
     /**
      * Atualiza na operação o custo médio e o resultado da venda
+     *
      * @param operacao a operação de referência
      * @return a operação atualizada
      */
     Operacao complementarOperacao(Operacao operacao) {
         if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
             //operacao de venda comum (redução de posição comprada)
-            operacao.custoMedioVenda = operacao.ativo.valorTotalInvestido.divide(operacao.ativo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            operacao.custoMedioVenda = operacao.ativo.obterCustoMedio()
             operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
         }
         else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
             //Reducao de um short
-            operacao.custoMedioVenda = operacao.ativo.valorTotalInvestido.divide(operacao.ativo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+            operacao.custoMedioVenda = operacao.ativo.obterCustoMedio()
             operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)) * -1
         }
 
         operacao
-    }
-
-    /**
-     * Atualiza no título o valor total investido e a nova quantidade com base na operação
-     * @param operacao a operação de referência
-     * @return o titulo atualizado
-     */
-    Ativo atualizarTituloAPartirDaOperacao(Operacao operacao) {
-        def tituloParaAtualizacao = operacao.ativo
-        if (tituloParaAtualizacao.qtde < 0 || (tituloParaAtualizacao.qtde == 0 && operacao.tipoOperacao.equals(TipoOperacaoEnum.v))) {
-            return atualizarTituloOperacaoShort(operacao, tituloParaAtualizacao)
-        } else {
-            return atualizarTituloOperacaoComum(operacao, tituloParaAtualizacao)
-        }
-    }
-
-    private Ativo atualizarTituloOperacaoComum(Operacao operacao, Ativo tituloParaAtualizacao) {
-        if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            def valorInvestidoEquivalente = tituloParaAtualizacao
-                    .valorTotalInvestido.divide(
-                    BigDecimal.valueOf(tituloParaAtualizacao.qtde), 4, RoundingMode.HALF_UP) * operacao.qtde
-            tituloParaAtualizacao.qtde -= operacao.qtde
-            tituloParaAtualizacao.valorTotalInvestido -= valorInvestidoEquivalente
-
-        } else {
-            tituloParaAtualizacao.qtde += operacao.qtde
-            tituloParaAtualizacao.valorTotalInvestido += operacao.valorTotalOperacao
-        }
-
-        return tituloParaAtualizacao
     }
 
     /**
@@ -175,7 +146,7 @@ class OperacaoService {
         def valorTaxaUnitaria = defineValorTaxaUnitaria(linhasArquivo, notaNegociacao)
         boolean notaContemCompras = linhasArquivo.any { it[0] == 'c' }
 
-        linhasArquivo.subList(9, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+        linhasArquivo.subList(11, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
             incluiOperacaoAPartirDeNotaNegociacao(linha, numeroLinha, idNotaNegociacao, dataPregao, valorTaxaUnitaria, notaContemCompras)
             qtdeProcessada += 1
         }
@@ -213,7 +184,9 @@ class OperacaoService {
                 taxaOperacional: new BigDecimal(linhasArquivoNota[4][1].replace(',', '.')),
                 impostos: new BigDecimal(linhasArquivoNota[5][1].replace(',', '.')),
                 irpfVendas: new BigDecimal(linhasArquivoNota[6][1].replace(',', '.')),
-                outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.'))
+                outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.')),
+                taxaRegistroBmf: new BigDecimal(linhasArquivoNota[8][1].replace(',', '.')),
+                taxasBmfEmolFgar: new BigDecimal(linhasArquivoNota[9][1].replace(',', '.'))
         )
     }
 
@@ -234,24 +207,6 @@ class OperacaoService {
         valorTotalTaxas.divide(qtdeParaDivisao, 4, RoundingMode.HALF_UP)
     }
 
-    Ativo atualizarTituloOperacaoShort(Operacao operacao, Ativo titulo) {
-        if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            titulo.qtde -= operacao.qtde
-            titulo.valorTotalInvestido -= operacao.valorTotalOperacao
-
-        } else {
-            def valorMedioShort = titulo.valorTotalInvestido.divide(titulo.qtde as BigDecimal, 4, RoundingMode.HALF_UP)
-            titulo.qtde += operacao.qtde
-            if (titulo.qtde == 0) {
-                titulo.valorTotalInvestido = 0
-            } else {
-                def valorAAbater = valorMedioShort * operacao.qtde
-                titulo.valorTotalInvestido += valorAAbater
-            }
-        }
-
-        return titulo
-    }
 
     BigDecimal defineValorTotalOperacao(String[] linhaAberta, BigDecimal valorUnitarioTaxas, boolean notaPossuiCompras) {
         def valorTotalOperacao

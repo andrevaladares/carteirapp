@@ -6,6 +6,8 @@ Taxa operacional	170,1
 Impostos	18,16				
 I.R.R.F. s/ operações	1,32				
 Outros	6,63				
+Taxa Registro BM&F	0,00
+Taxas BM&F (emol+f.gar)	0,00
 Dados das operações
 tipo	título	TipoTitulo	Preço compra	Quantidade	Valor 
 c	Aper3f	a	26,20	40	1048,00
