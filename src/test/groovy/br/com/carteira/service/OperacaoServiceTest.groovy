@@ -24,7 +24,7 @@ class OperacaoServiceTest {
     OperacaoService operacaoService
 
     @Test
-    void "atualiza operação a partir de venda"() {
+    void "atualiza operacao a partir de venda"() {
         Operacao operacao = obterOperacaoDeVenda()
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
@@ -34,7 +34,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "atualiza operação a partir de venda short"() {
+    void "atualiza operacao a partir de venda short"() {
         Operacao operacao = obterOperacaoDeVendaShort()
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
@@ -64,7 +64,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "atualiza operação a partir de compra"() {
+    void "atualiza operacao a partir de compra"() {
         Operacao operacao = obterOperacaoDeCompra()
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
@@ -90,7 +90,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "inclui titulo a partir da operação caso ainda não exista"() {
+    void "inclui titulo a partir da operacao caso ainda nao exista"() {
         def operacao = obterOperacaoDeCompra()
         Mockito.when(tituloRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(null)
 
@@ -102,7 +102,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "cria operação de short para título novo" () {
+    void "cria operacao de short para titulo novo" () {
         def operacao = obterOperacaoDeVenda()
         def titulo = operacaoService.criarTituloAPartirDaOperacao(operacao)
 
@@ -131,7 +131,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "calcula corretamente valor taxa unitária das operacoes de compra"() {
+    void "calcula corretamente valor taxa unitaria das operacoes de compra"() {
         def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNota())
         def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNota(), notaNegociacao)
 
@@ -139,11 +139,19 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "calcula corretamente valor taxa unitaria das quando so ha operacao de venda"() {
+    void "calcula corretamente valor taxa unitaria quando so ha operacao de venda"() {
         def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNotaApenasVendas())
         def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNotaApenasVendas(), notaNegociacao)
 
         Assert.assertEquals(new BigDecimal('0.5677'), valorUnitarioTaxas)
+    }
+
+    @Test
+    void "calcula corretamente valor taxa unitaria quando so ha operacao de venda de ouro"() {
+        def notaNegociacao = operacaoService.obterDadosNotaNegociacao(montaArquivoNotaApenasVendasOuro())
+        def valorUnitarioTaxas = operacaoService.defineValorTaxaUnitaria(montaArquivoNotaApenasVendasOuro(), notaNegociacao)
+
+        Assert.assertEquals(new BigDecimal('22.9900'), valorUnitarioTaxas)
     }
 
     private ArrayList<String[]> montaArquivoNota() {
@@ -185,6 +193,25 @@ class OperacaoServiceTest {
                 ['v', 'Aper3f', 'a', '26,20', '40', '1047,83'],
                 ['v', 'Jpsa3f', 'a', '25,35', '40', '1013,83'],
                 ['v', 'Bpan4', 'a', '3,51', '300', '1053,83']
+        ])
+        linhasArquivo
+    }
+
+    private ArrayList<String[]> montaArquivoNotaApenasVendasOuro() {
+        def linhasArquivo = new ArrayList<String[]>([
+                ['Dados da nota'],
+                ['Data do pregão', '17/04/2019'],
+                ['Taxa de liquidação', '0,00'],
+                ['Emolumentos', '0,00'],
+                ['Taxa operacional', '40,00'],
+                ['Impostos', '3,86'],
+                ['I.R.R.F. s/ operações', '0,15'],
+                ['Outros', '1,56'],
+                ['Taxa Registro BM&F', '0,31'],
+                ['Taxas BM&F (emol+f.gar)',	'0,10'],
+                ['Dados das operações'],
+                ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
+                ['v', 'oz2', 'o', '160,00', '2', '3196,80']
         ])
         linhasArquivo
     }

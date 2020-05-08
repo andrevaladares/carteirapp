@@ -8,7 +8,7 @@ import java.math.RoundingMode
 class OperacoesOuroOz2 implements OperacoesAtivo{
 
     BigDecimal obterCustoMedio(BigDecimal valorTotalInvestido, Integer qtde) {
-        valorTotalInvestido.divide(qtde as BigDecimal).divide(9.99, 4, RoundingMode.HALF_UP)
+        valorTotalInvestido.divide(qtde as BigDecimal, 4, RoundingMode.HALF_UP).divide(9.99, 4, RoundingMode.HALF_UP)
     }
 
     BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, Integer qtde) {
