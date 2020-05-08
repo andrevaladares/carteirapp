@@ -68,7 +68,7 @@ class OperacaoService {
         if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
             //operacao de venda comum (redução de posição comprada)
             operacao.custoMedioVenda = operacao.ativo.obterCustoMedio()
-            operacao.resultadoVenda = operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)
+            operacao.resultadoVenda = operacao.ativo.obterResultadoVenda(operacao.custoMedioVenda, operacao.valorTotalOperacao, operacao.qtde)
         }
         else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
             //Reducao de um short
@@ -165,7 +165,7 @@ class OperacaoService {
                     data: LocalDate.parse(dataNegociacao, dateFormatter),
                     idNotaNegociacao: idNotaNegociacao,
                     tipoOperacao: linhaAberta[0],
-                    ativo: new Ativo(
+                    ativo: Ativo.getInstanceWithAtributeMap(
                             ticker: linhaAberta[1],
                             tipo: linhaAberta[2].toLowerCase() as TipoAtivoEnum
                     ),

@@ -12,9 +12,17 @@ class Ativo {
     Integer qtde
     BigDecimal valorTotalInvestido
     LocalDate dataEntrada
+    OperacoesAtivo operacoesAtivo
+
+    private Ativo() {
+    }
 
     BigDecimal obterCustoMedio() {
-        valorTotalInvestido.divide(qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+        operacoesAtivo.obterCustoMedio(valorTotalInvestido, qtde)
+    }
+
+    BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, Integer qtde) {
+        operacoesAtivo.obterResultadoVenda(custoMedioVenda, valorTotalOperacao, qtde)
     }
 
     /**
@@ -24,30 +32,16 @@ class Ativo {
      * @return o titulo atualizado
      */
     Ativo atualizarTituloAPartirDaOperacao(Operacao operacao) {
+        def retornoAtualizacao
         if (qtde < 0 || (qtde == 0 && operacao.tipoOperacao.equals(TipoOperacaoEnum.v))) {
-            return atualizarTituloOperacaoShort(operacao)
+            retornoAtualizacao = operacoesAtivo.atualizarTituloOperacaoShort(operacao, this.qtde, this.valorTotalInvestido)
         } else {
-            return atualizarTituloOperacaoComum(operacao)
+            retornoAtualizacao = atualizarTituloOperacaoComum(operacao)
         }
-    }
+        this.qtde = retornoAtualizacao.qtde
+        this.valorTotalInvestido = retornoAtualizacao.valorTotalInvestido
 
-    Ativo atualizarTituloOperacaoShort(Operacao operacao) {
-        if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            qtde -= operacao.qtde
-            valorTotalInvestido -= operacao.valorTotalOperacao
-
-        } else {
-            def valorMedioShort = valorTotalInvestido.divide(qtde as BigDecimal, 4, RoundingMode.HALF_UP)
-            qtde += operacao.qtde
-            if (qtde == 0) {
-                valorTotalInvestido = 0
-            } else {
-                def valorAAbater = valorMedioShort * operacao.qtde
-                valorTotalInvestido += valorAAbater
-            }
-        }
-
-        return this
+        this
     }
 
     Ativo atualizarTituloOperacaoComum(Operacao operacao) {
@@ -65,4 +59,16 @@ class Ativo {
         return this
     }
 
+    static Ativo getInstance() {
+        new Ativo(operacoesAtivo: new OperacoesAtivoComum())
+    }
+
+    static Ativo getInstanceWithAtributeMap(Map atributes) {
+        def ativo = new Ativo(atributes)
+        if(ativo.tipo == null)
+            ativo.tipo = TipoAtivoEnum.a
+        ativo.operacoesAtivo = Class.forName(ativo.tipo.classeOperacao).newInstance()
+
+        ativo
+    }
 }

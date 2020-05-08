@@ -69,7 +69,7 @@ class ImportarNotaEOperacaoIT {
     }
 
     @Test
-    void "aloca corretamente os custos quando há somente operação de venda (short)"(){
+    void "aloca corretamente os custos quando ha somente operacao de venda (short)"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaOperacaoTesteVendas.txt'
 
@@ -87,6 +87,44 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
         Assert.assertEquals(-300, bpan4.qtde)
         Assert.assertEquals(new BigDecimal('-1215.26'), bpan4.valorTotalInvestido)
+    }
+
+    @Test
+    void "importa corretamente nota de negociacao de ouro com compra e venda" () {
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaNegociacaoOuro_teste.txt'
+
+        operacaoService.importarArquivoNotaNegociacao(caminhoArquivo, nomeArquivo)
+
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+
+        //Dados gerais da nota gravados corretamente
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('260.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('27.76'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('2.38'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.78'), notaNegociacaoGravada.taxasBmfEmolFgar)
+
+        def oz2 = tituloRepository.getByTicker('oz2')
+
+        def dataOperacoes = LocalDate.of(2020, 3, 9)
+        //Saldos dos títulos determinados corretamente
+        Assert.assertEquals(dataOperacoes, oz2.dataEntrada)
+        Assert.assertEquals(TipoAtivoEnum.o, oz2.tipo)
+        Assert.assertEquals(10, oz2.qtde)
+        Assert.assertEquals(new BigDecimal('25882.70'), oz2.valorTotalInvestido)
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesOz2 = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'oz2')
+        def operacaoCompra = operacoesOz2.find {it['tipo_operacao'] == 'c'}
+        Assert.assertEquals(new BigDecimal('23308.28'), operacaoCompra['valor_total_operacao'])
+        def operacaoVenda = operacoesOz2.find {it['tipo_operacao'] == 'v'}
+        Assert.assertEquals(new BigDecimal('7792.20'), operacaoVenda['valor_total_operacao'])
+        Assert.assertEquals(new BigDecimal('259.0861'), operacaoVenda['custo_medio_venda'])
+        Assert.assertEquals(new BigDecimal('27.39'), operacaoVenda['resultado_venda'])
     }
 
 }

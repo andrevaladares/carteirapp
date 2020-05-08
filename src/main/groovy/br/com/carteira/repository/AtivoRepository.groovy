@@ -63,7 +63,7 @@ class AtivoRepository {
     Ativo fromAtivoGroovyRow(GroovyRowResult ativoGroovyRow) {
         def ativo = null
         if (ativoGroovyRow != null) {
-            ativo = new Ativo(
+            ativo = Ativo.getInstanceWithAtributeMap(
                     id: ativoGroovyRow['id'],
                     ticker: ativoGroovyRow['ticker'],
                     nome: ativoGroovyRow['nome'],

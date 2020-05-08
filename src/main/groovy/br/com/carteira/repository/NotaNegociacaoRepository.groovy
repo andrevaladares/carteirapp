@@ -52,7 +52,9 @@ class NotaNegociacaoRepository {
                     taxaOperacional: notaNegociacaoGroovyRow['taxa_operacional'],
                     impostos: notaNegociacaoGroovyRow['impostos'],
                     irpfVendas: notaNegociacaoGroovyRow['irpf_vendas'],
-                    outrosCustos: notaNegociacaoGroovyRow['outros_custos_oper']
+                    outrosCustos: notaNegociacaoGroovyRow['outros_custos_oper'],
+                    taxaRegistroBmf: notaNegociacaoGroovyRow['taxa_registro_bmf'],
+                    taxasBmfEmolFgar: notaNegociacaoGroovyRow['taxas_bmf_emol_fgar']
             )
         }
         notaNegociacao

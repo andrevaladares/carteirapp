@@ -1,8 +1,5 @@
-package br.com.carteira.service
+package br.com.carteira.entity
 
-import br.com.carteira.entity.Ativo
-import br.com.carteira.entity.Operacao
-import br.com.carteira.entity.TipoOperacaoEnum
 import org.junit.Assert
 import org.junit.Test
 
@@ -19,7 +16,7 @@ class AtivoTest {
     }
 
     @Test
-    void "atualiza ativo a partir de compra short zerando posição"() {
+    void "atualiza ativo a partir de compra short zerando posicao"() {
         Operacao operacao = obterOperacaoDeCompraShortZeraPosicao()
 
         def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
@@ -49,7 +46,7 @@ class AtivoTest {
     }
 
     @Test
-    void "atualiza ativo a partir de compra short sem zerar posição"() {
+    void "atualiza ativo a partir de compra short sem zerar posicao"() {
         Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
 
         def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
@@ -58,10 +55,31 @@ class AtivoTest {
         Assert.assertEquals(new BigDecimal('-133.3330'), ativo.valorTotalInvestido)
     }
 
+    @Test
+    void "instancia classe a partir do nome"() {
+        def teste = Class.forName('br.com.carteira.entity.Ativo').newInstance(
+                ticker: 'teste'
+        )
+
+        assert 'teste' == teste.ticker
+    }
+
+    @Test
+    void "calcula corretamente custo medio do ouro oz2"(){
+        Ativo ouro = new Ativo(
+                ticker: 'oz2',
+                valorTotalInvestido: 1000.00,
+                qtde: 10,
+                operacoesAtivo: new OperacoesOuroOz2()
+        )
+
+        assert ouro.obterCustoMedio() == BigDecimal.valueOf(10.0100)
+    }
+
     private Operacao obterOperacaoDeCompraShortSemZerarPosicao() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                ativo: new Ativo(
+                ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400
@@ -102,7 +120,7 @@ class AtivoTest {
     private Operacao obterOperacaoDeVendaShort() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                ativo: new Ativo(
+                ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
                         qtde: 0,
                         valorTotalInvestido: 0
@@ -116,7 +134,7 @@ class AtivoTest {
     private Operacao obterOperacaoDeCompraShortZeraPosicao() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                ativo: new Ativo(
+                ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400

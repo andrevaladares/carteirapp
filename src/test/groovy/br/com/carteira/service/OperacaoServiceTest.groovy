@@ -44,7 +44,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "atualiza operação a partir de compra/redução short"() {
+    void "atualiza operacao a partir de compra ou reducao short"() {
         Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
@@ -54,7 +54,7 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void "atualiza operação a partir de compra em remontagem de posicao (ativo existente com saldo 0)"() {
+    void "atualiza operacao a partir de compra em remontagem de posicao (ativo existente com saldo 0)"() {
         Operacao operacao = obterOperacaoDeCompraAPartirDeAtivoComSaldoZero()
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
@@ -192,7 +192,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeVenda() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                ativo: new Ativo(
+                ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
                         qtde: 200,
                         valorTotalInvestido: 3500
@@ -220,7 +220,7 @@ class OperacaoServiceTest {
     private Operacao obterOperacaoDeCompraShortSemZerarPosicao() {
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                ativo: new Ativo(
+                ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
                         qtde: -15,
                         valorTotalInvestido: -400
