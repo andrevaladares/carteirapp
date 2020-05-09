@@ -51,7 +51,7 @@ class AtivoRepositoryIT {
                 nome: 'vinci shoppings',
                 tipo: 'a',
                 setor: 'bancos',
-                qtde: 100,
+                qtde: 100.00000000,
                 valorTotalInvestido: 1012,
                 dataEntrada: LocalDate.of(2020, 3, 20)
         )
@@ -63,7 +63,7 @@ class AtivoRepositoryIT {
         Assert.assertEquals('vinci shoppings', tituloAtualizado.nome)
         Assert.assertEquals(TipoAtivoEnum.a, tituloAtualizado.tipo)
         Assert.assertEquals('bancos', tituloAtualizado.setor)
-        Assert.assertEquals(100, tituloAtualizado.qtde)
+        Assert.assertEquals(100.00000000, tituloAtualizado.qtde)
         Assert.assertEquals(new BigDecimal('1012.00'), tituloAtualizado.valorTotalInvestido)
     }
 }

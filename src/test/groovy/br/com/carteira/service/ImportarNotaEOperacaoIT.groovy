@@ -53,11 +53,11 @@ class ImportarNotaEOperacaoIT {
         //Saldos dos títulos determinados corretamente
         Assert.assertEquals(dataOperacoes, aper3f.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, aper3f.tipo)
-        Assert.assertEquals(30, aper3f.qtde)
+        Assert.assertEquals(30.00000000, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('802.14'), aper3f.valorTotalInvestido)
         Assert.assertEquals(dataOperacoes, bpan4.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
-        Assert.assertEquals(300, bpan4.qtde)
+        Assert.assertEquals(300.00000000, bpan4.qtde)
         Assert.assertEquals(new BigDecimal('1215.26'), bpan4.valorTotalInvestido)
 
         //Valor de operações calculados corretamente em função dos custos
@@ -81,11 +81,11 @@ class ImportarNotaEOperacaoIT {
         def dataOperacoes = LocalDate.of(2020, 2, 3)
         Assert.assertEquals(dataOperacoes, aper3f.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, aper3f.tipo)
-        Assert.assertEquals(-40, aper3f.qtde)
+        Assert.assertEquals(-40.00000000, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('-1069.52'), aper3f.valorTotalInvestido)
         Assert.assertEquals(dataOperacoes, bpan4.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
-        Assert.assertEquals(-300, bpan4.qtde)
+        Assert.assertEquals(-300.00000000, bpan4.qtde)
         Assert.assertEquals(new BigDecimal('-1215.26'), bpan4.valorTotalInvestido)
     }
 
@@ -114,7 +114,7 @@ class ImportarNotaEOperacaoIT {
         //Saldos dos títulos determinados corretamente
         Assert.assertEquals(dataOperacoes, oz2.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.o, oz2.tipo)
-        Assert.assertEquals(10, oz2.qtde)
+        Assert.assertEquals(10.00000000, oz2.qtde)
         Assert.assertEquals(new BigDecimal('25882.70'), oz2.valorTotalInvestido)
 
         //Valor de operações calculados corretamente em função dos custos
@@ -123,7 +123,7 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('23308.28'), operacaoCompra['valor_total_operacao'])
         def operacaoVenda = operacoesOz2.find {it['tipo_operacao'] == 'v'}
         Assert.assertEquals(new BigDecimal('7792.20'), operacaoVenda['valor_total_operacao'])
-        Assert.assertEquals(new BigDecimal('259.0861'), operacaoVenda['custo_medio_venda'])
+        Assert.assertEquals(new BigDecimal('259.08610000'), operacaoVenda['custo_medio_venda'])
         Assert.assertEquals(new BigDecimal('27.39'), operacaoVenda['resultado_venda'])
     }
 

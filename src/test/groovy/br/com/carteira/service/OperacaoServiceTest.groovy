@@ -2,6 +2,7 @@ package br.com.carteira.service
 
 import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
+import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.entity.Ativo
 import br.com.carteira.repository.OperacaoRepository
@@ -107,7 +108,7 @@ class OperacaoServiceTest {
         def titulo = operacaoService.criarTituloAPartirDaOperacao(operacao)
 
         Assert.assertEquals('visc11', titulo.ticker)
-        Assert.assertEquals(-15, titulo.qtde)
+        Assert.assertEquals(-15.00000000, titulo.qtde)
         Assert.assertEquals(new BigDecimal('-300'), titulo.valorTotalInvestido)
     }
 
@@ -221,10 +222,11 @@ class OperacaoServiceTest {
                 tipoOperacao: TipoOperacaoEnum.v,
                 ativo: Ativo.getInstanceWithAtributeMap(
                         ticker: 'visc11',
-                        qtde: 200,
-                        valorTotalInvestido: 3500
+                        qtde: 200.00000000,
+                        valorTotalInvestido: 3500,
+                        tipo: TipoAtivoEnum.f
                 ),
-                qtde: 15,
+                qtde: 15.00000000,
                 valorTotalOperacao: 300
         )
         operacao

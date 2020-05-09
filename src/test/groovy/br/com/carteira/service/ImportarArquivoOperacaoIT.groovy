@@ -36,10 +36,10 @@ class ImportarArquivoOperacaoIT {
 
         def aper3f = tituloRepository.getByTicker('aper3f')
         def also3f = tituloRepository.getByTicker('also3f')
-        Assert.assertEquals(0, also3f.qtde)
+        Assert.assertEquals(0.00000000, also3f.qtde)
         Assert.assertEquals(new BigDecimal('0.00'), also3f.valorTotalInvestido)
         Assert.assertEquals(LocalDate.of(2019, 4, 5), also3f.dataEntrada)
-        Assert.assertEquals(40, aper3f.qtde)
+        Assert.assertEquals(40.00000000, aper3f.qtde)
         Assert.assertEquals(new BigDecimal('1047.83'), aper3f.valorTotalInvestido)
         Assert.assertEquals(LocalDate.of(2019, 3, 18), aper3f.dataEntrada)
     }

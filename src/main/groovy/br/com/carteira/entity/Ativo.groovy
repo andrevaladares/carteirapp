@@ -9,7 +9,7 @@ class Ativo {
     String nome
     TipoAtivoEnum tipo
     String setor
-    Integer qtde
+    BigDecimal qtde
     BigDecimal valorTotalInvestido
     LocalDate dataEntrada
     OperacoesAtivo operacoesAtivo
@@ -21,7 +21,7 @@ class Ativo {
         operacoesAtivo.obterCustoMedio(valorTotalInvestido, qtde)
     }
 
-    BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, Integer qtde) {
+    BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, BigDecimal qtde) {
         operacoesAtivo.obterResultadoVenda(custoMedioVenda, valorTotalOperacao, qtde)
     }
 
@@ -46,8 +46,7 @@ class Ativo {
 
     Ativo atualizarTituloOperacaoComum(Operacao operacao) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            def valorInvestidoEquivalente = valorTotalInvestido.divide(
-                    BigDecimal.valueOf(qtde), 4, RoundingMode.HALF_UP) * operacao.qtde
+            def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 4, RoundingMode.HALF_UP) * operacao.qtde).setScale(4, RoundingMode.HALF_UP)
             qtde -= operacao.qtde
             valorTotalInvestido -= valorInvestidoEquivalente
 
