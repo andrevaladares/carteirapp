@@ -70,7 +70,7 @@ class AtivoTest {
                 ticker: 'oz2',
                 valorTotalInvestido: 1000.00,
                 qtde: 10,
-                tipo: TipoAtivoEnum.o
+                tipo: TipoAtivoEnum.oz2
         )
 
         assert ouro.obterCustoMedio() == BigDecimal.valueOf(10.0100)

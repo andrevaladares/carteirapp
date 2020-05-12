@@ -1,8 +1,16 @@
 package br.com.carteira.entity
 
+import br.com.carteira.exception.AtivoInvalidoException
+
 import java.math.RoundingMode
 
 trait OperacoesAtivo {
+
+    def validar(Ativo ativo) {
+        if(ativo.ticker == null) {
+            throw new AtivoInvalidoException("é obrigatório informar o ticker para ativos do tipo: $ativo.tipo")
+        }
+    }
 
     BigDecimal obterCustoMedio(BigDecimal valorTotalInvestido, BigDecimal qtde) {
         valorTotalInvestido.divide(qtde as BigDecimal, 4, RoundingMode.HALF_UP)

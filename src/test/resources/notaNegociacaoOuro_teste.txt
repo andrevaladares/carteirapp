@@ -10,6 +10,6 @@ Taxa Registro BM&F	2,38
 Taxas BM&F (emol+f.gar)	0,78				
 Dados das operações					
 tipo	título	TipoTitulo	Preço compra	Quantidade	Valor 
-c	oz2	o	257,00	9	23106,87
-c	oz2	o	256,50	4	10249,72
-v	oz2	o	260,00	3	7792,20
+c	oz2	oz2	257,00	9	23106,87
+c	oz2	oz2	256,50	4	10249,72
+v	oz2	oz2	260,00	3	7792,20

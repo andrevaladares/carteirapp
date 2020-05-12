@@ -113,7 +113,7 @@ class ImportarNotaEOperacaoIT {
         def dataOperacoes = LocalDate.of(2020, 3, 9)
         //Saldos dos títulos determinados corretamente
         Assert.assertEquals(dataOperacoes, oz2.dataEntrada)
-        Assert.assertEquals(TipoAtivoEnum.o, oz2.tipo)
+        Assert.assertEquals(TipoAtivoEnum.oz2, oz2.tipo)
         Assert.assertEquals(10.00000000, oz2.qtde)
         Assert.assertEquals(new BigDecimal('25882.70'), oz2.valorTotalInvestido)
 

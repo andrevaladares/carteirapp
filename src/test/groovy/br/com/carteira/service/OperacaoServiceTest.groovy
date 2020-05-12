@@ -224,7 +224,7 @@ class OperacaoServiceTest {
                         ticker: 'visc11',
                         qtde: 200.00000000,
                         valorTotalInvestido: 3500,
-                        tipo: TipoAtivoEnum.f
+                        tipo: TipoAtivoEnum.fii
                 ),
                 qtde: 15.00000000,
                 valorTotalOperacao: 300

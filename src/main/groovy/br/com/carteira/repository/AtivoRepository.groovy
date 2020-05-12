@@ -30,9 +30,10 @@ class AtivoRepository {
     Long incluir(Ativo ativo) {
 
         def insertSql = """
-                insert into ativo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada)
+                insert into ativo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada, cnpj_fundo)
                 values (${ativo.ticker.toLowerCase()}, $ativo.nome, ${ativo.tipo as String}, 
-                    $ativo.setor, $ativo.qtde, $ativo.valorTotalInvestido, ${ativo.dataEntrada})
+                    $ativo.setor, $ativo.qtde, $ativo.valorTotalInvestido, ${ativo.dataEntrada},
+                    $ativo.cnpjFundo)
             """
         def keys = new Sql(DataSourceUtils.getConnection(dataSource)).executeInsert insertSql
 
@@ -54,7 +55,7 @@ class AtivoRepository {
     Long atualizar(Ativo ativo) {
         def updateQuery = """update ativo set nome = $ativo.nome, tipo = ${ativo.tipo as String},
             setor = $ativo.setor, qtde = $ativo.qtde, valor_total_investido = $ativo.valorTotalInvestido,
-            data_entrada = $ativo.dataEntrada where ticker = $ativo.ticker 
+            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo where ticker = $ativo.ticker 
         """
 
         new Sql(DataSourceUtils.getConnection(dataSource)).executeUpdate(updateQuery)
@@ -71,7 +72,8 @@ class AtivoRepository {
                     setor: ativoGroovyRow['setor'],
                     qtde: ativoGroovyRow['qtde'],
                     valorTotalInvestido: ativoGroovyRow['valor_total_investido'],
-                    dataEntrada: ((Date) ativoGroovyRow['data_entrada']).toLocalDate()
+                    dataEntrada: ((Date) ativoGroovyRow['data_entrada']).toLocalDate(),
+                    cnpjFundo: ativoGroovyRow['cnpj_fundo']
             )
         }
         ativo

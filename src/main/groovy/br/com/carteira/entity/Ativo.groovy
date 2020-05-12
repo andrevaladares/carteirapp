@@ -12,6 +12,7 @@ class Ativo {
     BigDecimal qtde
     BigDecimal valorTotalInvestido
     LocalDate dataEntrada
+    String cnpjFundo
     OperacoesAtivo operacoesAtivo
 
     private Ativo() {
@@ -69,5 +70,9 @@ class Ativo {
         ativo.operacoesAtivo = Class.forName(ativo.tipo.classeOperacao).newInstance()
 
         ativo
+    }
+
+    void validar() {
+        operacoesAtivo.validar(this)
     }
 }
