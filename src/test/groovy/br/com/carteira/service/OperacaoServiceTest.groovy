@@ -30,8 +30,8 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertEquals(17.5000, operacaoCompleta.custoMedioVenda)
-        Assert.assertEquals(BigDecimal.valueOf(37.5), operacaoCompleta.resultadoVenda)
+        Assert.assertEquals(17.50000000, operacaoCompleta.custoMedioOperacao)
+        Assert.assertEquals(new BigDecimal('37.50'), operacaoCompleta.resultadoVenda)
     }
 
     @Test
@@ -40,7 +40,7 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioVenda)
+        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
         Assert.assertNull(operacaoCompleta.resultadoVenda)
     }
 
@@ -50,8 +50,8 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertEquals(new BigDecimal('26.6667'), operacaoCompleta.custoMedioVenda)
-        Assert.assertEquals(new BigDecimal('116.667'), operacaoCompleta.resultadoVenda)
+        Assert.assertEquals(new BigDecimal('26.66666667'), operacaoCompleta.custoMedioOperacao)
+        Assert.assertEquals(new BigDecimal('116.6666667'), operacaoCompleta.resultadoVenda)
     }
 
     @Test
@@ -60,7 +60,7 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioVenda)
+        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
         Assert.assertNull(operacaoCompleta.resultadoVenda)
     }
 
@@ -70,7 +70,7 @@ class OperacaoServiceTest {
 
         def operacaoCompleta = operacaoService.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioVenda)
+        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
         Assert.assertNull(operacaoCompleta.resultadoVenda)
     }
 
@@ -105,7 +105,7 @@ class OperacaoServiceTest {
     @Test
     void "cria operacao de short para titulo novo" () {
         def operacao = obterOperacaoDeVenda()
-        def titulo = operacaoService.criarTituloAPartirDaOperacao(operacao)
+        def titulo = operacaoService.criarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals('visc11', titulo.ticker)
         Assert.assertEquals(-15.00000000, titulo.qtde)

@@ -28,10 +28,10 @@ class AtivoRepository {
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     Long incluir(Ativo ativo) {
-
+        ativo.ticker = ativo.ticker ? ativo.ticker.toLowerCase() : null
         def insertSql = """
                 insert into ativo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada, cnpj_fundo)
-                values (${ativo.ticker.toLowerCase()}, $ativo.nome, ${ativo.tipo as String}, 
+                values ($ativo.ticker, $ativo.nome, ${ativo.tipo as String}, 
                     $ativo.setor, $ativo.qtde, $ativo.valorTotalInvestido, ${ativo.dataEntrada},
                     $ativo.cnpjFundo)
             """
@@ -49,6 +49,12 @@ class AtivoRepository {
     Ativo getByTicker(String ticker) {
         def query = 'select * from ativo where ticker = :ticker'
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker.toLowerCase()], query)
+        return fromAtivoGroovyRow(resultado)
+    }
+
+    Ativo getByCnpjFundo(String cnpjFundo) {
+        def query = 'select * from ativo where cnpj_fundo = :cnpjFundo'
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['cnpjFundo': cnpjFundo], query)
         return fromAtivoGroovyRow(resultado)
     }
 

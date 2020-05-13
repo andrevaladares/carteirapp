@@ -32,7 +32,7 @@ class AtivoTest {
         def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
 
         Assert.assertEquals(185.00000000, ativo.qtde)
-        Assert.assertEquals(3237.5000, ativo.valorTotalInvestido)
+        Assert.assertEquals(3237.50000000, ativo.valorTotalInvestido)
     }
 
     @Test
@@ -73,7 +73,7 @@ class AtivoTest {
                 tipo: TipoAtivoEnum.oz2
         )
 
-        assert ouro.obterCustoMedio() == BigDecimal.valueOf(10.0100)
+        assert ouro.obterCustoMedioUnitario() == BigDecimal.valueOf(10.0100)
     }
 
     private Operacao obterOperacaoDeCompraShortSemZerarPosicao() {

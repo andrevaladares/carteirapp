@@ -25,10 +25,10 @@ class OperacaoRepository {
         def keys
         def insertSql = """
                 insert into operacao (nota_negociacao, tipo_operacao, ativo, qtde,
-                    valor_total_operacao, custo_medio_venda, resultado_venda, data)
-                values (${operacao.idNotaNegociacao}, ${operacao.tipoOperacao as String}, ${operacao.ativo.id}, 
-                    ${operacao.qtde}, ${operacao.valorTotalOperacao}, ${operacao.custoMedioVenda}, ${operacao.resultadoVenda},
-                    ${operacao.data})
+                    valor_total_operacao, custo_medio_operacao, resultado_venda, data, nota_investimento)
+                values ($operacao.idNotaNegociacao, ${operacao.tipoOperacao as String}, $operacao.ativo.id, 
+                    $operacao.qtde, $operacao.valorTotalOperacao, $operacao.custoMedioOperacao, $operacao.resultadoVenda,
+                    $operacao.data, $operacao.idNotaInvestimento)
             """
 
         Connection conn = DataSourceUtils.getConnection(dataSource)
@@ -52,6 +52,14 @@ class OperacaoRepository {
         def query = """
             select * from operacao o inner join ativo a on a.id =  o.ativo
             where a.ticker = $ticker and o.data = $dataOperacao
+        """
+        new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
+    }
+
+    List<GroovyRowResult> getByDataOperacaoCnpjFundo(LocalDate dataOperacao, String cnpjFundo) {
+        def query = """
+            select * from operacao o inner join ativo a on a.id =  o.ativo
+            where a.cnpj_fundo = $cnpjFundo and o.data = $dataOperacao
         """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
     }

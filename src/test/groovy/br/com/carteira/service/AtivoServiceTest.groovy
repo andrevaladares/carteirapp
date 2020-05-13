@@ -91,4 +91,21 @@ class AtivoServiceTest {
             assert e.getMessage() == "o cnpj deve possuir 14 caracteres. CNPJ errado: $ativo.cnpjFundo"
         }
     }
+
+    @Test
+    void 'falha ao tentar incluir fundo de investimento com cnpj nao numerico'(){
+        def ativo = Ativo.getInstanceWithAtributeMap(
+                nome: 'Fundo de investimento cambial',
+                tipo: TipoAtivoEnum.fiv,
+                cnpjFundo: '052170AB000107'
+        )
+        try {
+            ativoService.incluir(ativo)
+            Assert.fail()
+        }
+        catch (AtivoInvalidoException e){
+            assert e.getMessage() == "o cnpj deve possuir apenas caracteres numéricos. CNPJ errado: $ativo.cnpjFundo"
+        }
+    }
+
 }

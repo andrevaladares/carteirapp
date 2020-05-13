@@ -12,12 +12,12 @@ trait OperacoesAtivo {
         }
     }
 
-    BigDecimal obterCustoMedio(BigDecimal valorTotalInvestido, BigDecimal qtde) {
-        valorTotalInvestido.divide(qtde as BigDecimal, 4, RoundingMode.HALF_UP)
+    BigDecimal obterCustoMedioUnitario(BigDecimal valorTotalInvestido, BigDecimal qtde) {
+        valorTotalInvestido.divide(qtde as BigDecimal, 8, RoundingMode.HALF_UP)
     }
 
     BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, BigDecimal qtde) {
-        valorTotalOperacao - BigDecimal.valueOf(custoMedioVenda * qtde)
+        (valorTotalOperacao - custoMedioVenda * qtde).setScale(2, RoundingMode.HALF_UP)
     }
 
     Map atualizarTituloOperacaoShort(Operacao operacao, BigDecimal qtde, BigDecimal valorTotalInvestido) {

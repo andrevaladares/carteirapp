@@ -7,12 +7,12 @@ import java.math.RoundingMode
  */
 class OperacoesOuroOz2 implements OperacoesAtivo{
 
-    BigDecimal obterCustoMedio(BigDecimal valorTotalInvestido, BigDecimal qtde) {
+    BigDecimal obterCustoMedioUnitario(BigDecimal valorTotalInvestido, BigDecimal qtde) {
         valorTotalInvestido.divide(qtde, 4, RoundingMode.HALF_UP).divide(9.99, 4, RoundingMode.HALF_UP)
     }
 
     BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, BigDecimal qtde) {
-        valorTotalOperacao - custoMedioVenda * qtde * 9.99
+        (valorTotalOperacao - custoMedioVenda * qtde * 9.99).setScale(2, RoundingMode.HALF_UP)
     }
 
 }

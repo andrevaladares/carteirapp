@@ -34,7 +34,7 @@ class ImportarNotaEOperacaoIT {
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaOperacaoTeste.txt'
 
-        operacaoService.importarArquivoNotaNegociacao(caminhoArquivo, nomeArquivo)
+        operacaoService.importarOperacoesNotaNegociacao(caminhoArquivo, nomeArquivo)
 
         def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
 
@@ -73,7 +73,7 @@ class ImportarNotaEOperacaoIT {
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaOperacaoTesteVendas.txt'
 
-        operacaoService.importarArquivoNotaNegociacao(caminhoArquivo, nomeArquivo)
+        operacaoService.importarOperacoesNotaNegociacao(caminhoArquivo, nomeArquivo)
 
         def aper3f = tituloRepository.getByTicker('aper3f')
         def bpan4 = tituloRepository.getByTicker('bpan4')
@@ -94,7 +94,7 @@ class ImportarNotaEOperacaoIT {
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaNegociacaoOuro_teste.txt'
 
-        operacaoService.importarArquivoNotaNegociacao(caminhoArquivo, nomeArquivo)
+        operacaoService.importarOperacoesNotaNegociacao(caminhoArquivo, nomeArquivo)
 
         def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
 
@@ -123,7 +123,7 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('23308.28'), operacaoCompra['valor_total_operacao'])
         def operacaoVenda = operacoesOz2.find {it['tipo_operacao'] == 'v'}
         Assert.assertEquals(new BigDecimal('7792.20'), operacaoVenda['valor_total_operacao'])
-        Assert.assertEquals(new BigDecimal('259.08610000'), operacaoVenda['custo_medio_venda'])
+        Assert.assertEquals(new BigDecimal('259.08610000'), operacaoVenda['custo_medio_operacao'])
         Assert.assertEquals(new BigDecimal('27.39'), operacaoVenda['resultado_venda'])
     }
 

@@ -1,11 +1,13 @@
 package br.com.carteira.service
 
+import br.com.carteira.entity.NotaInvestimento
 import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
 import br.com.carteira.exception.ArquivoInvalidoException
+import br.com.carteira.repository.NotaInvestimentoRepository
 import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.AtivoRepository
@@ -21,16 +23,21 @@ import java.time.format.DateTimeFormatter
 @Transactional(readOnly = true)
 class OperacaoService {
     OperacaoRepository operacaoRepository
-    AtivoRepository tituloRepository
+    AtivoRepository ativoRepository
+    NotaInvestimentoRepository notaInvestimentoRepository
+
+
     NotaNegociacaoRepository notaNegociacaoRepository
 
     @Autowired
     OperacaoService(OperacaoRepository operacaoRepository,
-                    AtivoRepository tituloRepository,
-                    NotaNegociacaoRepository notaNegociacaoRepository) {
+                    AtivoRepository ativoRepository,
+                    NotaNegociacaoRepository notaNegociacaoRepository,
+                    NotaInvestimentoRepository notaInvestimentoRepository) {
         this.operacaoRepository = operacaoRepository
-        this.tituloRepository = tituloRepository
+        this.ativoRepository = ativoRepository
         this.notaNegociacaoRepository = notaNegociacaoRepository
+        this.notaInvestimentoRepository = notaInvestimentoRepository
     }
 
     /**
@@ -41,17 +48,42 @@ class OperacaoService {
      * @return o id da operação gravada
      */
     Operacao incluir(Operacao operacao) {
-        def ativo = tituloRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
+        def ativo = ativoRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
         def operacaoAtualizada
         if (ativo != null) {
             operacao.ativo = ativo
             operacaoAtualizada = complementarOperacao(operacao)
             Ativo tituloParaAtualizacao = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
-            tituloRepository.atualizar(tituloParaAtualizacao)
+            ativoRepository.atualizar(tituloParaAtualizacao)
         } else {
-            operacao.ativo = criarTituloAPartirDaOperacao(operacao)
+            operacao.ativo = criarAtivoAPartirDaOperacao(operacao)
             operacaoAtualizada = complementarOperacao(operacao)
-            operacaoAtualizada.ativo.id = tituloRepository.incluir(operacao.ativo)
+            operacaoAtualizada.ativo.id = ativoRepository.incluir(operacao.ativo)
+        }
+        operacaoRepository.incluir(operacaoAtualizada)
+
+        operacao
+    }
+
+    /**
+     * Inclui uma operação para um fundo de investimento
+     * Junto com a nova operação, atualiza os valores de estoque do título (quantidade e valor total investido até então)
+     *
+     * @param operacao a operação a ser inserida
+     * @return a operacao gravada
+     */
+    Operacao incluirOperacaoFundoInvestimento(Operacao operacao) {
+        def ativo = ativoRepository.getByCnpjFundo(operacao.ativo.cnpjFundo)
+        def operacaoAtualizada
+        if (ativo != null) {
+            operacao.ativo = ativo
+            operacaoAtualizada = complementarOperacao(operacao)
+            Ativo ativoParaAtualizacao = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+            ativoRepository.atualizar(ativoParaAtualizacao)
+        } else {
+            operacao.ativo = criarAtivoAPartirDaOperacao(operacao)
+            operacaoAtualizada = complementarOperacao(operacao)
+            operacaoAtualizada.ativo.id = ativoRepository.incluir(operacao.ativo)
         }
         operacaoRepository.incluir(operacaoAtualizada)
 
@@ -67,13 +99,13 @@ class OperacaoService {
     Operacao complementarOperacao(Operacao operacao) {
         if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
             //operacao de venda comum (redução de posição comprada)
-            operacao.custoMedioVenda = operacao.ativo.obterCustoMedio()
-            operacao.resultadoVenda = operacao.ativo.obterResultadoVenda(operacao.custoMedioVenda, operacao.valorTotalOperacao, operacao.qtde)
+            operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
+            operacao.resultadoVenda = operacao.ativo.obterResultadoVenda(operacao.custoMedioOperacao, operacao.valorTotalOperacao, operacao.qtde)
         }
         else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
             //Reducao de um short
-            operacao.custoMedioVenda = operacao.ativo.obterCustoMedio()
-            operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioVenda * operacao.qtde)) * -1
+            operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
+            operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioOperacao * operacao.qtde)) * -1
         }
 
         operacao
@@ -85,7 +117,7 @@ class OperacaoService {
      * @param operacao a operação de referência
      * @return o titulo atualizado
      */
-    Ativo criarTituloAPartirDaOperacao(Operacao operacao) {
+    Ativo criarAtivoAPartirDaOperacao(Operacao operacao) {
         def tituloParaAtualizacao = operacao.ativo
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             tituloParaAtualizacao.qtde = operacao.qtde * -1
@@ -135,7 +167,7 @@ class OperacaoService {
     }
 
     @Transactional
-    void importarArquivoNotaNegociacao(String caminhoArquivo, String nomeArquivo) {
+    void importarOperacoesNotaNegociacao(String caminhoArquivo, String nomeArquivo) {
         def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
 
         def notaNegociacao = obterDadosNotaNegociacao(linhasArquivo)
@@ -151,6 +183,49 @@ class OperacaoService {
             qtdeProcessada += 1
         }
         println "Concluído o processamento de ${qtdeProcessada - 1} operações" //Desconta linha de títulos
+    }
+
+    @Transactional
+    void importarOperacoesNotaInvestimento(String caminhoArquivo, String nomeArquivo) {
+        def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
+
+        def notaInvestimento = obterDadosNotaInvestimento(linhasArquivo)
+        def idNotaInvestimento = notaInvestimentoRepository.incluir(notaInvestimento)
+        def dataOperacao = notaInvestimento.dataMovimentacao
+        println 'Iniciando processamento das operações da nota'
+
+        linhasArquivo.subList(5, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+            incluiOperacaoAPartirDeNotaInvestimento(linha, numeroLinha, idNotaInvestimento, dataOperacao)
+        }
+        println "Concluído o processamento das operações"
+    }
+
+    void incluiOperacaoAPartirDeNotaInvestimento(String[] linhaArquivo, int numeroLinha, long idNotaInvestimento, LocalDate dataOperacao) {
+        def operacao
+
+        if (numeroLinha == 0) {
+            if (linhaArquivo[0] != 'tipo')
+                throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
+        } else {
+            def qtde = new BigDecimal(linhaArquivo[4].replace(",", "."))
+            def valorTotalOperacao = new BigDecimal(linhaArquivo[3].replace(",", "."))
+            def custoMedioOperacao = valorTotalOperacao.divide(qtde, 8, RoundingMode.HALF_UP)
+            operacao = new Operacao(
+                    data: dataOperacao,
+                    idNotaInvestimento: idNotaInvestimento,
+                    tipoOperacao: linhaArquivo[0],
+                    ativo: Ativo.getInstanceWithAtributeMap(
+                            nome: linhaArquivo[2],
+                            tipo: TipoAtivoEnum.fiv,
+                            cnpjFundo: linhaArquivo[1]
+                    ),
+                    qtde: qtde,
+                    valorTotalOperacao: valorTotalOperacao,
+                    custoMedioOperacao: custoMedioOperacao
+            )
+
+            this.incluirOperacaoFundoInvestimento(operacao)
+        }
     }
 
     void incluiOperacaoAPartirDeNotaNegociacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao, BigDecimal valorTaxaUnitaria, boolean notaContemCompras) {
@@ -190,6 +265,16 @@ class OperacaoService {
         )
     }
 
+    NotaInvestimento obterDadosNotaInvestimento(List<String[]> linhasArquivoNota) {
+        def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+
+        new NotaInvestimento(
+                dataMovimentacao: LocalDate.parse(linhasArquivoNota[1][1], dateFormatter),
+                cnpjCorretora: linhasArquivoNota[2][1],
+                nomeCorretora: linhasArquivoNota[3][1]
+        )
+    }
+
     BigDecimal defineValorTaxaUnitaria(List<String[]> listaOperacoes, NotaNegociacao notaNegociacao) {
         def valorTotalTaxas = notaNegociacao.getTotalTaxas()
         def titulosCompra = listaOperacoes
@@ -221,4 +306,5 @@ class OperacaoService {
         }
         valorTotalOperacao
     }
+
 }

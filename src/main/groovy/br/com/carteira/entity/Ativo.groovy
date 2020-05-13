@@ -18,8 +18,8 @@ class Ativo {
     private Ativo() {
     }
 
-    BigDecimal obterCustoMedio() {
-        operacoesAtivo.obterCustoMedio(valorTotalInvestido, qtde)
+    BigDecimal obterCustoMedioUnitario() {
+        operacoesAtivo.obterCustoMedioUnitario(valorTotalInvestido, qtde)
     }
 
     BigDecimal obterResultadoVenda(BigDecimal custoMedioVenda, BigDecimal valorTotalOperacao, BigDecimal qtde) {
@@ -47,7 +47,7 @@ class Ativo {
 
     Ativo atualizarTituloOperacaoComum(Operacao operacao) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
-            def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 4, RoundingMode.HALF_UP) * operacao.qtde).setScale(4, RoundingMode.HALF_UP)
+            def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde).setScale(8, RoundingMode.HALF_UP)
             qtde -= operacao.qtde
             valorTotalInvestido -= valorInvestidoEquivalente
 

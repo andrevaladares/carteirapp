@@ -36,6 +36,18 @@ class NotaInvestimentoRepository {
         keys[0][0] as Long
     }
 
+    NotaInvestimento getById(Long id) {
+        def sql = "select * from nota_investimento where id = :idNota"
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['idNota': id], sql)
+
+        fromNotaInvestimentoGroovyRow(resultado)
+    }
+
+    List listAll() {
+        List resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows('select * from nota_investimento')
+        return resultado
+    }
+
     NotaInvestimento fromNotaInvestimentoGroovyRow(GroovyRowResult notaInvestimentoGroovyRow) {
         def notaInvestimento = null
         if (notaInvestimentoGroovyRow != null) {

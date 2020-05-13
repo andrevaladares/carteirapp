@@ -3,7 +3,6 @@ package br.com.carteira.scripts
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cglib.core.Local
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.springframework.stereotype.Component
@@ -33,7 +32,7 @@ class ImportarDados {
         println 'Iniciando importação de operações'
         println '==============='
 
-        operacaoService.importarArquivoNotaNegociacao(caminho, arquivo)
+        operacaoService.importarOperacoesNotaNegociacao(caminho, arquivo)
 
         println '==============='
         println 'Encerrada importação de operações'

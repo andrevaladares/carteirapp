@@ -19,17 +19,17 @@ class OperacaoRepositoryIT {
     @Autowired
     OperacaoRepository operacaoRepository
     @Autowired
-    AtivoRepository tituloRepository
+    AtivoRepository ativoRepository
 
     @Test
     void testIncluirOperacaoCompra() {
-        def tituloGroovyRow = tituloRepository.listAll()[0]
+        def tituloGroovyRow = ativoRepository.listAll()[0]
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
-                ativo: tituloRepository.fromAtivoGroovyRow(tituloGroovyRow),
+                ativo: ativoRepository.fromAtivoGroovyRow(tituloGroovyRow),
                 qtde: 100,
                 valorTotalOperacao: BigDecimal.valueOf(1200),
-                custoMedioVenda: BigDecimal.valueOf(12),
+                custoMedioOperacao: BigDecimal.valueOf(12),
                 data: LocalDate.of(2019, 12, 30)
         )
 
@@ -41,13 +41,13 @@ class OperacaoRepositoryIT {
 
     @Test
     void testIncluirOperacaoVenda() {
-        def tituloGroovyRow = tituloRepository.listAll()[0]
+        def tituloGroovyRow = ativoRepository.listAll()[0]
         def operacao = new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
-                ativo: tituloRepository.fromAtivoGroovyRow(tituloGroovyRow),
+                ativo: ativoRepository.fromAtivoGroovyRow(tituloGroovyRow),
                 qtde: 50,
                 valorTotalOperacao: BigDecimal.valueOf(600),
-                custoMedioVenda: BigDecimal.valueOf(12),
+                custoMedioOperacao: BigDecimal.valueOf(12),
                 data: LocalDate.of(2020, 2, 10)
         )
 
