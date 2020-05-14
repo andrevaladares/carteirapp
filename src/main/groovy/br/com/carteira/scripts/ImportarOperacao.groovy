@@ -39,6 +39,17 @@ class ImportarDados {
 
     }
 
+    void importarNotaInvestimento(String caminho, String arquivo){
+        println 'Iniciando importação de Nota de Investimento'
+        println '==============='
+
+        operacaoService.importarOperacoesNotaInvestimento(caminho, arquivo)
+
+        println '==============='
+        println 'Encerrada importação de Nota de Investimento'
+
+    }
+
     void importarSituacaoCarteira(String caminho, String arquivo, LocalDate dataReferencia){
         println 'Iniciando importação de situacao da carteira'
         println '==============='
@@ -79,4 +90,5 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 //importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraShort31032020.txt', LocalDate.of(2020, 3, 31))
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,3,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_Oz2_17042019.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_Oz2_17042019.txt')
+importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoXp_20200310.txt')
