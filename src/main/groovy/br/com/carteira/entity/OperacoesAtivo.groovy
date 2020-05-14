@@ -38,4 +38,12 @@ trait OperacoesAtivo {
 
         [qtde: qtde, valorTotalInvestido: valorTotalInvestido]
     }
+
+    GString obterQueryUpdate(Ativo ativo) {
+        """
+            update ativo set nome = $ativo.nome, tipo = ${ativo.tipo as String},
+            setor = $ativo.setor, qtde = $ativo.qtde, valor_total_investido = $ativo.valorTotalInvestido,
+            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo where ticker = $ativo.ticker 
+        """
+    }
 }

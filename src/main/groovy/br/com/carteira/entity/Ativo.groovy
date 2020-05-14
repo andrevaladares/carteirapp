@@ -75,4 +75,8 @@ class Ativo {
     void validar() {
         operacoesAtivo.validar(this)
     }
+
+    GString obterQueryUpdate() {
+        operacoesAtivo.obterQueryUpdate(this)
+    }
 }

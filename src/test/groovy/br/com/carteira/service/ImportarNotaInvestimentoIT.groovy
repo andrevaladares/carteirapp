@@ -57,4 +57,25 @@ class ImportarNotaInvestimentoIT {
         assert new BigDecimal('3000.00') == operacaoCompra['valor_total_operacao']
     }
 
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoCambial.sql"])
+    void "importa corretamente uma nota de venda de fundo cambial e suas operacoes"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoCambialVenda_teste.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def fundoCambial = ativoRepository.getByCnpjFundo('3319016000150')
+
+        def dataOperacoes = LocalDate.of(2020, 2, 27)
+        //Saldos dos títulos determinados corretamente
+        assert fundoCambial.qtde == 729.1147
+        assert fundoCambial.valorTotalInvestido == 2334.57
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
+        def operacaoCompra = operacoesFundoCambial.find {it['tipo_operacao'] == 'v'}
+        assert operacaoCompra['valor_total_operacao'] == new BigDecimal('800.00')
+    }
+
 }

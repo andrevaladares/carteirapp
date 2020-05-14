@@ -46,10 +46,10 @@ class AtivoRepositoryIT {
 
     @Test
     void testAtualizarTituloSucesso() {
-        def titulo = new Ativo (
+        def titulo = Ativo.getInstanceWithAtributeMap (
                 ticker: 'visc11',
                 nome: 'vinci shoppings',
-                tipo: 'a',
+                tipo: TipoAtivoEnum.a,
                 setor: 'bancos',
                 qtde: 100.00000000,
                 valorTotalInvestido: 1012,
