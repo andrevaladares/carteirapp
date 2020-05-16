@@ -9,7 +9,7 @@ class AtivoTest {
     void "atualiza ativo a partir de venda short"() {
         Operacao operacao = obterOperacaoDeVendaShort()
 
-        def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+        def ativo = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals(-15.00000000, ativo.qtde)
         Assert.assertEquals(new BigDecimal('-300'), ativo.valorTotalInvestido)
@@ -19,7 +19,7 @@ class AtivoTest {
     void "atualiza ativo a partir de compra short zerando posicao"() {
         Operacao operacao = obterOperacaoDeCompraShortZeraPosicao()
 
-        def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+        def ativo = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals(0.00000000, ativo.qtde)
         Assert.assertEquals(new BigDecimal('0'), ativo.valorTotalInvestido)
@@ -29,7 +29,7 @@ class AtivoTest {
     void "atualiza ativo a partir de venda"() {
         Operacao operacao = obterOperacaoDeVenda()
 
-        def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+        def ativo = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals(185.00000000, ativo.qtde)
         Assert.assertEquals(3237.50000000, ativo.valorTotalInvestido)
@@ -39,7 +39,7 @@ class AtivoTest {
     void "atualiza ativo a partir de compra"() {
         Operacao operacao = obterOperacaoDeCompra()
 
-        def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+        def ativo = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals(2100.00000000, ativo.qtde)
         Assert.assertEquals(BigDecimal.valueOf(31200), ativo.valorTotalInvestido)
@@ -49,7 +49,7 @@ class AtivoTest {
     void "atualiza ativo a partir de compra short sem zerar posicao"() {
         Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
 
-        def ativo = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+        def ativo = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
 
         Assert.assertEquals(-5.00000000, ativo.qtde)
         Assert.assertEquals(-133.3330, ativo.valorTotalInvestido)

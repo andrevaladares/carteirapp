@@ -20,7 +20,7 @@ trait OperacoesAtivo {
         (valorTotalOperacao - custoMedioVenda * qtde).setScale(2, RoundingMode.HALF_UP)
     }
 
-    Map atualizarTituloOperacaoShort(Operacao operacao, BigDecimal qtde, BigDecimal valorTotalInvestido) {
+    Map atualizarAtivoOperacaoShort(Operacao operacao, BigDecimal qtde, BigDecimal valorTotalInvestido) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             qtde -= operacao.qtde
             valorTotalInvestido -= operacao.valorTotalOperacao

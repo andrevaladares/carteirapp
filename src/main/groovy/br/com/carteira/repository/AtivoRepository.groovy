@@ -52,10 +52,17 @@ class AtivoRepository {
         return fromAtivoGroovyRow(resultado)
     }
 
-    Ativo getByCnpjFundo(String cnpjFundo) {
-        def query = 'select * from ativo where cnpj_fundo = :cnpjFundo'
-        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['cnpjFundo': cnpjFundo], query)
-        return fromAtivoGroovyRow(resultado)
+    /**
+     * Retorna todas as ocorrências do ativo indicado pelo cnpj cuja quantidade seja maior que zero
+     *
+     * @param cnpjFundo o cnpj do ativo (geralmente fundo de investimento)
+     * @return lista dos ativos que correspondem ao cnpj informado com quantidade maior que zero ordenados por data de entrada
+     */
+    List<Ativo> getAllByCnpjFundo(String cnpjFundo) {
+        def query = 'select * from ativo where cnpj_fundo = :cnpjFundo order by data_entrada and qtde > 0'
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['cnpjFundo': cnpjFundo], query)
+
+        return resultado.collect({fromAtivoGroovyRow(it)})
     }
 
     Long atualizar(Ativo ativo) {
@@ -81,4 +88,5 @@ class AtivoRepository {
         }
         ativo
     }
+
 }

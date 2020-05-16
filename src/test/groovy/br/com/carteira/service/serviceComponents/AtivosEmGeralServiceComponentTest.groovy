@@ -29,50 +29,50 @@ class AtivosEmGeralServiceComponentTest {
     void "atualiza operacao a partir de venda"() {
         Operacao operacao = obterOperacaoDeVenda()
 
-        def operacaoCompleta = ativosEmGeralServiceComponent.complementarOperacao(operacao)
+        def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        assert operacaoCompleta.custoMedioOperacao == 17.50000000
-        assert operacaoCompleta.resultadoVenda == new BigDecimal('37.50')
+        assert operacoesComplementadasList[0].custoMedioOperacao == 17.50000000
+        assert operacoesComplementadasList[0].resultadoVenda == new BigDecimal('37.50')
     }
 
     @Test
     void "atualiza operacao a partir de venda short"() {
         Operacao operacao = obterOperacaoDeVendaShort()
 
-        def operacaoCompleta = ativosEmGeralServiceComponent.complementarOperacao(operacao)
+        def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
-        Assert.assertNull(operacaoCompleta.resultadoVenda)
+        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
+        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
     }
 
     @Test
     void "atualiza operacao a partir de compra ou reducao short"() {
         Operacao operacao = obterOperacaoDeCompraShortSemZerarPosicao()
 
-        def operacaoCompleta = ativosEmGeralServiceComponent.complementarOperacao(operacao)
+        def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        assert operacaoCompleta.custoMedioOperacao == new BigDecimal('26.66666667')
-        assert operacaoCompleta.resultadoVenda == new BigDecimal('116.6666667')
+        assert operacoesComplementadasList[0].custoMedioOperacao == new BigDecimal('26.66666667')
+        assert operacoesComplementadasList[0].resultadoVenda == new BigDecimal('116.6666667')
     }
 
     @Test
     void "atualiza operacao a partir de compra em remontagem de posicao (ativo existente com saldo 0)"() {
         Operacao operacao = obterOperacaoDeCompraAPartirDeAtivoComSaldoZero()
 
-        def operacaoCompleta = ativosEmGeralServiceComponent.complementarOperacao(operacao)
+        def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
-        Assert.assertNull(operacaoCompleta.resultadoVenda)
+        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
+        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
     }
 
     @Test
     void "atualiza operacao a partir de compra"() {
         Operacao operacao = obterOperacaoDeCompra()
 
-        def operacaoCompleta = ativosEmGeralServiceComponent.complementarOperacao(operacao)
+        def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacaoCompleta.custoMedioOperacao)
-        Assert.assertNull(operacaoCompleta.resultadoVenda)
+        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
+        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
     }
 
     @Test

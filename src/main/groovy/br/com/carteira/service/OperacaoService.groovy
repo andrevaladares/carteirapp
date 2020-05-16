@@ -1,6 +1,6 @@
 package br.com.carteira.service
 
-import br.com.carteira.entity.NotaInvestimento
+
 import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoAtivoEnum
@@ -11,7 +11,7 @@ import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.AtivoRepository
 import br.com.carteira.service.serviceComponents.AtivosEmGeralServiceComponent
-import br.com.carteira.service.serviceComponents.FundosInvestimentosComponentService
+import br.com.carteira.service.serviceComponents.FundosInvestimentosServiceComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +26,7 @@ class OperacaoService {
     OperacaoRepository operacaoRepository
     AtivoRepository ativoRepository
     NotaInvestimentoRepository notaInvestimentoRepository
-    FundosInvestimentosComponentService fundosInvestimentosComponentService
+    FundosInvestimentosServiceComponent fundosInvestimentosComponentService
     AtivosEmGeralServiceComponent ativosEmGeralComponentService
     NotaNegociacaoRepository notaNegociacaoRepository
 
@@ -35,7 +35,7 @@ class OperacaoService {
                     AtivoRepository ativoRepository,
                     NotaNegociacaoRepository notaNegociacaoRepository,
                     NotaInvestimentoRepository notaInvestimentoRepository,
-                    FundosInvestimentosComponentService fundosInvestimentosComponentService,
+                    FundosInvestimentosServiceComponent fundosInvestimentosComponentService,
                     AtivosEmGeralServiceComponent ativosEmGeralComponentService) {
         this.operacaoRepository = operacaoRepository
         this.ativoRepository = ativoRepository
@@ -102,7 +102,7 @@ class OperacaoService {
     void importarOperacoesNotaInvestimento(String caminhoArquivo, String nomeArquivo) {
         def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
 
-        def notaInvestimento = obterDadosNotaInvestimento(linhasArquivo)
+        def notaInvestimento = fundosInvestimentosComponentService.obterDadosNotaInvestimento(linhasArquivo)
         def idNotaInvestimento = notaInvestimentoRepository.incluir(notaInvestimento)
         def dataOperacao = notaInvestimento.dataMovimentacao
         println 'Iniciando processamento das operações da nota'
@@ -123,16 +123,6 @@ class OperacaoService {
                 outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.')),
                 taxaRegistroBmf: new BigDecimal(linhasArquivoNota[8][1].replace(',', '.')),
                 taxasBmfEmolFgar: new BigDecimal(linhasArquivoNota[9][1].replace(',', '.'))
-        )
-    }
-
-    NotaInvestimento obterDadosNotaInvestimento(List<String[]> linhasArquivoNota) {
-        def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
-
-        new NotaInvestimento(
-                dataMovimentacao: LocalDate.parse(linhasArquivoNota[1][1], dateFormatter),
-                cnpjCorretora: linhasArquivoNota[2][1],
-                nomeCorretora: linhasArquivoNota[3][1]
         )
     }
 

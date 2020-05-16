@@ -42,7 +42,7 @@ trait ComponentServiceTrait {
      * @param operacao a operação a ser inserida
      * @return o id da operação gravada
      */
-    abstract Operacao incluir(Operacao operacao)
+    abstract List<Operacao> incluir(Operacao operacao)
 
     /**
      * Atualiza na operação o custo médio e o resultado da venda
@@ -50,7 +50,7 @@ trait ComponentServiceTrait {
      * @param operacao a operação de referência
      * @return a operação atualizada
      */
-    Operacao complementarOperacao(Operacao operacao) {
+    List<Operacao> complementarOperacao(Operacao operacao) {
         if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
             //operacao de venda comum (redução de posição comprada)
             operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
@@ -62,7 +62,7 @@ trait ComponentServiceTrait {
             operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioOperacao * operacao.qtde)) * -1
         }
 
-        operacao
+        [operacao]
     }
 
     /**

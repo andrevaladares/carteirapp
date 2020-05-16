@@ -32,12 +32,12 @@ class Ativo {
      * @param operacao a operação de referência
      * @return o titulo atualizado
      */
-    Ativo atualizarTituloAPartirDaOperacao(Operacao operacao) {
+    Ativo atualizarAtivoAPartirDaOperacao(Operacao operacao) {
         def retornoAtualizacao
-        if (qtde < 0 || (qtde == 0 && operacao.tipoOperacao.equals(TipoOperacaoEnum.v))) {
-            retornoAtualizacao = operacoesAtivo.atualizarTituloOperacaoShort(operacao, this.qtde, this.valorTotalInvestido)
+        if (qtde < 0 || (qtde == 0 && operacao.tipoOperacao == TipoOperacaoEnum.v)) {
+            retornoAtualizacao = operacoesAtivo.atualizarAtivoOperacaoShort(operacao, this.qtde, this.valorTotalInvestido)
         } else {
-            retornoAtualizacao = atualizarTituloOperacaoComum(operacao)
+            retornoAtualizacao = atualizarAtivoOperacaoComum(operacao)
         }
         this.qtde = retornoAtualizacao.qtde
         this.valorTotalInvestido = retornoAtualizacao.valorTotalInvestido
@@ -45,7 +45,7 @@ class Ativo {
         this
     }
 
-    Ativo atualizarTituloOperacaoComum(Operacao operacao) {
+    Ativo atualizarAtivoOperacaoComum(Operacao operacao) {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde).setScale(8, RoundingMode.HALF_UP)
             qtde -= operacao.qtde

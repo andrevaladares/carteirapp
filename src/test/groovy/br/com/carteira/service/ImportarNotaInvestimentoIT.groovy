@@ -42,14 +42,14 @@ class ImportarNotaInvestimentoIT {
         assert notaInvestimentoGravada.cnpjCorretora == '02332886000104'
         assert notaInvestimentoGravada.nomeCorretora == 'XP'
 
-        def fundoCambial = ativoRepository.getByCnpjFundo('3319016000150')
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150')
 
         def dataOperacoes = LocalDate.of(2019, 12, 20)
         //Saldos dos títulos determinados corretamente
-        assert dataOperacoes == fundoCambial.dataEntrada
-        assert TipoAtivoEnum.fiv == fundoCambial.tipo
-        assert 936.9351 == fundoCambial.qtde
-        assert new BigDecimal('3000.00') == fundoCambial.valorTotalInvestido
+        assert dataOperacoes == fundoCambialList[0].dataEntrada
+        assert TipoAtivoEnum.fiv == fundoCambialList[0].tipo
+        assert 936.9351 == fundoCambialList[0].qtde
+        assert new BigDecimal('3000.00') == fundoCambialList[0].valorTotalInvestido
 
         //Valor de operações calculados corretamente em função dos custos
         List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
@@ -65,12 +65,12 @@ class ImportarNotaInvestimentoIT {
 
         operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
 
-        def fundoCambial = ativoRepository.getByCnpjFundo('3319016000150')
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150')
 
         def dataOperacoes = LocalDate.of(2020, 2, 27)
         //Saldos dos títulos determinados corretamente
-        assert fundoCambial.qtde == 729.1147
-        assert fundoCambial.valorTotalInvestido == 2334.57
+        assert fundoCambialList[0].qtde == 729.1147
+        assert fundoCambialList[0].valorTotalInvestido == 2334.57
 
         //Valor de operações calculados corretamente em função dos custos
         List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')

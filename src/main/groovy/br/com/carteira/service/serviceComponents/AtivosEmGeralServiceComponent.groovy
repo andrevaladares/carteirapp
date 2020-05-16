@@ -19,21 +19,22 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         this.ativoRepository = ativoRepository
     }
 
-    Operacao incluir(Operacao operacao) {
+    List<Operacao> incluir(Operacao operacao) {
         def ativo = ativoRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
-        def operacaoAtualizada
+        def operacoesAtualizadas
         if (ativo != null) {
             operacao.ativo = ativo
-            operacaoAtualizada = complementarOperacao(operacao)
-            Ativo tituloParaAtualizacao = operacao.ativo.atualizarTituloAPartirDaOperacao(operacao)
+            operacoesAtualizadas = complementarOperacao(operacao)
+            Ativo tituloParaAtualizacao = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
             ativoRepository.atualizar(tituloParaAtualizacao)
         } else {
             operacao.ativo = criarAtivoAPartirDaOperacao(operacao)
-            operacaoAtualizada = complementarOperacao(operacao)
-            operacaoAtualizada.ativo.id = ativoRepository.incluir(operacao.ativo)
+            operacoesAtualizadas = complementarOperacao(operacao)
+            //Para ativos em geral uma operação de venda ou compra não se desdobra em mais de uma
+            operacoesAtualizadas[0].ativo.id = ativoRepository.incluir(operacao.ativo)
         }
-        operacaoRepository.incluir(operacaoAtualizada)
+        operacaoRepository.incluir(operacoesAtualizadas[0])
 
-        operacao
+        [operacao]
     }
 }
