@@ -3,6 +3,7 @@ package br.com.carteira.service
 
 import br.com.carteira.entity.NotaNegociacao
 import br.com.carteira.entity.Operacao
+import br.com.carteira.entity.OperacaoComeCotasDTO
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
 import br.com.carteira.exception.ArquivoInvalidoException
@@ -143,5 +144,8 @@ class OperacaoService {
         valorTotalTaxas.divide(qtdeParaDivisao, 4, RoundingMode.HALF_UP)
     }
 
-
+    @Transactional
+    List<Operacao> incluiOperacoesComeCotas(String cnpjFundo, LocalDate dataOperacaoComeCotas, List<OperacaoComeCotasDTO> operacaoComeCotasDTO) {
+        fundosInvestimentosComponentService.incluiOperacoesComeCotas(cnpjFundo, dataOperacaoComeCotas, operacaoComeCotasDTO)
+    }
 }

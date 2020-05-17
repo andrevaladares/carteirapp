@@ -1,5 +1,7 @@
 package br.com.carteira.scripts
 
+import br.com.carteira.entity.OperacaoComeCotasDTO
+import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,6 +52,17 @@ class ImportarDados {
 
     }
 
+    void importarOperacoesComeCotas(String cnpj, LocalDate dataOperacao, List<OperacaoComeCotasDTO> operacaoComeCotasDTOList){
+        println 'Iniciando importação de Nota de Investimento'
+        println '==============='
+
+        operacaoService.incluiOperacoesComeCotas(cnpj, dataOperacao, operacaoComeCotasDTOList)
+
+        println '==============='
+        println 'Encerrada importação de Nota de Investimento'
+
+    }
+
     void importarSituacaoCarteira(String caminho, String arquivo, LocalDate dataReferencia){
         println 'Iniciando importação de situacao da carteira'
         println '==============='
@@ -91,4 +104,11 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,3,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
 //importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_Oz2_17042019.txt')
-importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoXp_20191023.txt')
+importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoXp_20200310.txt')
+/*
+importarDados.importarOperacoesComeCotas('3319016000150', LocalDate.of(2019, 11, 29), [
+        new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 7,15), qtdeComeCotas: new BigDecimal(16.5193)),
+        new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 9,12), qtdeComeCotas: new BigDecimal(3.7619)),
+        new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 10,23), qtdeComeCotas: new BigDecimal(16.3484))
+])
+*/

@@ -3,6 +3,7 @@ package br.com.carteira.service.serviceComponents
 import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.NotaInvestimento
 import br.com.carteira.entity.Operacao
+import br.com.carteira.entity.OperacaoComeCotasDTO
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.ArquivoInvalidoException
@@ -130,7 +131,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
                 break
             }
             else {
-                def valorTotalProporcional = operacao.valorTotalOperacao.divide(operacao.qtde) * ativo.qtde
+                def valorTotalProporcional = operacao.valorTotalOperacao.divide(operacao.qtde, 8, RoundingMode.HALF_UP) * ativo.qtde
                 novaOperacao.qtde = ativo.qtde
                 novaOperacao.valorTotalOperacao = valorTotalProporcional
                 novaOperacao.custoMedioOperacao = ativo.obterCustoMedioUnitario()
@@ -153,6 +154,29 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
                 cnpjCorretora: linhasArquivoNota[2][1],
                 nomeCorretora: linhasArquivoNota[3][1]
         )
+    }
+
+    List<Operacao> incluiOperacoesComeCotas(String cnpjFundo, LocalDate dataRealizacaoComeCotas, List<OperacaoComeCotasDTO> operacoesComeCotasDTO) {
+        List<Ativo> ativos = ativoRepository.getAllByCnpjFundoDatasEntrada(cnpjFundo, operacoesComeCotasDTO.dataAplicacao)
+        List<Operacao> operacoesCriadas = []
+        operacoesComeCotasDTO.each {operacaoComeCotasDTO ->
+            def ativoParaAtualizar = ativos.find({it.dataEntrada == operacaoComeCotasDTO.dataAplicacao})
+            def operacao = new Operacao(
+                    tipoOperacao: TipoOperacaoEnum.i,
+                    ativo: ativoParaAtualizar,
+                    qtde: operacaoComeCotasDTO.qtdeComeCotas,
+                    valorTotalOperacao: ativoParaAtualizar.obterCustoMedioUnitario() * operacaoComeCotasDTO.qtdeComeCotas,
+                    custoMedioOperacao: ativoParaAtualizar.obterCustoMedioUnitario(),
+                    data: dataRealizacaoComeCotas,
+                    resultadoVenda: 0
+            )
+            operacaoRepository.incluir(operacao)
+            ativoParaAtualizar.valorTotalInvestido-=operacao.valorTotalOperacao
+            ativoParaAtualizar.qtde-=operacao.qtde
+            ativoRepository.atualizar(ativoParaAtualizar)
+            operacoesCriadas << operacao
+        }
+        operacoesCriadas
     }
 
 }

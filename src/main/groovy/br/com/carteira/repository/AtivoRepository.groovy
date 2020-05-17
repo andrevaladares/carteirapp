@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.stereotype.Repository
 
 import java.sql.Date
+import java.time.LocalDate
 
 @Repository
 class AtivoRepository {
@@ -65,6 +66,17 @@ class AtivoRepository {
         return resultado.collect({fromAtivoGroovyRow(it)})
     }
 
+    List<Ativo> getAllByCnpjFundoDatasEntrada(String cnpjFundo, ArrayList<LocalDate> datasAplicacoes) {
+        def mapaDatas = montaMapaDatas(datasAplicacoes)
+
+        def query = "select * from ativo where cnpj_fundo = :cnpjFundo and data_entrada in (${mapaDatas.keySet().collect{":$it"}.join(',')}) and qtde > 0 order by data_entrada"
+        Map<String, Object> mapaParametros = ['cnpjFundo': cnpjFundo]
+        mapaParametros.putAll(mapaDatas)
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(query, mapaParametros)
+
+        return resultado.collect({fromAtivoGroovyRow(it)})
+    }
+
     Long atualizar(Ativo ativo) {
         def updateQuery = ativo.obterQueryUpdate()
 
@@ -89,4 +101,11 @@ class AtivoRepository {
         ativo
     }
 
+    Map montaMapaDatas(List<LocalDate> datas) {
+        def contador = 0
+        datas.collectEntries({
+            contador++
+            ['data' + contador, it]
+        })
+    }
 }
