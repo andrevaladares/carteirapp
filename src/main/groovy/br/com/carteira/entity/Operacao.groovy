@@ -5,7 +5,7 @@ import java.time.LocalDate
 class Operacao {
     Long id
     Long idNotaNegociacao
-    Long idNotaInvestimento
+    NotaInvestimento notaInvestimento
     TipoOperacaoEnum tipoOperacao
     LocalDate data
     Ativo ativo

@@ -1,8 +1,10 @@
 package br.com.carteira.service.serviceComponents
 
 import br.com.carteira.entity.Ativo
+import br.com.carteira.entity.NotaInvestimento
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.OperacaoComeCotasDTO
+import br.com.carteira.entity.RegimeResgateEnum
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.OperacaoInvalidaException
@@ -51,7 +53,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'nao pode vender mais que a quantidade total do ativo' () {
         def operacao = obterOperacaoDeVenda()
         def ativosRetornados = obterListaAtivos10Unidades()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo)).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
         try {
             fundoInvestimentoServiceComponent.incluir(operacao)
             Assert.fail()
@@ -65,7 +67,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'venda de fundo de investimento consumindo apenas o primeiro ativo do estoque'() {
         def operacao = obterOperacaoDeVenda()
         def ativosRetornados = obterListaAtivosRetornados()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo)).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
@@ -84,7 +86,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'venda de fundo de investimento consumindo os dois primeiros ativos do estoque'() {
         def operacao = obterOperacaoDeVenda150Unidades()
         def ativosRetornados = obterListaAtivosRetornados()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo)).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
@@ -207,6 +209,7 @@ class FundoInvestimentosServiceComponentTest {
     private Operacao obterOperacaoDeVenda() {
         new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
+                notaInvestimento: new NotaInvestimento(regimeResgate: RegimeResgateEnum.fifo),
                 ativo: Ativo.getInstanceWithAtributeMap(
                         qtde: 200.00000000,
                         valorTotalInvestido: 3500,
@@ -221,6 +224,7 @@ class FundoInvestimentosServiceComponentTest {
     private Operacao obterOperacaoDeVenda150Unidades() {
         new Operacao(
                 tipoOperacao: TipoOperacaoEnum.v,
+                notaInvestimento: new NotaInvestimento(regimeResgate: RegimeResgateEnum.fifo),
                 ativo: Ativo.getInstanceWithAtributeMap(
                         qtde: 200.00000000,
                         valorTotalInvestido: 3500,
@@ -235,6 +239,7 @@ class FundoInvestimentosServiceComponentTest {
     private Operacao obterOperacaoDeCompra() {
         new Operacao(
                 tipoOperacao: TipoOperacaoEnum.c,
+                notaInvestimento: new NotaInvestimento(regimeResgate: RegimeResgateEnum.fifo),
                 ativo: Ativo.getInstanceWithAtributeMap(
                         qtde: 2000,
                         valorTotalInvestido: 30000,

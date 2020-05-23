@@ -104,12 +104,12 @@ class OperacaoService {
         def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
 
         def notaInvestimento = fundosInvestimentosComponentService.obterDadosNotaInvestimento(linhasArquivo)
-        def idNotaInvestimento = notaInvestimentoRepository.incluir(notaInvestimento)
+        notaInvestimento.id = notaInvestimentoRepository.incluir(notaInvestimento)
         def dataOperacao = notaInvestimento.dataMovimentacao
         println 'Iniciando processamento das operações da nota'
 
-        linhasArquivo.subList(5, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
-            fundosInvestimentosComponentService.incluiOperacao(linha, numeroLinha, idNotaInvestimento, dataOperacao)
+        linhasArquivo.subList(6, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+            fundosInvestimentosComponentService.incluiOperacao(linha, numeroLinha, notaInvestimento, dataOperacao)
         }
         println "Concluído o processamento das operações"
     }

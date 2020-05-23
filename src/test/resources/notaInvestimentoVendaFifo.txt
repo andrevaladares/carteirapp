@@ -1,8 +1,8 @@
 Dados da nota					
-Data da movimentação	20/12/2019
+Data da movimentação	27/02/2020
 CNPJ corretora	02332886000104
 Nome corretora	XP
 Regime resgate	fifo
 Dados das operações
 tipo	cnpj fundo	nome fundo	Valor operação	Qtde cotas	Valor da cota
-c	3319016000150	VOTORANTIM FIC DE FI CAMBIAL DÓLAR	3000,00	936,9351	3,20192940300
+v	3319016000150	VOTORANTIM FIC DE FI CAMBIAL DÓLAR	1600,00	414,0000	3,86473429900

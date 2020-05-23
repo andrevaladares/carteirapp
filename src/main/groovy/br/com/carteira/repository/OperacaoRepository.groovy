@@ -28,7 +28,7 @@ class OperacaoRepository {
                     valor_total_operacao, custo_medio_operacao, resultado_venda, data, nota_investimento)
                 values ($operacao.idNotaNegociacao, ${operacao.tipoOperacao as String}, $operacao.ativo.id, 
                     $operacao.qtde, $operacao.valorTotalOperacao, $operacao.custoMedioOperacao, $operacao.resultadoVenda,
-                    $operacao.data, $operacao.idNotaInvestimento)
+                    $operacao.data, ${operacao.notaInvestimento?.id})
             """
 
         Connection conn = DataSourceUtils.getConnection(dataSource)
@@ -58,7 +58,9 @@ class OperacaoRepository {
 
     List<GroovyRowResult> getByDataOperacaoCnpjFundo(LocalDate dataOperacao, String cnpjFundo) {
         def query = """
-            select * from operacao o inner join ativo a on a.id =  o.ativo
+            select o.tipo_operacao, o.ativo, o.qtde, o.valor_total_operacao,
+                o.custo_medio_operacao, o.resultado_venda 
+            from operacao o inner join ativo a on a.id =  o.ativo
             where a.cnpj_fundo = $cnpjFundo and o.data = $dataOperacao
         """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)

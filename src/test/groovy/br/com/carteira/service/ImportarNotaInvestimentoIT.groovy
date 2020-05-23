@@ -42,7 +42,7 @@ class ImportarNotaInvestimentoIT {
         assert notaInvestimentoGravada.cnpjCorretora == '02332886000104'
         assert notaInvestimentoGravada.nomeCorretora == 'XP'
 
-        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150')
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150', 'asc')
 
         def dataOperacoes = LocalDate.of(2019, 12, 20)
         //Saldos dos títulos determinados corretamente
@@ -65,7 +65,7 @@ class ImportarNotaInvestimentoIT {
 
         operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
 
-        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150')
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150', 'asc')
 
         def dataOperacoes = LocalDate.of(2020, 2, 27)
         //Saldos dos títulos determinados corretamente
@@ -76,6 +76,62 @@ class ImportarNotaInvestimentoIT {
         List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
         def operacaoCompra = operacoesFundoCambial.find {it['tipo_operacao'] == 'v'}
         assert operacaoCompra['valor_total_operacao'] == new BigDecimal('800.00')
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql"])
+    void "realiza corretamente operacao de venda de fundo lifo"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoVendaLifo.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150', 'desc')
+
+        def dataOperacoes = LocalDate.of(2020, 2, 27)
+        //Saldos dos títulos determinados corretamente. A lista não contem o último título, que teve o valor zerado
+        assert fundoCambialList[0].qtde == 286
+        assert fundoCambialList[0].valorTotalInvestido == 858
+        assert fundoCambialList[1].qtde == 936.9351
+        assert fundoCambialList[1].valorTotalInvestido == 3000
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
+        assert operacoesFundoCambial[0]['qtde'] == new BigDecimal('114')
+        assert operacoesFundoCambial[0]['valor_total_operacao'] == new BigDecimal('440.58')
+        assert operacoesFundoCambial[0]['custo_medio_operacao'] == new BigDecimal('3')
+        assert operacoesFundoCambial[0]['resultado_venda'] == new BigDecimal('98.58')
+        assert operacoesFundoCambial[1]['qtde'] == new BigDecimal('300')
+        assert operacoesFundoCambial[1]['valor_total_operacao'] == new BigDecimal('1159.42')
+        assert operacoesFundoCambial[1]['custo_medio_operacao'] == new BigDecimal('3.5')
+        assert operacoesFundoCambial[1]['resultado_venda'] == new BigDecimal('109.42')
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql"])
+    void "realiza corretamente operacao de venda de fundo fifo"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoVendaFifo.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def fundoCambialList = ativoRepository.getAllByCnpjFundo('3319016000150', 'asc')
+
+        def dataOperacoes = LocalDate.of(2020, 2, 27)
+        //Saldos dos títulos determinados corretamente. A lista não contem o último título, que teve o valor zerado
+        assert fundoCambialList[0].qtde == 522.9351
+        assert fundoCambialList[0].valorTotalInvestido == 1674.40
+        assert fundoCambialList[1].qtde == 400
+        assert fundoCambialList[1].valorTotalInvestido == 1200
+        assert fundoCambialList[2].qtde == 300
+        assert fundoCambialList[2].valorTotalInvestido == 1050
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
+        assert operacoesFundoCambial[0]['qtde'] == new BigDecimal('414')
+        assert operacoesFundoCambial[0]['valor_total_operacao'] == new BigDecimal('1600')
+        assert operacoesFundoCambial[0]['custo_medio_operacao'] == new BigDecimal('3.20192935')
+        assert operacoesFundoCambial[0]['resultado_venda'] == new BigDecimal('274.40')
     }
 
 }

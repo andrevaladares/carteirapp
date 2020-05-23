@@ -26,9 +26,9 @@ class NotaInvestimentoRepository {
         def keys
         def insertSql = """
                 insert into nota_investimento (data_movimentacao, cnpj_corretora, 
-                nome_corretora)
+                nome_corretora, regime_resgate)
                 values ($notaInvestimento.dataMovimentacao, $notaInvestimento.cnpjCorretora, 
-                        $notaInvestimento.nomeCorretora)
+                        $notaInvestimento.nomeCorretora, ${notaInvestimento.regimeResgate as String})
             """
 
         Connection conn = DataSourceUtils.getConnection(dataSource)
@@ -55,7 +55,8 @@ class NotaInvestimentoRepository {
                     id: notaInvestimentoGroovyRow['id'],
                     dataMovimentacao: ((Date) notaInvestimentoGroovyRow['data_movimentacao']).toLocalDate(),
                     cnpjCorretora: notaInvestimentoGroovyRow['cnpj_corretora'],
-                    nomeCorretora: notaInvestimentoGroovyRow['nome_corretora']
+                    nomeCorretora: notaInvestimentoGroovyRow['nome_corretora'],
+                    regimeResgate: notaInvestimentoGroovyRow['regime_resgate']
             )
         }
         notaInvestimento

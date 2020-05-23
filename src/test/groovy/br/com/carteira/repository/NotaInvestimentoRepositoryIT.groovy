@@ -1,6 +1,7 @@
 package br.com.carteira.repository
 
 import br.com.carteira.entity.NotaInvestimento
+import br.com.carteira.entity.RegimeResgateEnum
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +23,8 @@ class NotaInvestimentoRepositoryIT {
         def notaInvestimento = new NotaInvestimento(
                 dataMovimentacao: LocalDate.of(2020, 4, 20),
                 cnpjCorretora: '05217065000107',
-                nomeCorretora: 'XP'
+                nomeCorretora: 'XP',
+                regimeResgate: RegimeResgateEnum.fifo
         )
 
         def id = notaInvestimentoRepository.incluir(notaInvestimento)

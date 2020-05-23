@@ -4,6 +4,7 @@ import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.NotaInvestimento
 import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.OperacaoComeCotasDTO
+import br.com.carteira.entity.RegimeResgateEnum
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.ArquivoInvalidoException
@@ -28,7 +29,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
         this.operacaoRepository = operacaoRepository
     }
 
-    void incluiOperacao(String[] linhaArquivo, int numeroLinha, long idNotaInvestimento, LocalDate dataOperacao) {
+    void incluiOperacao(String[] linhaArquivo, int numeroLinha, NotaInvestimento notaInvestimento, LocalDate dataOperacao) {
         def operacao
 
         if (numeroLinha == 0) {
@@ -40,7 +41,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             def custoMedioOperacao = valorTotalOperacao.divide(qtde, 8, RoundingMode.HALF_UP)
             operacao = new Operacao(
                     data: dataOperacao,
-                    idNotaInvestimento: idNotaInvestimento,
+                    notaInvestimento: notaInvestimento,
                     tipoOperacao: linhaArquivo[0],
                     ativo: Ativo.getInstanceWithAtributeMap(
                             nome: linhaArquivo[2],
@@ -72,7 +73,8 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             operacoesGeradas << operacaoRepository.incluir(operacao)
         }
         else {
-            def ativos = ativoRepository.getAllByCnpjFundo(operacao.ativo.cnpjFundo)
+            def ordenacao = operacao.notaInvestimento.regimeResgate == RegimeResgateEnum.fifo ? 'asc' : 'desc'
+            def ativos = ativoRepository.getAllByCnpjFundo(operacao.ativo.cnpjFundo, ordenacao)
             if (ativos.isEmpty()) {
                 //Tentando vender sem estoque. Não pode haver short
                 throw new OperacaoInvalidaException("operação inválida. Não pode haver um short de fundo de investimento. CNPJ do fundo: $operacao.ativo.cnpjFundo")
@@ -115,7 +117,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
 
         for (Ativo ativo:ativos){
             def novaOperacao = new Operacao(
-                    idNotaInvestimento: operacao.idNotaInvestimento,
+                    notaInvestimento: operacao.notaInvestimento,
                     tipoOperacao: operacao.tipoOperacao,
                     data: operacao.data,
                     ativo: ativo,
@@ -152,7 +154,8 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
         new NotaInvestimento(
                 dataMovimentacao: LocalDate.parse(linhasArquivoNota[1][1], dateFormatter),
                 cnpjCorretora: linhasArquivoNota[2][1],
-                nomeCorretora: linhasArquivoNota[3][1]
+                nomeCorretora: linhasArquivoNota[3][1],
+                regimeResgate: linhasArquivoNota[4][1]
         )
     }
 

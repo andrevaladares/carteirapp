@@ -61,7 +61,7 @@ class AtivoRepository {
      * @return lista dos ativos que correspondem ao cnpj informado com quantidade maior que zero ordenados por data de entrada
      */
     List<Ativo> getAllByCnpjFundo(String cnpjFundo, String ordenacao) {
-        def query = "select * from ativo where cnpj_fundo = :cnpjFundo order by data_entrada ${Sql.expand(ordenacao)} and qtde > 0"
+        def query = "select * from ativo where cnpj_fundo = :cnpjFundo and qtde > 0 order by data_entrada $ordenacao"
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['cnpjFundo': cnpjFundo], query)
 
         return resultado.collect({fromAtivoGroovyRow(it)})
