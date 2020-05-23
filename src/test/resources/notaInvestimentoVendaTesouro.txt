@@ -1,0 +1,8 @@
+Dados da nota
+Data da movimentação	25/12/2019
+CNPJ corretora	2332886000104
+Nome corretora	XP
+Regime resgate	fifo
+Dados das operações
+tipo	cnpj fundo	nome fundo	Valor operação	Qtde cotas	Valor da cota
+v		Tesouro IPCA+ com Juros Semestrais 2050	19000,00	4,10000	4859,33503836317

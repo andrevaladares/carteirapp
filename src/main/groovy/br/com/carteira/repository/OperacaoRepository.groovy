@@ -65,4 +65,14 @@ class OperacaoRepository {
         """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
     }
+
+    List<GroovyRowResult> getByDataOperacaoNomeAtivo(LocalDate dataOperacao, String nomeAtivo) {
+        def query = """
+            select o.tipo_operacao, o.ativo, o.qtde, o.valor_total_operacao,
+                o.custo_medio_operacao, o.resultado_venda 
+            from operacao o inner join ativo a on a.id =  o.ativo
+            where a.nome = $nomeAtivo and o.data = $dataOperacao
+        """
+        new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)
+    }
 }

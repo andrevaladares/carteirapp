@@ -53,7 +53,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'nao pode vender mais que a quantidade total do ativo' () {
         def operacao = obterOperacaoDeVenda()
         def ativosRetornados = obterListaAtivos10Unidades()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
         try {
             fundoInvestimentoServiceComponent.incluir(operacao)
             Assert.fail()
@@ -67,7 +67,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'venda de fundo de investimento consumindo apenas o primeiro ativo do estoque'() {
         def operacao = obterOperacaoDeVenda()
         def ativosRetornados = obterListaAtivosRetornados()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
@@ -86,7 +86,7 @@ class FundoInvestimentosServiceComponentTest {
     void 'venda de fundo de investimento consumindo os dois primeiros ativos do estoque'() {
         def operacao = obterOperacaoDeVenda150Unidades()
         def ativosRetornados = obterListaAtivosRetornados()
-        Mockito.when(ativoRepositoryMock.getAllByCnpjFundo(operacao.ativo.cnpjFundo, 'asc')).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 

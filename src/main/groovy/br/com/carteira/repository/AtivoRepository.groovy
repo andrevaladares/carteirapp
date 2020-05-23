@@ -2,6 +2,7 @@ package br.com.carteira.repository
 
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
+import br.com.carteira.exception.CunsultaInvalidaException
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,6 +64,38 @@ class AtivoRepository {
     List<Ativo> getAllByCnpjFundo(String cnpjFundo, String ordenacao) {
         def query = "select * from ativo where cnpj_fundo = :cnpjFundo and qtde > 0 order by data_entrada $ordenacao"
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['cnpjFundo': cnpjFundo], query)
+
+        return resultado.collect({fromAtivoGroovyRow(it)})
+    }
+
+    /**
+     * Retorna todas as ocorrências do ativo cujos campos ticker,
+     * cnpj fundo ou nome coincidam com o exemplo e com quantidade maior que 0
+     *
+     * @param ativoExemplo o ativo com as informações de critério preenchidas
+     * @param ordenacao do resultado
+     * @return lista dos ativos cujo ticker, cnpjFundo ou nome coincidam com o exemplo
+     */
+    List<Ativo> getAllByAtivoExample(Ativo ativoExemplo, String ordenacao) {
+        StringBuilder queryStrBuilder = new StringBuilder("select * from ativo where ")
+        def paramsMap = []
+        if(ativoExemplo.ticker) {
+            queryStrBuilder.append("ticker = :ticker")
+            paramsMap << ['ticker': ativoExemplo.ticker]
+        }
+        else if(ativoExemplo.cnpjFundo) {
+            queryStrBuilder.append("cnpj_fundo = :cnpjFundo")
+            paramsMap << ['cnpjFundo': ativoExemplo.cnpjFundo]
+        }
+        else if(ativoExemplo.nome) {
+            queryStrBuilder.append("nome = :nome")
+            paramsMap << ['nome': ativoExemplo.nome]
+        }
+        else {
+            throw new CunsultaInvalidaException("ao menos um dos critérios precisa ser informado (ticker, cnpjFundo ou nome")
+        }
+        queryStrBuilder.append(" and qtde > 0 order by data_entrada $ordenacao")
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(queryStrBuilder.toString(), paramsMap)
 
         return resultado.collect({fromAtivoGroovyRow(it)})
     }

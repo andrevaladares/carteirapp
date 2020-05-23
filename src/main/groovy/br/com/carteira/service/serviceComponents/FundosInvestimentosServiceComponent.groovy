@@ -39,14 +39,23 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             def qtde = new BigDecimal(linhaArquivo[4].replace(",", "."))
             def valorTotalOperacao = new BigDecimal(linhaArquivo[3].replace(",", "."))
             def custoMedioOperacao = valorTotalOperacao.divide(qtde, 8, RoundingMode.HALF_UP)
+            def cnpjFundo = linhaArquivo[1]
+            def tipoAtivo
+            if(cnpjFundo){
+                tipoAtivo = TipoAtivoEnum.fiv
+            }
+            else {
+                tipoAtivo = TipoAtivoEnum.tis
+                cnpjFundo = null
+            }
             operacao = new Operacao(
                     data: dataOperacao,
                     notaInvestimento: notaInvestimento,
                     tipoOperacao: linhaArquivo[0],
                     ativo: Ativo.getInstanceWithAtributeMap(
                             nome: linhaArquivo[2],
-                            tipo: TipoAtivoEnum.fiv,
-                            cnpjFundo: linhaArquivo[1]
+                            tipo: tipoAtivo,
+                            cnpjFundo: cnpjFundo
                     ),
                     qtde: qtde,
                     valorTotalOperacao: valorTotalOperacao,
@@ -74,7 +83,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
         }
         else {
             def ordenacao = operacao.notaInvestimento.regimeResgate == RegimeResgateEnum.fifo ? 'asc' : 'desc'
-            def ativos = ativoRepository.getAllByCnpjFundo(operacao.ativo.cnpjFundo, ordenacao)
+            def ativos = ativoRepository.getAllByAtivoExample(operacao.ativo, ordenacao)
             if (ativos.isEmpty()) {
                 //Tentando vender sem estoque. Não pode haver short
                 throw new OperacaoInvalidaException("operação inválida. Não pode haver um short de fundo de investimento. CNPJ do fundo: $operacao.ativo.cnpjFundo")

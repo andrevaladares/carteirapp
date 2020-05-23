@@ -1,5 +1,6 @@
 package br.com.carteira.service
 
+import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.repository.AtivoRepository
 import br.com.carteira.repository.NotaInvestimentoRepository
@@ -132,6 +133,64 @@ class ImportarNotaInvestimentoIT {
         assert operacoesFundoCambial[0]['valor_total_operacao'] == new BigDecimal('1600')
         assert operacoesFundoCambial[0]['custo_medio_operacao'] == new BigDecimal('3.20192935')
         assert operacoesFundoCambial[0]['resultado_venda'] == new BigDecimal('274.40')
+    }
+
+    @Test
+    void "realiza corretamente compra de tesouro direto"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoTesouro.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def ativoExemplo = Ativo.getInstanceWithAtributeMap(
+                nome: 'Tesouro IPCA+ com Juros Semestrais 2050'
+        )
+
+        def listOfAtivos = ativoRepository.getAllByAtivoExample(ativoExemplo, 'asc')
+
+        def dataOperacoes = LocalDate.of(2019, 12, 20)
+        //Saldos dos títulos determinados corretamente. A lista não contem o último título, que teve o valor zerado
+        assert listOfAtivos.size() == 1
+        assert listOfAtivos[0].qtde == 3.91
+        assert listOfAtivos[0].valorTotalInvestido == 18873.10
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoes = operacaoRepository.getByDataOperacaoNomeAtivo(dataOperacoes, 'Tesouro IPCA+ com Juros Semestrais 2050')
+        assert operacoes[0]['qtde'] == 3.91
+        assert operacoes[0]['valor_total_operacao'] == 18873.10
+        assert operacoes[0]['custo_medio_operacao'] == 4826.87979540
+        assert operacoes[0]['resultado_venda'] == null
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroFifo.sql"])
+    void "realiza corretamente venda de tesouro direto fifo"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoVendaTesouro.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def ativoExemplo = Ativo.getInstanceWithAtributeMap(nome: 'Tesouro IPCA+ com Juros Semestrais 2050')
+
+        def listOfAtivos = ativoRepository.getAllByAtivoExample(ativoExemplo, 'asc')
+
+        def dataOperacoes = LocalDate.of(2019, 12, 25)
+        //Saldos dos títulos determinados corretamente. A lista não contem o último título, que teve o valor zerado
+        assert listOfAtivos.size() == 1
+        assert listOfAtivos[0].qtde == 1.3351
+        assert listOfAtivos[0].valorTotalInvestido == 1068.08
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoes = operacaoRepository.getByDataOperacaoNomeAtivo(dataOperacoes, 'Tesouro IPCA+ com Juros Semestrais 2050')
+        assert operacoes.size() == 2
+        assert operacoes[0]['qtde'] == 3.9351
+        assert operacoes[0]['valor_total_operacao'] == 18235.83
+        assert operacoes[0]['custo_medio_operacao'] == 1524.73888847
+        assert operacoes[0]['resultado_venda'] == 12235.83
+        assert operacoes[1]['qtde'] == 0.1649
+        assert operacoes[1]['valor_total_operacao'] == 764.17
+        assert operacoes[1]['custo_medio_operacao'] == 800
+        assert operacoes[1]['resultado_venda'] == 632.25
     }
 
 }
