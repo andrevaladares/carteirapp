@@ -1,6 +1,7 @@
 package br.com.carteira.entity
 
 import br.com.carteira.exception.AtivoInvalidoException
+import br.com.carteira.exception.OperacaoInvalidaException
 import org.apache.commons.lang3.StringUtils
 
 class OperacoesFundoInvestimento implements OperacoesAtivo {
@@ -20,10 +21,22 @@ class OperacoesFundoInvestimento implements OperacoesAtivo {
     }
 
     GString obterQueryUpdate(Ativo ativo) {
-        """update ativo set nome = $ativo.nome, tipo = ${ativo.tipo as String},
+        def query =  """update ativo set nome = $ativo.nome, tipo = ${ativo.tipo as String},
             setor = $ativo.setor, qtde = $ativo.qtde, valor_total_investido = $ativo.valorTotalInvestido,
-            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo where cnpj_fundo = $ativo.cnpjFundo
-            and data_entrada = $ativo.dataEntrada 
-        """
+            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo"""
+
+
+        if(ativo.tipo == TipoAtivoEnum.tis) {
+            query += """ where nome = $ativo.nome"""
+        }
+        else if(ativo.tipo == TipoAtivoEnum.fiv){
+            query += """ where cnpj_fundo = $ativo.cnpjFundo"""
+        }
+        else {
+            throw new OperacaoInvalidaException("nesse ponto a operacao de update só pode ocorrer para fundo de investimento ou tyesouro direto")
+        }
+        query += """ and data_entrada = $ativo.dataEntrada and tipo = ${ativo.tipo as String}"""
+
+        query
     }
 }

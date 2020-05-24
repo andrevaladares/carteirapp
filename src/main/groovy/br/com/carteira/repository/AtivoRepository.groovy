@@ -2,7 +2,7 @@ package br.com.carteira.repository
 
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
-import br.com.carteira.exception.CunsultaInvalidaException
+import br.com.carteira.exception.ConsultaInvalidaException
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
@@ -92,7 +92,7 @@ class AtivoRepository {
             paramsMap << ['nome': ativoExemplo.nome]
         }
         else {
-            throw new CunsultaInvalidaException("ao menos um dos critérios precisa ser informado (ticker, cnpjFundo ou nome")
+            throw new ConsultaInvalidaException("ao menos um dos critérios precisa ser informado (ticker, cnpjFundo ou nome")
         }
         queryStrBuilder.append(" and qtde > 0 order by data_entrada $ordenacao")
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(queryStrBuilder.toString(), paramsMap)
