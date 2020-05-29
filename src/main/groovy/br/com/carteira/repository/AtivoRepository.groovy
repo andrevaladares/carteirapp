@@ -54,6 +54,13 @@ class AtivoRepository {
         return fromAtivoGroovyRow(resultado)
     }
 
+    Ativo getByIdentificadorTipo(String tipoAtivoStr, String valorIdentificador) {
+        TipoAtivoEnum tipoAtivo = TipoAtivoEnum.values().find {it.toString() == tipoAtivoStr}
+        def query = "select * from ativo where $tipoAtivo.idNoBanco = :valorIdentificador"
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['valorIdentificador': valorIdentificador], query)
+        return fromAtivoGroovyRow(resultado)
+    }
+
     /**
      * Retorna todas as ocorrências do ativo indicado pelo cnpj cuja quantidade seja maior que zero
      *

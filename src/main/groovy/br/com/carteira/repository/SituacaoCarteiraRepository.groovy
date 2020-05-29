@@ -32,10 +32,14 @@ class SituacaoCarteiraRepository {
         keys[0][0] as Long
     }
 
-    SituacaoCarteira getByTickerDataReferencia(String ticker, LocalDate dataReferencia) {
-        def sql = 'select * from situacao_carteira where ativo = (select id from ativo where ticker = :ticker) and data = :dataReferencia'
+    SituacaoCarteira getByDataReferenciaIdAtivo(Long idAtivo, LocalDate dataReferencia) {
+        def sql = """
+                select * 
+                from situacao_carteira 
+                where ativo = :ativo and data = :dataReferencia
+            """
 
-        def resultado =  new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker.toLowerCase(), 'dataReferencia': dataReferencia], sql)
+        def resultado =  new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ativo': idAtivo, 'dataReferencia': dataReferencia], sql)
 
         situacaoCarteiraFromGroovyRowResult(resultado)
     }

@@ -1,12 +1,18 @@
-Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro
-ALUP11	400	400	28,20	11280,00
-				
-APER3	80	80	26,16	2092,80
-				
-AZUL4	170	170	44,44	7554,80
-				
-BBAS3	200	200	46,86	9372,00
-				
-BPAC11	130	130	67,56	8782,80
-				
-BPAN4	100	100	9,00	9900,00
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+alup11	400	400	28,2	11280,00	a
+
+visc11	80	80	26,16	2092,80	fii
+
+smal11	170	170	44,44	7554,80	fin
+
+oz2	200	200	46,86	9372,00	oz2
+
+05217065000107	130	130	67,56	8782,80	fiv
+
+Tesouro Prefixado com Juros Semestrais 2029	100	100	9	9900,00	tis
+
+DEB LIGHT SERVICOS DE ELETRIC - OUT/2022	100	100	9	9900,00	deb
+
+CRI Direcional - ABR/2021	100	100	9	9900,00	cri
+
+CDB BANCO BMG	100	100	9	9900,00	cdb

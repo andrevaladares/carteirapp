@@ -1,2 +1,2 @@
-Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro
-ALUP11	250	250	28,20	11280,00
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+alup11	250	250	28,2	11280,00	a

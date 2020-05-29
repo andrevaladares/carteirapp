@@ -15,13 +15,13 @@ import java.time.LocalDate
 @Transactional(readOnly = true)
 class SituacaoCarteiraService {
 
-    AtivoRepository tituloRepository
+    AtivoRepository ativoRepository
     SituacaoCarteiraRepository situacaoCarteiraRepository
 
     @Autowired
-    SituacaoCarteiraService(AtivoRepository tituloRepository,
+    SituacaoCarteiraService(AtivoRepository ativoRepository,
                             SituacaoCarteiraRepository situacaoCarteiraRepository) {
-        this.tituloRepository = tituloRepository
+        this.ativoRepository = ativoRepository
         this.situacaoCarteiraRepository = situacaoCarteiraRepository
     }
 
@@ -29,7 +29,7 @@ class SituacaoCarteiraService {
     void importarSituacaoTitulos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia) {
         new File(caminhoArquivo, nomeArquivo)
                 .collect { it -> it.split('\\t') }
-                .findAll { it.length == 5 && it[0] != 'Papel' }
+                .findAll { it.length == 6 && it[0] != 'Papel' }
                 .each { it ->
                     SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia)
                     incluir(situacaoCarteira)
@@ -37,23 +37,23 @@ class SituacaoCarteiraService {
     }
 
     SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia) {
-        def titulo = tituloRepository.getByTicker(linhaArquivo[0])
-        if (titulo == null) {
+        def ativo = ativoRepository.getByIdentificadorTipo(linhaArquivo[5], linhaArquivo[0])
+        if (ativo == null) {
             throw new QuantidadeTituloException("O ativo ${linhaArquivo[0]} não foi encontrado")
         }
         def quantidadeInformadaEmCarteira = Integer.valueOf(linhaArquivo[2])
-        if (titulo.valorTotalInvestido < 0) {
+        if (ativo.valorTotalInvestido < 0) {
             //posicao short
             quantidadeInformadaEmCarteira *= -1
         }
-        if (titulo.qtde != quantidadeInformadaEmCarteira) {
-            throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $titulo.ticker")
+        if (ativo.qtde != quantidadeInformadaEmCarteira) {
+            throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $ativo.ticker")
         }
         new SituacaoCarteira(
                 data: dataReferencia,
-                idAtivo: titulo.id,
+                idAtivo: ativo.id,
                 qtdeDisponivel: quantidadeInformadaEmCarteira,
-                valorInvestido: titulo.valorTotalInvestido,
+                valorInvestido: ativo.valorTotalInvestido,
                 valorAtual: new BigDecimal(linhaArquivo[4].replace(',', '.'))
         )
     }

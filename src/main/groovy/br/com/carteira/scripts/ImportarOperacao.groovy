@@ -100,10 +100,10 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 
 //========= Execute aqui o metodo que deseja
 
-//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraShort31032020.txt', LocalDate.of(2020, 3, 31))
+importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraShort31032020.txt', LocalDate.of(2020, 3, 31))
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,3,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_20200406.2.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_20200406.2.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoXPTesouro_20200319.2.txt')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 11, 29), [
