@@ -1,0 +1,5 @@
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+CRI Direcional - ABR/2021	0	0	668,17566	8686,28	cri
+
+
+DEB LIGHT SERVICOS DE ELETRIC - OUT/2022	0	0	1183,45	16568,29	deb

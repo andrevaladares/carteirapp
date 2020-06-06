@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
-@Sql(scripts = ["classpath:titulos.sql", "classpath:limpaDados.sql"])
+@Sql(scripts = ["classpath:limpaDados.sql", "classpath:titulos.sql"])
 class NotaInvestimentoRepositoryIT {
     @Autowired
     NotaInvestimentoRepository notaInvestimentoRepository

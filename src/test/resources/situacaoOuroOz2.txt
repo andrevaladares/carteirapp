@@ -1,0 +1,2 @@
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+oz2	240	24	292	70000	oz2

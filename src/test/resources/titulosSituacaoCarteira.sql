@@ -1,4 +1,3 @@
-delete from ativo;
 insert into ativo (ticker, nome, tipo, setor, qtde, valor_total_investido, data_entrada)
 values ('alup11', 'Alupar', 'a', 'nao_sei', 400, 1000.00, '2020-01-01');
 

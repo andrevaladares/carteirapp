@@ -1,6 +1,7 @@
 package br.com.carteira.service
 
 import br.com.carteira.entity.SituacaoCarteira
+import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.exception.QuantidadeTituloException
 import br.com.carteira.repository.SituacaoCarteiraRepository
 import br.com.carteira.repository.AtivoRepository
@@ -46,13 +47,14 @@ class SituacaoCarteiraService {
             //posicao short
             quantidadeInformadaEmCarteira *= -1
         }
-        if (ativo.qtde != quantidadeInformadaEmCarteira) {
+        def tipoEhDebCri = ativo.tipo in [TipoAtivoEnum.cri, TipoAtivoEnum.deb]
+        if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCri) {
             throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $ativo.ticker")
         }
         new SituacaoCarteira(
                 data: dataReferencia,
                 idAtivo: ativo.id,
-                qtdeDisponivel: quantidadeInformadaEmCarteira,
+                qtdeDisponivel: ativo.qtde,
                 valorInvestido: ativo.valorTotalInvestido,
                 valorAtual: new BigDecimal(linhaArquivo[4].replace(',', '.'))
         )

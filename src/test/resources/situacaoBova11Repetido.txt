@@ -1,0 +1,4 @@
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+bova11	900	900	1,33	-1200	fin
+
+bova11	200	170	2,50	-500	fin

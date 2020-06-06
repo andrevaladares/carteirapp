@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
-@Sql(scripts = ["classpath:titulos.sql"])
+@Sql(scripts = ["classpath:limpaDados.sql", "classpath:titulos.sql"])
 class AtivoRepositoryIT {
     @Autowired
     AtivoRepository ativoRepository
@@ -22,7 +22,7 @@ class AtivoRepositoryIT {
     @Test
     void testListAll() {
         List<Ativo> resultado = ativoRepository.listAll()
-        Assert.assertEquals(1, resultado.size())
+        Assert.assertEquals(3, resultado.size())
         Assert.assertEquals('visc11', resultado[0]['ticker'])
     }
 
