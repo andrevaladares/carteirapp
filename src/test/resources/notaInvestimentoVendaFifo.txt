@@ -4,5 +4,5 @@ CNPJ corretora	02332886000104
 Nome corretora	XP
 Regime resgate	fifo
 Dados das operações
-tipo	cnpj fundo	nome fundo	Valor operação	Qtde cotas	Valor da cota
-v	3319016000150	VOTORANTIM FIC DE FI CAMBIAL DÓLAR	1600,00	414,0000	3,86473429900
+tipo	cnpj fundo	nome ativo	tipo ativo	Valor operação	Qtde cotas	Valor da cota
+v	3319016000150	VOTORANTIM FIC DE FI CAMBIAL DÓLAR	fiv	1600,00	414,000000	3,86473429952

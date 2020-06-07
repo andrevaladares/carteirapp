@@ -36,18 +36,11 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             if (linhaArquivo[0] != 'tipo')
                 throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
         } else {
-            def qtde = new BigDecimal(linhaArquivo[4].replace(",", "."))
-            def valorTotalOperacao = new BigDecimal(linhaArquivo[3].replace(",", "."))
+            def qtde = new BigDecimal(linhaArquivo[5].replace(",", "."))
+            def valorTotalOperacao = new BigDecimal(linhaArquivo[4].replace(",", "."))
             def custoMedioOperacao = valorTotalOperacao.divide(qtde, 8, RoundingMode.HALF_UP)
             def cnpjFundo = linhaArquivo[1]
-            def tipoAtivo
-            if(cnpjFundo){
-                tipoAtivo = TipoAtivoEnum.fiv
-            }
-            else {
-                tipoAtivo = TipoAtivoEnum.tis
-                cnpjFundo = null
-            }
+            def tipoAtivo = linhaArquivo[3]
             operacao = new Operacao(
                     data: dataOperacao,
                     notaInvestimento: notaInvestimento,

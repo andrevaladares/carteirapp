@@ -4,5 +4,5 @@ CNPJ corretora	2332886000104
 Nome corretora	XP
 Regime resgate	fifo
 Dados das operações
-tipo	cnpj fundo	nome fundo	Valor operação	Qtde cotas	Valor da cota
-c		Tesouro IPCA+ com Juros Semestrais 2050	18873,10	3,910000	4826,87979539642
+tipo	cnpj fundo	nome ativo	tipo ativo	Valor operação	Qtde cotas	Valor da cota
+c		Tesouro IPCA+ com Juros Semestrais 2050	tis	18873,10	3,910000	4826,87979539642

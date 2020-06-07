@@ -7,6 +7,8 @@ enum TipoAtivoEnum {
     oz2('ouro oz2', 'br.com.carteira.entity.OperacoesOuroOz2', 'ticker'),
     fiv('fundos de investimento', 'br.com.carteira.entity.OperacoesFundoInvestimento', 'cnpj_fundo'),
     tis('tesouro ipca juros semestrais', 'br.com.carteira.entity.OperacoesFundoInvestimento', 'nome'),
+    tse('tesouro selic', 'br.com.carteira.entity.OperacoesFundoInvestimento', 'nome'),
+    tps('tesouro prefixado com juros semestrais', 'br.com.carteira.entity.OperacoesFundoInvestimento', 'nome'),
     deb('debenture', 'br.com.carteira.entity.OperacoesAtivoComum', 'nome'),
     cri('cri', 'br.com.carteira.entity.OperacoesAtivoComum', 'nome'),
     cdb('cdb', 'br.com.carteira.entity.OperacoesAtivoComum', 'nome')
