@@ -35,7 +35,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
 
         def alupar = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'alup11', tipo: TipoAtivoEnum.a), 'asc')[0]
         def smal11 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'smal11', tipo: TipoAtivoEnum.fin), 'asc')[0]
@@ -48,14 +48,14 @@ class SituacaoCarteiraServiceIT {
         def situacaoVotor = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(votor.id, LocalDate.of(2020, 2, 28))
         def situacaoDebLight = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(debLight.id, LocalDate.of(2020, 2, 28))
 
-        Assert.assertEquals(400, situacaoAlup11.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('11280.00'), situacaoAlup11.valorAtual)
-        Assert.assertEquals(170, situacaoSmal11.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('7554.80'), situacaoSmal11.valorAtual)
-        Assert.assertEquals(130, situacaoVotor.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('8782.80'), situacaoVotor.valorAtual)
-        Assert.assertEquals(100, situacaoDebLight.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('9900.00'), situacaoDebLight.valorAtual)
+        assert situacaoAlup11.qtdeDisponivel == 400
+        assert situacaoAlup11.valorAtual == 11280.00
+        assert situacaoSmal11.qtdeDisponivel == 170
+        assert situacaoSmal11.valorAtual == 7554.80
+        assert situacaoVotor.qtdeDisponivel == 130
+        assert situacaoVotor.valorAtual == 8782.80
+        assert situacaoDebLight.qtdeDisponivel == 100
+        assert situacaoDebLight.valorAtual == 9900.00
     }
 
     @Test
@@ -67,7 +67,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
 
         def bova11 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'bova11', tipo: TipoAtivoEnum.fin), 'asc')[0]
 
@@ -85,7 +85,7 @@ class SituacaoCarteiraServiceIT {
             def dataReferencia = LocalDate.of(2020, 2, 28)
 
             situacaoCarteiraService.
-                    importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+                    importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
             Assert.fail()
         }
         catch (QuantidadeTituloException e) {
@@ -101,14 +101,14 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
 
         def oz2 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'oz2', tipo: TipoAtivoEnum.oz2), 'asc')[0]
 
         def situacaoOz2 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(oz2.id, LocalDate.of(2020, 2, 28))
 
-        Assert.assertEquals(24, situacaoOz2.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('70000.00'), situacaoOz2.valorAtual)
+        assert situacaoOz2.qtdeDisponivel == 24
+        assert situacaoOz2.valorAtual == 70000.00
     }
 
     @Test
@@ -119,7 +119,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoTitulos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
 
         def cri = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'CRI Direcional - ABR/2021', tipo: TipoAtivoEnum.cri), 'asc')[0]
         def deb = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'DEB LIGHT SERVICOS DE ELETRIC - OUT/2022', tipo: TipoAtivoEnum.deb), 'asc')[0]
@@ -127,10 +127,34 @@ class SituacaoCarteiraServiceIT {
         def situacaoCri = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(cri.id, LocalDate.of(2020, 2, 28))
         def situacaoDeb = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(deb.id, LocalDate.of(2020, 2, 28))
 
-        Assert.assertEquals(1500, situacaoCri.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('8686.28'), situacaoCri.valorAtual)
-        Assert.assertEquals(1200, situacaoDeb.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('16568.29'), situacaoDeb.valorAtual)
+        assert  situacaoCri.qtdeDisponivel == 1500
+        assert situacaoCri.valorAtual == 8686.28
+        assert situacaoDeb.qtdeDisponivel == 1200
+        assert situacaoDeb.valorAtual == 16568.29
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosTesouroSelic.sql"])
+    void 'grava corretamente a situacao tesouro selic'(){
+        def nomeArquivo = 'situacaoTesouroSelic.txt'
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def dataReferencia = LocalDate.of(2020, 2, 28)
+
+        situacaoCarteiraService.
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+
+        def ativos = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'Tesouro Selic 2025'), 'asc')
+
+        def situacaoSelic1603 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[0].id, LocalDate.of(2020, 2, 28))
+        def situacaoSelic1803 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[1].id, LocalDate.of(2020, 2, 28))
+        def situacaoSelic2403 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[2].id, LocalDate.of(2020, 2, 28))
+
+        assert situacaoSelic1603.qtdeDisponivel == 0.86000000
+        assert situacaoSelic1603.valorAtual == 10634.79
+        assert situacaoSelic1803.qtdeDisponivel == 6.63000000
+        assert situacaoSelic1803.valorAtual == 81986.81
+        assert situacaoSelic2403.qtdeDisponivel == 4.64000000
+        assert situacaoSelic2403.valorAtual == 57378.40
     }
 
 }

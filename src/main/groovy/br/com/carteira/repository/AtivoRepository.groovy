@@ -54,11 +54,12 @@ class AtivoRepository {
         return fromAtivoGroovyRow(resultado)
     }
 
-    Ativo getByIdentificadorTipo(String tipoAtivoStr, String valorIdentificador) {
+    List<Ativo> getAllByIdentificadorTipo(String tipoAtivoStr, String valorIdentificador) {
         TipoAtivoEnum tipoAtivo = TipoAtivoEnum.values().find {it.toString() == tipoAtivoStr}
         def query = "select * from ativo where $tipoAtivo.idNoBanco = :valorIdentificador"
-        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['valorIdentificador': valorIdentificador], query)
-        return fromAtivoGroovyRow(resultado)
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['valorIdentificador': valorIdentificador], query)
+
+        resultado.collect {it -> fromAtivoGroovyRow(it as GroovyRowResult)}
     }
 
     /**

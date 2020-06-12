@@ -6,7 +6,7 @@ class SituacaoCarteira {
     Long id
     LocalDate data
     Long idAtivo
-    Integer qtdeDisponivel
+    BigDecimal qtdeDisponivel
     BigDecimal valorInvestido
     BigDecimal valorAtual
 

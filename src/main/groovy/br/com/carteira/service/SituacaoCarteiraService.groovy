@@ -1,5 +1,6 @@
 package br.com.carteira.service
 
+import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.SituacaoCarteira
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.exception.QuantidadeTituloException
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import java.math.RoundingMode
 import java.time.LocalDate
 
 @Service
@@ -27,36 +29,46 @@ class SituacaoCarteiraService {
     }
 
     @Transactional
-    void importarSituacaoTitulos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia) {
+    void importarSituacaoAtivos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia) {
         new File(caminhoArquivo, nomeArquivo)
                 .collect { it -> it.split('\\t') }
                 .findAll { it.length == 6 && it[0] != 'Papel' }
                 .each { it ->
-                    SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia)
-                    incluir(situacaoCarteira)
+                    def ativos = ativoRepository.getAllByIdentificadorTipo(it[5], it[0])
+                    ativos.each {ativo ->
+                        SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia, ativo)
+                        incluir(situacaoCarteira)
+
+                    }
                 }
     }
 
-    SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia) {
-        def ativo = ativoRepository.getByIdentificadorTipo(linhaArquivo[5], linhaArquivo[0])
+    SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia, Ativo ativo) {
         if (ativo == null) {
             throw new QuantidadeTituloException("O ativo ${linhaArquivo[0]} não foi encontrado")
         }
-        def quantidadeInformadaEmCarteira = Integer.valueOf(linhaArquivo[2])
+        def quantidadeInformadaEmCarteira = new BigDecimal(linhaArquivo[2].replace(',', '.'))
+
         if (ativo.valorTotalInvestido < 0) {
             //posicao short
             quantidadeInformadaEmCarteira *= -1
         }
-        def tipoEhDebCri = ativo.tipo in [TipoAtivoEnum.cri, TipoAtivoEnum.deb]
-        if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCri) {
+        def tipoEhDebCriTesouro = ativo.tipo in TipoAtivoEnum.getDebCriTesouro()
+        if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCriTesouro) {
             throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $ativo.ticker")
         }
+        def tipoEhTesouro = ativo.tipo in TipoAtivoEnum.getTesouro()
+        def valorAtual = new BigDecimal(linhaArquivo[4].replace(',', '.'))
+        if(tipoEhTesouro) {
+            valorAtual = valorAtual / quantidadeInformadaEmCarteira * ativo.qtde
+        }
+
         new SituacaoCarteira(
                 data: dataReferencia,
                 idAtivo: ativo.id,
                 qtdeDisponivel: ativo.qtde,
                 valorInvestido: ativo.valorTotalInvestido,
-                valorAtual: new BigDecimal(linhaArquivo[4].replace(',', '.'))
+                valorAtual: valorAtual
         )
     }
 

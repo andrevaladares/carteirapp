@@ -1,0 +1,2 @@
+Papel	Qtd Disponível	Qtd Total	Última Cotação	Financeiro	Tipo Ativo
+Tesouro Selic 2025	12,13	12,13	12366,03462	150000,00	tse

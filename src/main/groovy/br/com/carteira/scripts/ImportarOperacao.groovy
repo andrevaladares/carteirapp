@@ -1,7 +1,6 @@
 package br.com.carteira.scripts
 
 import br.com.carteira.entity.OperacaoComeCotasDTO
-import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
 import org.springframework.beans.factory.annotation.Autowired
@@ -67,7 +66,7 @@ class ImportarDados {
         println 'Iniciando importação de situacao da carteira'
         println '==============='
 
-        situacaoCarteiraService.importarSituacaoTitulos(caminho, arquivo, dataReferencia)
+        situacaoCarteiraService.importarSituacaoAtivos(caminho, arquivo, dataReferencia)
 
         println '==============='
         println 'Encerrada importação de situação da carteira'

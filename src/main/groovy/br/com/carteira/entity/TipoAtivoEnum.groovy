@@ -35,4 +35,12 @@ enum TipoAtivoEnum {
         idNoBanco
     }
 
+    static List<TipoAtivoEnum> getDebCriTesouro(){
+        [deb, cri] + getTesouro()
+    }
+
+    static List<TipoAtivoEnum> getTesouro(){
+        [tis,tse,tps]
+    }
+
 }

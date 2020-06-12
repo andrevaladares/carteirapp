@@ -1,0 +1,1 @@
+alter table situacao_carteira modify qtde_disponivel decimal(18,8) not null;
