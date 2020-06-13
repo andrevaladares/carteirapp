@@ -56,7 +56,7 @@ class AtivoRepository {
 
     List<Ativo> getAllByIdentificadorTipo(String tipoAtivoStr, String valorIdentificador) {
         TipoAtivoEnum tipoAtivo = TipoAtivoEnum.values().find {it.toString() == tipoAtivoStr}
-        def query = "select * from ativo where $tipoAtivo.idNoBanco = :valorIdentificador"
+        def query = "select * from ativo where $tipoAtivo.idNoBanco = :valorIdentificador and qtde > 0"
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['valorIdentificador': valorIdentificador], query)
 
         resultado.collect {it -> fromAtivoGroovyRow(it as GroovyRowResult)}
@@ -112,7 +112,7 @@ class AtivoRepository {
         def mapaDatas = montaMapaDatas(datasAplicacoes)
 
         def query = "select * from ativo where cnpj_fundo = :cnpjFundo and data_entrada in (${mapaDatas.keySet().collect{":$it"}.join(',')}) and qtde > 0 order by data_entrada"
-        Map<String, Object> mapaParametros = ['cnpjFundo': cnpjFundo]
+        def mapaParametros = ['cnpjFundo': cnpjFundo]
         mapaParametros.putAll(mapaDatas)
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(query, mapaParametros)
 

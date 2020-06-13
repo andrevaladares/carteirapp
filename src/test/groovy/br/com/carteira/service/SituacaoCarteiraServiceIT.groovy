@@ -73,8 +73,8 @@ class SituacaoCarteiraServiceIT {
 
         def situacaoBova11 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(bova11.id, LocalDate.of(2020, 2, 28))
 
-        Assert.assertEquals(-1100, situacaoBova11.qtdeDisponivel)
-        Assert.assertEquals(new BigDecimal('-1700.00'), situacaoBova11.valorAtual)
+        assert situacaoBova11.qtdeDisponivel == -1100
+        assert situacaoBova11.valorAtual == new BigDecimal('-1700.00')
     }
 
     @Test
@@ -155,6 +155,30 @@ class SituacaoCarteiraServiceIT {
         assert situacaoSelic1803.valorAtual == 81986.81
         assert situacaoSelic2403.qtdeDisponivel == 4.64000000
         assert situacaoSelic2403.valorAtual == 57378.40
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosFundosInvestimento.sql"])
+    void 'grava corretamente a situacao de fundo de investimento'(){
+        def nomeArquivo = 'situacaoFundoInvestimento.txt'
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def dataReferencia = LocalDate.of(2020, 2, 28)
+
+        situacaoCarteiraService.
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+
+        def ativos = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(cnpjFundo: '3319016000150'), 'asc')
+
+        def situacaoFundo1803 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[0].id, LocalDate.of(2020, 2, 28))
+        def situacaoFundo1804 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[1].id, LocalDate.of(2020, 2, 28))
+        def situacaoFundo1506 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(ativos[2].id, LocalDate.of(2020, 2, 28))
+
+        assert situacaoFundo1803.qtdeDisponivel == 3486.1505
+        assert situacaoFundo1803.valorAtual == 16318.01
+        assert situacaoFundo1804.qtdeDisponivel == 4000.0000
+        assert situacaoFundo1804.valorAtual == 18723.24
+        assert situacaoFundo1506.qtdeDisponivel == 2000.0000
+        assert situacaoFundo1506.valorAtual == 9361.62
     }
 
 }

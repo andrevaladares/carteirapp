@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import java.math.RoundingMode
 import java.time.LocalDate
 
 @Service
@@ -53,13 +52,13 @@ class SituacaoCarteiraService {
             //posicao short
             quantidadeInformadaEmCarteira *= -1
         }
-        def tipoEhDebCriTesouro = ativo.tipo in TipoAtivoEnum.getDebCriTesouro()
-        if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCriTesouro) {
+        def tipoEhDebCriTesouroFundo = ativo.tipo in TipoAtivoEnum.getDebCriTesouroFundo()
+        if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCriTesouroFundo) {
             throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $ativo.ticker")
         }
-        def tipoEhTesouro = ativo.tipo in TipoAtivoEnum.getTesouro()
+        def tipoEhTesouroFundo = ativo.tipo in TipoAtivoEnum.getTesouroFundo()
         def valorAtual = new BigDecimal(linhaArquivo[4].replace(',', '.'))
-        if(tipoEhTesouro) {
+        if(tipoEhTesouroFundo) {
             valorAtual = valorAtual / quantidadeInformadaEmCarteira * ativo.qtde
         }
 
@@ -94,7 +93,7 @@ class SituacaoCarteiraService {
         }
     }
 
-    private BigDecimal defineRentabilidade(GroovyRowResult situacaoRowResult) {
+    private String defineRentabilidade(GroovyRowResult situacaoRowResult) {
         def rentabilidade = String.valueOf((situacaoRowResult['valor_atual'] / situacaoRowResult['valor_investido']) - 1).replace('.', ',')
 
         rentabilidade
