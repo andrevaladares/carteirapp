@@ -45,6 +45,8 @@ class SituacaoCarteiraRepository {
     }
 
     SituacaoCarteira situacaoCarteiraFromGroovyRowResult(GroovyRowResult groovyRowResult) {
+        if(!groovyRowResult) return null
+
         new SituacaoCarteira(
                 id: groovyRowResult['id'],
                 data: ((Date)groovyRowResult['data']).toLocalDate(),

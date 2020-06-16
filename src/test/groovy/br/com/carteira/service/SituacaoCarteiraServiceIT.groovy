@@ -62,7 +62,7 @@ class SituacaoCarteiraServiceIT {
     @Sql(scripts = ["classpath:limpaDados.sql", "classpath:titulos.sql"])
     @Ignore
     void 'grava corretamente a situacao com repeticao do fundo de indice'(){
-        def nomeArquivo = 'situacaoBova11Repetido.txt'
+        def nomeArquivo = 'situacaoBova11.txt'
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
@@ -75,6 +75,24 @@ class SituacaoCarteiraServiceIT {
 
         assert situacaoBova11.qtdeDisponivel == -1100
         assert situacaoBova11.valorAtual == new BigDecimal('-1700.00')
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:titulos.sql"])
+    void 'grava corretamente a situacao de fundo indice short'(){
+        def nomeArquivo = 'situacaoBova11.txt'
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def dataReferencia = LocalDate.of(2020, 2, 28)
+
+        situacaoCarteiraService.
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+
+        def bova11 = ativoRepository.getByTicker('bova11')
+
+        def situacaoBova11 = situacaoCarteiraRepository.getByDataReferenciaIdAtivo(bova11.id, LocalDate.of(2020, 2, 28))
+
+        assert situacaoBova11.qtdeDisponivel == -1100
+        assert situacaoBova11.valorAtual == new BigDecimal('-1200.00')
     }
 
     @Test
