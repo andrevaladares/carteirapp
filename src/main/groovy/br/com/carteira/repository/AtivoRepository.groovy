@@ -54,7 +54,7 @@ class AtivoRepository {
         return fromAtivoGroovyRow(resultado)
     }
 
-    List<Ativo> getAllByIdentificadorTipo(String tipoAtivoStr, String valorIdentificador) {
+    List<Ativo> getAllByIdentificadorTipoComSaldo(String tipoAtivoStr, String valorIdentificador) {
         TipoAtivoEnum tipoAtivo = TipoAtivoEnum.values().find {it.toString() == tipoAtivoStr}
         def query = "select * from ativo where $tipoAtivo.idNoBanco = :valorIdentificador and qtde <> 0"
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows(['valorIdentificador': valorIdentificador], query)

@@ -1,6 +1,7 @@
 package br.com.carteira.service
 
 import br.com.carteira.entity.Ativo
+import br.com.carteira.entity.ExportacaoSituacaoDTO
 import br.com.carteira.entity.SituacaoCarteira
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.exception.QuantidadeTituloException
@@ -33,7 +34,7 @@ class SituacaoCarteiraService {
                 .collect { it -> it.split('\\t') }
                 .findAll { it.length == 6 && it[0] != 'Papel' }
                 .each { it ->
-                    def ativos = ativoRepository.getAllByIdentificadorTipo(it[5], it[0])
+                    def ativos = ativoRepository.getAllByIdentificadorTipoComSaldo(it[5], it[0])
                     ativos.each {ativo ->
                         SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia, ativo)
                         incluir(situacaoCarteira)
@@ -80,15 +81,35 @@ class SituacaoCarteiraService {
         def valorTotalAtual = situacaoCarteira.sum({ it -> it['valor_atual'] })
         def nomeArquivo = "situacaoCarteira${dataReferencia}.csv"
 
-        new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter('utf-8') { writer ->
-            writer.writeLine('ativo;tipo;dataEntrada;dataSituacao;qtde;valorInvestido;valorAtual;rentabilidade(%);alocacaoAtual(%)')
-            situacaoCarteira.each { it ->
-                def valorInvestido = String.valueOf(it['valor_investido']).replace('.', ',')
-                def valorAtual = String.valueOf(it['valor_atual']).replace('.', ',')
-                Object rentabilidade = defineRentabilidade(it)
-                def alocacao = String.valueOf(it['valor_atual'] / valorTotalAtual).replace('.', ',')
+        situacaoCarteira = situacaoCarteira.collect {it ->
+            TipoAtivoEnum tipoAtivoEnum = it['tipo']
+            def identificador = tipoAtivoEnum.getIdEmSituacaoCarteira()
+            def valorInvestido = it['valor_investido']
+            def valorAtual = it['valor_atual']
+            def alocacao = it['valor_atual'] / valorTotalAtual
+            new ExportacaoSituacaoDTO(
+                    ativo: it[identificador],
+                    tipo: tipoAtivoEnum,
+                    dataEntrada: it['data_entrada'].toLocalDate(),
+                    dataSituacao: it['data'].toLocalDate(),
+                    qtde: it['qtde_disponivel'],
+                    valorInvestido: valorInvestido,
+                    valorAtual: valorAtual,
+                    alocacaoAtual: alocacao
+            )}.groupBy {it['ativo']}
+                .collectEntries {[(it.key): ['tipo': it.value['tipo'][0],
+                                             'dataEntrada': it.value.min {it['dataEntrada']}['dataEntrada'],
+                                             'dataSituacao': it.value['dataSituacao'][0],
+                                             'qtde': it.value.sum {it['qtde']},
+                                             'valorInvestido': (it.value.sum {it['valorInvestido']} as String).replace('.', ','),
+                                             'valorAtual': (it.value.sum {it['valorAtual']} as String).replace('.', ','),
+                                             'alocacaoAtual': (it.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
+                ]]}
 
-                writer.writeLine("${it['ticker']};${it['tipo']};${it['data_entrada']};${it['data']};${it['qtde_disponivel']};${valorInvestido};${valorAtual};${rentabilidade};${alocacao}")
+        new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter('utf-8') { writer ->
+            writer.writeLine('ativo;tipo;dataEntrada;dataSituacao;qtde;valorInvestido;valorAtual;alocacaoAtual(%)')
+            situacaoCarteira.each { it ->
+                writer.writeLine("${it.key};${it.value.tipo};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorAtual};${it.value.alocacaoAtual}")
             }
         }
     }
