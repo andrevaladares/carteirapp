@@ -46,12 +46,13 @@ class Ativo {
     }
 
     Ativo atualizarAtivoOperacaoComum(Operacao operacao) {
-        if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
+        if (operacao.tipoOperacao in [TipoOperacaoEnum.v, TipoOperacaoEnum.ts]) {
             def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde).setScale(8, RoundingMode.HALF_UP)
             qtde -= operacao.qtde
             valorTotalInvestido -= valorInvestidoEquivalente
 
         } else {
+            //Aqui pode ser um compra ou transferência de entrada
             qtde += operacao.qtde
             valorTotalInvestido += operacao.valorTotalOperacao
         }

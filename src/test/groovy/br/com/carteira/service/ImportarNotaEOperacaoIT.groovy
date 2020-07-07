@@ -127,4 +127,72 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('27.39'), operacaoVenda['resultado_venda'])
     }
 
+    @Test
+    void "importa corretamente nota de negociacao de compra de dolar" () {
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaNegociacaoDolar_teste.txt'
+
+        operacaoService.importarOperacoesNotaNegociacao(caminhoArquivo, nomeArquivo)
+
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+
+        //Dados gerais da nota gravados corretamente
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+
+        def dolar = tituloRepository.getByTicker('us$')
+
+        def dataOperacoes = LocalDate.of(2019, 9, 12)
+        //Saldos dos títulos determinados corretamente
+        assert dolar.dataEntrada == dataOperacoes
+        assert dolar.tipo == TipoAtivoEnum.m
+        assert dolar.qtde == 1178.34
+        assert dolar.valorTotalInvestido == 5000.00
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')
+        def operacaoCompra = operacoesDolar.find {it['tipo_operacao'] == 'c'}
+        assert operacaoCompra['valor_total_operacao'] == new BigDecimal('5000.00')
+    }
+
+    @Test
+    void "importa corretamente nota de negociacao de compra de acao estados unidos" () {
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaNegociacaoAcaoUs_teste.txt'
+
+        operacaoService.importarOperacoesNotaNegociacao(caminhoArquivo, nomeArquivo)
+
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+
+        //Dados gerais da nota gravados corretamente
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+
+        def dolar = tituloRepository.getByTicker('us$')
+
+        def dataOperacoes = LocalDate.of(2019, 9, 12)
+        //Saldos dos títulos determinados corretamente
+        assert dolar.dataEntrada == dataOperacoes
+        assert dolar.tipo == TipoAtivoEnum.m
+        assert dolar.qtde == 1178.34
+        assert dolar.valorTotalInvestido == 5000.00
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoesDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')
+        def operacaoCompra = operacoesDolar.find {it['tipo_operacao'] == 'c'}
+        assert operacaoCompra['valor_total_operacao'] == new BigDecimal('5000.00')
+    }
+
 }

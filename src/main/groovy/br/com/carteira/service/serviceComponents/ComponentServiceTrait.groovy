@@ -27,7 +27,7 @@ trait ComponentServiceTrait {
                             ticker: linhaAberta[1],
                             tipo: linhaAberta[2].toLowerCase() as TipoAtivoEnum
                     ),
-                    qtde: Integer.valueOf(linhaAberta[4]),
+                    qtde: new BigDecimal(linhaAberta[4].replace(',', '.')),
                     valorTotalOperacao: valorTotalOperacao
             )
 
@@ -88,7 +88,7 @@ trait ComponentServiceTrait {
 
     BigDecimal defineValorTotalOperacao(String[] linhaAberta, BigDecimal valorUnitarioTaxas, boolean notaPossuiCompras) {
         def valorTotalOperacao
-        def quantidade = Integer.valueOf(linhaAberta[4])
+        def quantidade = new BigDecimal(linhaAberta[4].replace(',', '.'))
         if (linhaAberta[0] == 'c' || !notaPossuiCompras) {
             //compra sempre adiciona taxas ao valor da operação. Venda em nota que não possui compras também
             valorTotalOperacao = new BigDecimal(linhaAberta[5].replace(',', '.')).add(valorUnitarioTaxas * (quantidade as BigDecimal))

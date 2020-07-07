@@ -12,6 +12,7 @@ import br.com.carteira.repository.NotaNegociacaoRepository
 import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.AtivoRepository
 import br.com.carteira.service.serviceComponents.AtivosEmGeralServiceComponent
+import br.com.carteira.service.serviceComponents.AtivosUsComponentService
 import br.com.carteira.service.serviceComponents.FundosInvestimentosServiceComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -30,6 +31,7 @@ class OperacaoService {
     FundosInvestimentosServiceComponent fundosInvestimentosComponentService
     AtivosEmGeralServiceComponent ativosEmGeralComponentService
     NotaNegociacaoRepository notaNegociacaoRepository
+    AtivosUsComponentService ativosUsComponentService
 
     @Autowired
     OperacaoService(OperacaoRepository operacaoRepository,
@@ -100,6 +102,23 @@ class OperacaoService {
     }
 
     @Transactional
+    void importarOperacoesNotaNegociacaoUs(String caminhoArquivo, String nomeArquivo) {
+        def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
+
+        def notaNegociacao = obterDadosNotaNegociacao(linhasArquivo)
+        def idNotaNegociacao = notaNegociacaoRepository.incluir(notaNegociacao)
+        def dataPregao = linhasArquivo[1][1]
+        println 'Iniciando processamento das operações da nota'
+        def qtdeProcessada = 0
+
+        linhasArquivo.subList(11, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+            ativosUsComponentService.incluiOperacao(linha, numeroLinha, idNotaNegociacao, dataPregao)
+            qtdeProcessada += 1
+        }
+        println "Concluído o processamento de ${qtdeProcessada - 1} operações" //Desconta linha de títulos
+    }
+
+    @Transactional
     void importarOperacoesNotaInvestimento(String caminhoArquivo, String nomeArquivo) {
         def linhasArquivo = new File(caminhoArquivo, nomeArquivo).collect { it -> it.split('\\t') }
 
@@ -133,7 +152,7 @@ class OperacaoService {
                 .findAll { it[0] == 'c' }
         def qtdeParaDivisao
         if (titulosCompra) {
-            qtdeParaDivisao = titulosCompra.sum { it[4] as BigDecimal } as BigDecimal
+            qtdeParaDivisao = titulosCompra.sum { it[4].replace(',', '.') as BigDecimal } as BigDecimal
         } else {
             //Só tem vendas
             qtdeParaDivisao = listaOperacoes

@@ -47,4 +47,5 @@ trait OperacoesAtivo {
             and tipo = ${ativo.tipo as String} 
         """
     }
+
 }
