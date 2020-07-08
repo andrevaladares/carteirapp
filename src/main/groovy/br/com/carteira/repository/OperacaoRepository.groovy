@@ -50,7 +50,8 @@ class OperacaoRepository {
 
     List<GroovyRowResult> getByDataOperacaoTicker(LocalDate dataOperacao, String ticker) {
         def query = """
-            select * from operacao o inner join ativo a on a.id =  o.ativo
+            select o.*
+            from operacao o inner join ativo a on a.id =  o.ativo
             where a.ticker = $ticker and o.data = $dataOperacao
         """
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(query)

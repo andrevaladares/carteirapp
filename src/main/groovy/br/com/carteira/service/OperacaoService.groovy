@@ -39,13 +39,14 @@ class OperacaoService {
                     NotaNegociacaoRepository notaNegociacaoRepository,
                     NotaInvestimentoRepository notaInvestimentoRepository,
                     FundosInvestimentosServiceComponent fundosInvestimentosComponentService,
-                    AtivosEmGeralServiceComponent ativosEmGeralComponentService) {
+                    AtivosEmGeralServiceComponent ativosEmGeralComponentService, AtivosUsComponentService ativosUsComponentService) {
         this.operacaoRepository = operacaoRepository
         this.ativoRepository = ativoRepository
         this.notaNegociacaoRepository = notaNegociacaoRepository
         this.notaInvestimentoRepository = notaInvestimentoRepository
         this.fundosInvestimentosComponentService = fundosInvestimentosComponentService
         this.ativosEmGeralComponentService = ativosEmGeralComponentService
+        this.ativosUsComponentService = ativosUsComponentService
     }
 
     @Transactional

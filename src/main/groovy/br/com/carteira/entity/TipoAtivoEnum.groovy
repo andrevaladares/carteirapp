@@ -2,7 +2,7 @@ package br.com.carteira.entity
 
 enum TipoAtivoEnum {
     a('ações', 'br.com.carteira.entity.OperacoesAtivoComum', 'ticker', 'ticker'),
-    aus('ações estados unidos', 'br.com.carteira.entity.OperacoesDolar', 'ticker', 'ticker'),
+    aus('ações estados unidos', 'br.com.carteira.entity.OperacoesAtivoComum', 'ticker', 'ticker'),
     m('moeda', 'br.com.carteira.entity.OperacoesAtivoComum', 'ticker', 'ticker'),
     fii('fundos imobiliários', 'br.com.carteira.entity.OperacoesAtivoComum', 'ticker', 'ticker'),
     fin('fundos de índice', 'br.com.carteira.entity.OperacoesAtivoComum', 'ticker', 'ticker'),

@@ -10,10 +10,12 @@ import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.repository.AtivoRepository
 import br.com.carteira.repository.OperacaoRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@Component
 class AtivosUsComponentService implements ComponentServiceTrait{
 
     AtivoRepository ativoRepository
