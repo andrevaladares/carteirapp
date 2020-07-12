@@ -95,10 +95,6 @@ class AtivosUsComponentService implements ComponentServiceTrait{
         //Operacao com a acao
         def ativo = ativoRepository.getByTicker(operacaoOriginal.ativo.ticker.toLowerCase())
         Operacao operacaoAcao = operacaoOriginal
-        if(operacaoAcao.tipoOperacao == TipoOperacaoEnum.c) {
-            // se for venda o valor total em reais já veio baseado no dolar
-            operacaoAcao.valorTotalOperacao = operacaoDolar.valorTotalOperacao //O valor em dolares já veio da nota de negociacao
-        }
         if (ativo != null) {
             operacaoAcao.ativo = ativo
             operacaoAcao = complementarOperacao(operacaoAcao)[0] //Essa linha sempre gerará apenas uma operação

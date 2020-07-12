@@ -196,6 +196,7 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
         Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
         Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+        Assert.assertEquals(new BigDecimal('4.50'), notaNegociacaoGravada.valorDolarNaData)
 
         def dolar = ativoRepository.getByTicker('us$')
         def acaoXP = ativoRepository.getByTicker('xp')
@@ -207,7 +208,7 @@ class ImportarNotaEOperacaoIT {
         assert dolar.valorTotalInvestido == 5051.08
         assert acaoXP.tipo == TipoAtivoEnum.aus
         assert acaoXP.qtde == 30
-        assert acaoXP.valorTotalInvestido == 5448.92
+        assert acaoXP.valorTotalInvestido == 4670.51
         assert acaoXP.valorInvestidoDolares == 1037.89
 
         //operações determinadas corretamente
@@ -218,7 +219,7 @@ class ImportarNotaEOperacaoIT {
         assert transferenciaSaidaDolar['ativo'] == dolar.id
 
         def operacaoCompraXP = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'xp')[0]
-        assert operacaoCompraXP['valor_total_operacao'] == 5448.92
+        assert operacaoCompraXP['valor_total_operacao'] == 4670.51
         assert operacaoCompraXP['tipo_operacao'] == TipoOperacaoEnum.c as String
         assert operacaoCompraXP['qtde'] == 30
         assert operacaoCompraXP['ativo'] == acaoXP.id
