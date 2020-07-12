@@ -40,6 +40,17 @@ class ImportarDados {
 
     }
 
+    void importarNotaNegociacaoAcoesInternacionais(String caminho, String arquivo){
+        println 'Iniciando importação de operações'
+        println '==============='
+
+        operacaoService.importarOperacoesNotaNegociacaoUs(caminho, arquivo)
+
+        println '==============='
+        println 'Encerrada importação de operações'
+
+    }
+
     void importarNotaInvestimento(String caminho, String arquivo){
         println 'Iniciando importação de Nota de Investimento'
         println '==============='
@@ -102,8 +113,10 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 //importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200430.txt', LocalDate.of(2020, 4, 30))
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,4,30))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoXp_20200406.2.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20191211.txt')
+importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueXP_20191213.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200527_notaInvestimnto_votorantimCambial_xp.txt')
+/*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 4,3), qtdeComeCotas: new BigDecimal(15.38454166)),
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 1,13), qtdeComeCotas: new BigDecimal(1.37666566)),
@@ -111,3 +124,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,17), qtdeComeCotas: new BigDecimal(1.42136266)),
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
+*/

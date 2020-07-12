@@ -95,7 +95,7 @@ class OperacaoService {
         def valorTaxaUnitaria = defineValorTaxaUnitaria(linhasArquivo, notaNegociacao)
         boolean notaContemCompras = linhasArquivo.any { it[0] == 'c' }
 
-        linhasArquivo.subList(11, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+        linhasArquivo.subList(12, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
             ativosEmGeralComponentService.incluiOperacao(linha, numeroLinha, idNotaNegociacao, dataPregao, valorTaxaUnitaria, notaContemCompras)
             qtdeProcessada += 1
         }
@@ -112,8 +112,8 @@ class OperacaoService {
         println 'Iniciando processamento das operações da nota'
         def qtdeProcessada = 0
 
-        linhasArquivo.subList(11, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
-            ativosUsComponentService.incluiOperacao(linha, numeroLinha, idNotaNegociacao, dataPregao)
+        linhasArquivo.subList(12, linhasArquivo.size()).eachWithIndex { linha, numeroLinha ->
+            ativosUsComponentService.incluiOperacao(linha, numeroLinha, idNotaNegociacao, dataPregao, notaNegociacao.valorDolarNaData)
             qtdeProcessada += 1
         }
         println "Concluído o processamento de ${qtdeProcessada - 1} operações" //Desconta linha de títulos
@@ -143,7 +143,8 @@ class OperacaoService {
                 irpfVendas: new BigDecimal(linhasArquivoNota[6][1].replace(',', '.')),
                 outrosCustos: new BigDecimal(linhasArquivoNota[7][1].replace(',', '.')),
                 taxaRegistroBmf: new BigDecimal(linhasArquivoNota[8][1].replace(',', '.')),
-                taxasBmfEmolFgar: new BigDecimal(linhasArquivoNota[9][1].replace(',', '.'))
+                taxasBmfEmolFgar: new BigDecimal(linhasArquivoNota[9][1].replace(',', '.')),
+                valorDolarNaData: new BigDecimal(linhasArquivoNota[10][1].replace(',', '.'))
         )
     }
 

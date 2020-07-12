@@ -9,8 +9,11 @@ class Operacao {
     TipoOperacaoEnum tipoOperacao
     LocalDate data
     Ativo ativo
-    BigDecimal qtde
-    BigDecimal valorTotalOperacao
-    BigDecimal custoMedioOperacao
-    BigDecimal resultadoVenda
+    BigDecimal qtde = 0.0
+    BigDecimal valorTotalOperacao = 0.0
+    BigDecimal custoMedioOperacao = 0.0
+    BigDecimal resultadoVenda = 0.0
+    BigDecimal valorOperacaoDolares = 0.0
+    BigDecimal custoMedioDolares = 0.0
+    BigDecimal resultadoVendaDolares = 0.0
 }

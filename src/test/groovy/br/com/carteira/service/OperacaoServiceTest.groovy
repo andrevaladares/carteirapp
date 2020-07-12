@@ -37,7 +37,8 @@ class OperacaoServiceTest {
                 irpfVendas: new BigDecimal('1.32'),
                 outrosCustos: new BigDecimal('6.63'),
                 taxaRegistroBmf: new BigDecimal('2.38'),
-                taxasBmfEmolFgar: new BigDecimal('0.78')
+                taxasBmfEmolFgar: new BigDecimal('0.78'),
+                valorDolarNaData: new BigDecimal('0.0')
         )
 
         Assert.assertEquals(notaNegociacaoEsperada, notaNegociacao)
@@ -79,6 +80,7 @@ class OperacaoServiceTest {
                 ['Outros', '6,63'],
                 ['Taxa Registro BM&F', '2,38'],
                 ['Taxas BM&F (emol+f.gar)',	'0,78'],
+                ['Valor Dolar na Data',	'0,0'],
                 ['Dados das operações'],
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['c', 'Aper3f', 'a', '26,20', '40', '1047,83'],
@@ -101,6 +103,7 @@ class OperacaoServiceTest {
                 ['Outros', '6,63'],
                 ['Taxa Registro BM&F', '2,38'],
                 ['Taxas BM&F (emol+f.gar)',	'0,78'],
+                ['Valor Dolar na Data',	'0,0'],
                 ['Dados das operações'],
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['v', 'Aper3f', 'a', '26,20', '40', '1047,83'],
@@ -122,6 +125,7 @@ class OperacaoServiceTest {
                 ['Outros', '1,56'],
                 ['Taxa Registro BM&F', '0,31'],
                 ['Taxas BM&F (emol+f.gar)',	'0,10'],
+                ['Valor Dolar na Data',	'0,0'],
                 ['Dados das operações'],
                 ['tipo', 'título', 'TipoTitulo', 'Preço compra', 'Quantidade', 'Valor'],
                 ['v', 'oz2', 'o', '160,00', '2', '3196,80']

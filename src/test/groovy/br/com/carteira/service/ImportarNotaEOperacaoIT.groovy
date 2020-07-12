@@ -8,6 +8,7 @@ import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.AtivoRepository
 import groovy.sql.GroovyRowResult
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -206,7 +207,8 @@ class ImportarNotaEOperacaoIT {
         assert dolar.valorTotalInvestido == 5051.08
         assert acaoXP.tipo == TipoAtivoEnum.aus
         assert acaoXP.qtde == 30
-        assert acaoXP.valorTotalInvestido == 1037.89
+        assert acaoXP.valorTotalInvestido == 5448.92
+        assert acaoXP.valorInvestidoDolares == 1037.89
 
         //operações determinadas corretamente
         def transferenciaSaidaDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')[0]
@@ -216,10 +218,11 @@ class ImportarNotaEOperacaoIT {
         assert transferenciaSaidaDolar['ativo'] == dolar.id
 
         def operacaoCompraXP = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'xp')[0]
-        assert operacaoCompraXP['valor_total_operacao'] == 1037.89
+        assert operacaoCompraXP['valor_total_operacao'] == 5448.92
         assert operacaoCompraXP['tipo_operacao'] == TipoOperacaoEnum.c as String
         assert operacaoCompraXP['qtde'] == 30
         assert operacaoCompraXP['ativo'] == acaoXP.id
+        assert operacaoCompraXP['valor_total_dolares'] == 1037.89
 
     }
 
@@ -234,6 +237,17 @@ class ImportarNotaEOperacaoIT {
         def dolar = ativoRepository.getByTicker('us$')
         def acaoXP = ativoRepository.getByTicker('xp')
 
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+        Assert.assertEquals(new BigDecimal('5.20'), notaNegociacaoGravada.valorDolarNaData)
+
         def dataOperacoes = LocalDate.of(2019, 12, 13)
         //Saldos dos títulos determinados corretamente
         assert dolar.tipo == TipoAtivoEnum.m
@@ -241,7 +255,8 @@ class ImportarNotaEOperacaoIT {
         assert dolar.valorTotalInvestido == 12316.29
         assert acaoXP.tipo == TipoAtivoEnum.aus
         assert acaoXP.qtde == 20
-        assert acaoXP.valorTotalInvestido == 693.33
+        assert acaoXP.valorTotalInvestido == 3120.00
+        assert acaoXP.valorInvestidoDolares == 693.33
 
         //operações determinadas corretamente
         def transferenciaEntradaDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')[0]
@@ -251,12 +266,15 @@ class ImportarNotaEOperacaoIT {
         assert transferenciaEntradaDolar['ativo'] == dolar.id
 
         def operacaoVendaXP = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'xp')[0]
-        assert operacaoVendaXP['valor_total_operacao'] == 345.96
+        assert operacaoVendaXP['valor_total_operacao'] == 1798.99
+        assert operacaoVendaXP['custo_medio_operacao'] == 156.00
+        assert operacaoVendaXP['resultado_venda'] == 238.99
         assert operacaoVendaXP['tipo_operacao'] == TipoOperacaoEnum.v as String
         assert operacaoVendaXP['qtde'] == 10
         assert operacaoVendaXP['ativo'] == acaoXP.id
-        assert operacaoVendaXP['custo_medio_operacao'] == 34.66666667
-        assert operacaoVendaXP['resultado_venda'] == -0.71
+        assert operacaoVendaXP['valor_total_dolares'] == 345.96
+        assert operacaoVendaXP['custo_medio_dolares'] == 34.66666667
+        assert operacaoVendaXP['resultado_venda_dolares'] == -0.71
 
     }
 

@@ -10,6 +10,7 @@ class NotaNegociacao {
     BigDecimal outrosCustos
     BigDecimal taxaRegistroBmf
     BigDecimal taxasBmfEmolFgar
+    BigDecimal valorDolarNaData
 
     BigDecimal getTotalTaxas() {
         taxaLiquidacao
@@ -35,6 +36,9 @@ class NotaNegociacao {
         if (outrosCustos != that.outrosCustos) return false
         if (taxaLiquidacao != that.taxaLiquidacao) return false
         if (taxaOperacional != that.taxaOperacional) return false
+        if (taxaRegistroBmf != that.taxaRegistroBmf) return false
+        if (taxasBmfEmolFgar != that.taxasBmfEmolFgar) return false
+        if (valorDolarNaData != that.valorDolarNaData) return false
 
         return true
     }
@@ -48,6 +52,9 @@ class NotaNegociacao {
         result = 31 * result + (impostos != null ? impostos.hashCode() : 0)
         result = 31 * result + (irpfVendas != null ? irpfVendas.hashCode() : 0)
         result = 31 * result + (outrosCustos != null ? outrosCustos.hashCode() : 0)
+        result = 31 * result + (taxaRegistroBmf != null ? taxaRegistroBmf.hashCode() : 0)
+        result = 31 * result + (taxasBmfEmolFgar != null ? taxasBmfEmolFgar.hashCode() : 0)
+        result = 31 * result + (valorDolarNaData != null ? valorDolarNaData.hashCode() : 0)
         return result
     }
 }

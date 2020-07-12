@@ -98,14 +98,14 @@ class ImportarNotaInvestimentoIT {
 
         //Valor de operações calculados corretamente em função dos custos
         List<GroovyRowResult> operacoesFundoCambial = operacaoRepository.getByDataOperacaoCnpjFundo(dataOperacoes, '3319016000150')
-        assert operacoesFundoCambial[0]['qtde'] == new BigDecimal('114')
-        assert operacoesFundoCambial[0]['valor_total_operacao'] == new BigDecimal('440.58')
-        assert operacoesFundoCambial[0]['custo_medio_operacao'] == new BigDecimal('3')
-        assert operacoesFundoCambial[0]['resultado_venda'] == new BigDecimal('98.58')
-        assert operacoesFundoCambial[1]['qtde'] == new BigDecimal('300')
-        assert operacoesFundoCambial[1]['valor_total_operacao'] == new BigDecimal('1159.42')
-        assert operacoesFundoCambial[1]['custo_medio_operacao'] == new BigDecimal('3.5')
-        assert operacoesFundoCambial[1]['resultado_venda'] == new BigDecimal('109.42')
+        assert operacoesFundoCambial[0]['qtde'] == new BigDecimal('300')
+        assert operacoesFundoCambial[0]['valor_total_operacao'] == new BigDecimal('1159.42')
+        assert operacoesFundoCambial[0]['custo_medio_operacao'] == new BigDecimal('3.5')
+        assert operacoesFundoCambial[0]['resultado_venda'] == new BigDecimal('109.42')
+        assert operacoesFundoCambial[1]['qtde'] == new BigDecimal('114')
+        assert operacoesFundoCambial[1]['valor_total_operacao'] == new BigDecimal('440.58')
+        assert operacoesFundoCambial[1]['custo_medio_operacao'] == new BigDecimal('3')
+        assert operacoesFundoCambial[1]['resultado_venda'] == new BigDecimal('98.58')
     }
 
     @Test
@@ -159,7 +159,7 @@ class ImportarNotaInvestimentoIT {
         assert operacoes[0]['qtde'] == 3.91
         assert operacoes[0]['valor_total_operacao'] == 18873.10
         assert operacoes[0]['custo_medio_operacao'] == 4826.87979540
-        assert operacoes[0]['resultado_venda'] == null
+        assert operacoes[0]['resultado_venda'] == 0.0
     }
 
     @Test

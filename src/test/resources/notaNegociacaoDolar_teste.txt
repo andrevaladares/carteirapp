@@ -8,6 +8,7 @@ I.R.R.F. s/ operações	0,00
 Outros	0,00
 Taxa Registro BM&F	0,00
 Taxas BM&F (emol+f.gar)	0,00
+Valor Dolar na Data	0,00
 Dados das operações
 tipo	título	TipoTitulo	Preço compra	Quantidade	Valor
 c	us$	m	4,2433	1178,34	5000,00

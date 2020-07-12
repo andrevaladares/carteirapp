@@ -9,8 +9,9 @@ class Ativo {
     String nome
     TipoAtivoEnum tipo
     String setor
-    BigDecimal qtde
-    BigDecimal valorTotalInvestido
+    BigDecimal qtde = 0.0
+    BigDecimal valorTotalInvestido = 0.0
+    BigDecimal valorInvestidoDolares = 0.0
     LocalDate dataEntrada
     String cnpjFundo
     OperacoesAtivo operacoesAtivo
@@ -41,6 +42,7 @@ class Ativo {
         }
         this.qtde = retornoAtualizacao.qtde
         this.valorTotalInvestido = retornoAtualizacao.valorTotalInvestido
+        this.valorInvestidoDolares = retornoAtualizacao.valorInvestidoDolares
 
         this
     }
@@ -48,13 +50,16 @@ class Ativo {
     Ativo atualizarAtivoOperacaoComum(Operacao operacao) {
         if (operacao.tipoOperacao in [TipoOperacaoEnum.v, TipoOperacaoEnum.ts]) {
             def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde).setScale(8, RoundingMode.HALF_UP)
+            def valorInvestidoEquivalenteDolares = valorInvestidoDolares.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde
             qtde -= operacao.qtde
             valorTotalInvestido -= valorInvestidoEquivalente
+            valorInvestidoDolares -= valorInvestidoEquivalenteDolares
 
         } else {
             //Aqui pode ser um compra ou transferência de entrada
             qtde += operacao.qtde
             valorTotalInvestido += operacao.valorTotalOperacao
+            valorInvestidoDolares += operacao.valorOperacaoDolares
         }
 
         return this
@@ -79,5 +84,10 @@ class Ativo {
 
     GString obterQueryUpdate() {
         operacoesAtivo.obterQueryUpdate(this)
+    }
+
+    BigDecimal obterCustoMedioUnitarioDolares() {
+        this.valorInvestidoDolares / this.qtde
+
     }
 }

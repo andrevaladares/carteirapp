@@ -8,6 +8,7 @@ I.R.R.F. s/ operações	0,00
 Outros	0,00
 Taxa Registro BM&F	0,00
 Taxas BM&F (emol+f.gar)	0,00
+Valor dolar na data	5,20
 Dados das operações
 tipo	título	TipoTitulo	Preço compra	Quantidade	Valor
-v	xp	aus	34,5963	10,00	345,96
+v	xp	aus	34,5960	10,0000	345,96

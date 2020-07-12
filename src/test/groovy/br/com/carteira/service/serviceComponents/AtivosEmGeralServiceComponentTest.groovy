@@ -41,8 +41,8 @@ class AtivosEmGeralServiceComponentTest {
 
         def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
-        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
+        assert operacoesComplementadasList[0].custoMedioOperacao == 0.0
+        assert operacoesComplementadasList[0].resultadoVenda == 0.0
     }
 
     @Test
@@ -61,8 +61,8 @@ class AtivosEmGeralServiceComponentTest {
 
         def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
-        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
+        assert operacoesComplementadasList[0].custoMedioOperacao == 0.0
+        assert operacoesComplementadasList[0].resultadoVenda == 0.0
     }
 
     @Test
@@ -71,8 +71,8 @@ class AtivosEmGeralServiceComponentTest {
 
         def operacoesComplementadasList = ativosEmGeralServiceComponent.complementarOperacao(operacao)
 
-        Assert.assertNull(operacoesComplementadasList[0].custoMedioOperacao)
-        Assert.assertNull(operacoesComplementadasList[0].resultadoVenda)
+        assert operacoesComplementadasList[0].custoMedioOperacao == 0.0
+        assert operacoesComplementadasList[0].resultadoVenda == 0.0
     }
 
     @Test

@@ -76,10 +76,12 @@ trait ComponentServiceTrait {
         if (TipoOperacaoEnum.v == operacao.tipoOperacao) {
             tituloParaAtualizacao.qtde = operacao.qtde * -1
             tituloParaAtualizacao.valorTotalInvestido = operacao.valorTotalOperacao * -1
+            tituloParaAtualizacao.valorInvestidoDolares = operacao.valorOperacaoDolares * -1
             tituloParaAtualizacao.dataEntrada = operacao.data
         } else {
             tituloParaAtualizacao.qtde = operacao.qtde
             tituloParaAtualizacao.valorTotalInvestido = operacao.valorTotalOperacao
+            tituloParaAtualizacao.valorInvestidoDolares = operacao.valorOperacaoDolares
             tituloParaAtualizacao.dataEntrada = operacao.data
         }
 

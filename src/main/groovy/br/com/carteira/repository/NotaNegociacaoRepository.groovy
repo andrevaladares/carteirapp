@@ -25,11 +25,12 @@ class NotaNegociacaoRepository {
         def insertSql = """
                 insert into nota_negociacao (taxa_liquidacao, emolumentos, 
                 taxa_operacional, impostos, irpf_vendas, outros_custos_oper, taxa_registro_bmf,
-                taxas_bmf_emol_fgar)
+                taxas_bmf_emol_fgar, valor_dolar_na_data)
                 values ($notaNegociacao.taxaLiquidacao, $notaNegociacao.emolumentos, 
                         $notaNegociacao.taxaOperacional, $notaNegociacao.impostos, 
                         $notaNegociacao.irpfVendas, $notaNegociacao.outrosCustos,
-                        $notaNegociacao.taxaRegistroBmf, $notaNegociacao.taxasBmfEmolFgar)
+                        $notaNegociacao.taxaRegistroBmf, $notaNegociacao.taxasBmfEmolFgar,
+                        $notaNegociacao.valorDolarNaData)
             """
 
         Connection conn = DataSourceUtils.getConnection(dataSource)
@@ -54,7 +55,8 @@ class NotaNegociacaoRepository {
                     irpfVendas: notaNegociacaoGroovyRow['irpf_vendas'],
                     outrosCustos: notaNegociacaoGroovyRow['outros_custos_oper'],
                     taxaRegistroBmf: notaNegociacaoGroovyRow['taxa_registro_bmf'],
-                    taxasBmfEmolFgar: notaNegociacaoGroovyRow['taxas_bmf_emol_fgar']
+                    taxasBmfEmolFgar: notaNegociacaoGroovyRow['taxas_bmf_emol_fgar'],
+                    valorDolarNaData: notaNegociacaoGroovyRow['valor_dolar_na_data']
             )
         }
         notaNegociacao

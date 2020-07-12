@@ -27,13 +27,14 @@ class AtivosUsComponentService implements ComponentServiceTrait{
         this.operacaoRepository = operacaoRepository
     }
 
-    void incluiOperacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao) {
+    void incluiOperacao(String[] linhaAberta, Integer numeroLinha, Long idNotaNegociacao, String dataNegociacao, BigDecimal valorDolarNaData) {
         def operacao
         def dateFormatter = DateTimeFormatter.ofPattern('dd/MM/yyyy')
         if (numeroLinha == 0) {
             if (linhaAberta[0] != 'tipo')
                 throw new ArquivoInvalidoException('Arquivo precisa possuir cabeçalhos de coluna conforme template')
         } else {
+            def valorOperacaoDolares = new BigDecimal(linhaAberta[5].replace(',', '.'))
             operacao = new Operacao(
                     data: LocalDate.parse(dataNegociacao, dateFormatter),
                     idNotaNegociacao: idNotaNegociacao,
@@ -43,7 +44,8 @@ class AtivosUsComponentService implements ComponentServiceTrait{
                             tipo: linhaAberta[2].toLowerCase() as TipoAtivoEnum
                     ),
                     qtde: new BigDecimal(linhaAberta[4].replace(',', '.')),
-                    valorTotalOperacao: new BigDecimal(linhaAberta[5].replace(',', '.'))
+                    valorOperacaoDolares: valorOperacaoDolares,
+                    valorTotalOperacao: valorOperacaoDolares * valorDolarNaData
             )
 
             incluir(operacao)
@@ -54,29 +56,13 @@ class AtivosUsComponentService implements ComponentServiceTrait{
     @Override
     List<Operacao> incluir(Operacao operacaoOriginal) {
         def operacoesGeradas = []
-        //Operacao com a acao
-        def ativo = ativoRepository.getByTicker(operacaoOriginal.ativo.ticker.toLowerCase())
-        Operacao operacaoAcao = operacaoOriginal
-        if (ativo != null) {
-            operacaoAcao.ativo = ativo
-            operacaoAcao = complementarOperacao(operacaoAcao)[0] //Essa linha sempre gerará apenas uma operação
-            Ativo ativoParaAtualizacao = operacaoOriginal.ativo.atualizarAtivoAPartirDaOperacao(operacaoAcao)
-            ativoRepository.atualizar(ativoParaAtualizacao)
-        } else {
-            operacaoAcao.ativo = criarAtivoAPartirDaOperacao(operacaoAcao)
-            operacaoAcao = complementarOperacao(operacaoAcao)[0] //Essa linha sempre gerará apenas uma operação
-            operacaoAcao.ativo.id = ativoRepository.incluir(operacaoAcao.ativo)
-        }
-        operacaoAcao.id = operacaoRepository.incluir(operacaoAcao)
-        operacoesGeradas << operacaoAcao
-
         //Operacao com os dolares
         Ativo dolar = ativoRepository.getByTicker('us$')
         Operacao operacaoDolar = new Operacao(
                 idNotaNegociacao: operacaoOriginal.idNotaNegociacao,
                 data: operacaoOriginal.data,
                 ativo: dolar,
-                qtde: operacaoOriginal.valorTotalOperacao, //valores de operações em dolar alterando o saldo de dolares
+                qtde: operacaoOriginal.valorOperacaoDolares, //valores de operações em dolar alterando o saldo de dolares
         )
         if(operacaoOriginal.tipoOperacao == TipoOperacaoEnum.c) {
             //Em caso de compra da ação US, é necessária uma transferência de saída de dolares
@@ -87,8 +73,6 @@ class AtivosUsComponentService implements ComponentServiceTrait{
             def custoMedioDolarAtual = dolar.valorTotalInvestido / dolar.qtde
             operacaoDolar.valorTotalOperacao = operacaoDolar.qtde * custoMedioDolarAtual
             operacaoDolar.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolar)
-            operacaoDolar.id = operacaoRepository.incluir(operacaoDolar)
-            ativoRepository.atualizar(operacaoDolar.ativo)
         }
         else {
             //Em caso de venda de ação US, devo gerar um crédito de dolares equivalente ao valor total recebido pela venda
@@ -106,9 +90,57 @@ class AtivosUsComponentService implements ComponentServiceTrait{
             def custoMedioDolarAtual =  operacaoDolar.ativo.qtde != 0 ? operacaoDolar.ativo.valorTotalInvestido / operacaoDolar.ativo.qtde : 0
             operacaoDolar.valorTotalOperacao = operacaoDolar.qtde * custoMedioDolarAtual
             operacaoDolar.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolar)
-            operacaoDolar.id = operacaoRepository.incluir(operacaoDolar)
-            ativoRepository.atualizar(operacaoDolar.ativo)
         }
+
+        //Operacao com a acao
+        def ativo = ativoRepository.getByTicker(operacaoOriginal.ativo.ticker.toLowerCase())
+        Operacao operacaoAcao = operacaoOriginal
+        if(operacaoAcao.tipoOperacao == TipoOperacaoEnum.c) {
+            // se for venda o valor total em reais já veio baseado no dolar
+            operacaoAcao.valorTotalOperacao = operacaoDolar.valorTotalOperacao //O valor em dolares já veio da nota de negociacao
+        }
+        if (ativo != null) {
+            operacaoAcao.ativo = ativo
+            operacaoAcao = complementarOperacao(operacaoAcao)[0] //Essa linha sempre gerará apenas uma operação
+            Ativo ativoParaAtualizacao = operacaoAcao.ativo.atualizarAtivoAPartirDaOperacao(operacaoAcao)
+            ativoRepository.atualizar(ativoParaAtualizacao)
+        } else {
+            operacaoAcao.ativo = criarAtivoAPartirDaOperacao(operacaoAcao)
+            operacaoAcao = complementarOperacao(operacaoAcao)[0] //Essa linha sempre gerará apenas uma operação
+            operacaoAcao.ativo.id = ativoRepository.incluir(operacaoAcao.ativo)
+        }
+
+        operacaoAcao.id = operacaoRepository.incluir(operacaoAcao)
+        operacoesGeradas << operacaoAcao
+        operacaoDolar.id = operacaoRepository.incluir(operacaoDolar)
+        ativoRepository.atualizar(operacaoDolar.ativo)
         operacoesGeradas << operacaoDolar
     }
+
+    /**
+     * Atualiza na operação o custo médio e o resultado da venda
+     *
+     * @param operacao a operação de referência
+     * @return a operação atualizada
+     */
+    @Override
+    List<Operacao> complementarOperacao(Operacao operacao) {
+        if (operacao.tipoOperacao == TipoOperacaoEnum.v && operacao.ativo.qtde > 0) {
+            //operacao de venda comum (redução de posição comprada)
+            operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
+            operacao.custoMedioDolares = operacao.ativo.obterCustoMedioUnitarioDolares()
+            operacao.resultadoVenda = operacao.ativo.obterResultadoVenda(operacao.custoMedioOperacao, operacao.valorTotalOperacao, operacao.qtde)
+            operacao.resultadoVendaDolares = operacao.valorOperacaoDolares - (operacao.custoMedioDolares * operacao.qtde)
+        }
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
+            //Reducao de um short
+            operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
+            operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitarioDolares()
+            operacao.resultadoVenda = (operacao.valorTotalOperacao - BigDecimal.valueOf(operacao.custoMedioOperacao * operacao.qtde)) * -1
+            operacao.resultadoVendaDolares = (operacao.valorOperacaoDolares - (operacao.custoMedioDolares * operacao.qtde)) * -1
+        }
+
+        [operacao]
+    }
+
 }
