@@ -14,7 +14,7 @@ import java.time.YearMonth
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
-class ConsolidacaoImpostosIT {
+class ConsolidacaoImpostosAcoesIT {
     @Autowired
     private ConsolidacaoImpostos consolidacaoImpostos
 

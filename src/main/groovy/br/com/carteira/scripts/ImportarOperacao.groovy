@@ -1,6 +1,7 @@
 package br.com.carteira.scripts
 
 import br.com.carteira.entity.OperacaoComeCotasDTO
+import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.impostos.ConsolidacaoImpostos
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
@@ -105,9 +106,9 @@ class ExportarDados {
 
     }
 
-    void calcularImpostoAPagar(YearMonth mesAno) {
+    void calcularImpostoAPagar(YearMonth mesAno, TipoAtivoEnum tipoDeAtivo) {
         println "Calculando imposto a pagar para ${mesAno}"
-        geradorImpostos.consolidarImpostos(mesAno)
+        geradorImpostos.consolidarImpostos(mesAno, tipoDeAtivo)
     }
 }
 
@@ -134,4 +135,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
-exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 1))
+exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 1), TipoAtivoEnum.a)
