@@ -1,6 +1,7 @@
 package br.com.carteira.scripts
 
 import br.com.carteira.entity.OperacaoComeCotasDTO
+import br.com.carteira.impostos.ConsolidacaoImpostos
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,6 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.springframework.stereotype.Component
 
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Component
 class ImportarDados {
@@ -89,6 +91,8 @@ class ImportarDados {
 class ExportarDados {
     @Autowired
     SituacaoCarteiraService situacaoCarteiraService
+    @Autowired
+    ConsolidacaoImpostos geradorImpostos
 
     void exportarSituacaoCarteira(String caminho, LocalDate dataReferencia) {
         println 'Iniciando exportação de situacao da carteira'
@@ -99,6 +103,11 @@ class ExportarDados {
         println '==============='
         println 'Encerrada exportação de situação da carteira'
 
+    }
+
+    void calcularImpostoAPagar(YearMonth mesAno) {
+        println "Calculando imposto a pagar para ${mesAno}"
+        geradorImpostos.consolidarImpostos(mesAno)
     }
 }
 
@@ -114,7 +123,7 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,4,30))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
 //importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20191211.txt')
-importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraSTNE_20200526.txt')
+//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraSTNE_20200526.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200527_notaInvestimnto_votorantimCambial_xp.txt')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
@@ -125,3 +134,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
+exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 1))
