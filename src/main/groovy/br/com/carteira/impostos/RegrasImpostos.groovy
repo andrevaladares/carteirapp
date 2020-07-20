@@ -68,6 +68,7 @@ trait RegrasImpostos {
         def prejuizoAcumuladoMes
         def impostoDevido
         def baseCalculoImposto
+
         if (it['valorTotal'] <= 20000) {
             //Isento de imposto... Carrega o prejuizo acumulado pra frente
             return [
@@ -79,39 +80,50 @@ trait RegrasImpostos {
         }
 
         if(prejuizoACompensar > 0) {
-            baseCalculoImposto = it['resultadoTotal'] - prejuizoACompensar
-            if (baseCalculoImposto <= 0) {
-                prejuizoAcumuladoMes = -baseCalculoImposto
-                baseCalculoImposto = 0
-                impostoDevido = 0
-            } else {
-                prejuizoAcumuladoMes = 0
-                impostoDevido = baseCalculoImposto * 0.15
-            }
-            return [
-                    'prejuizoAcumuladoMes': prejuizoAcumuladoMes,
-                    'baseCalculoImposto': baseCalculoImposto,
-                    'impostoDevido': impostoDevido
-            ]
+            return obterDadosComPrejuizoACompensar(it, prejuizoACompensar)
         }
+
+
+        return obterDadosSemPrejuizoACompensar(it)
+    }
+
+    Map obterDadosSemPrejuizoACompensar(GroovyRowResult it) {
         //Prejuizo a compensar = 0
-        //Prejuizo a compensar = 0
+
+        def prejuizoAcumuladoMes, baseCalculoImposto, impostoDevido
         if (it['resultadoTotal'] < 0) {
             prejuizoAcumuladoMes = -it['resultadoTotal']
             baseCalculoImposto = 0
             impostoDevido = 0
-        }
-        else {
+        } else {
             prejuizoAcumuladoMes = 0
             baseCalculoImposto = it['resultadoTotal']
-            impostoDevido = baseCalculoImposto * 0.15
+            impostoDevido = baseCalculoImposto * this.percentualImposto
         }
 
         return [
                 'prejuizoAcumuladoMes': prejuizoAcumuladoMes,
-                'baseCalculoImposto': baseCalculoImposto,
-                'impostoDevido': impostoDevido
+                'baseCalculoImposto'  : baseCalculoImposto,
+                'impostoDevido'       : impostoDevido
         ]
     }
+
+    Map obterDadosComPrejuizoACompensar(GroovyRowResult it, BigDecimal prejuizoACompensar) {
+        def prejuizoAcumuladoMes, impostoDevido, baseCalculoImposto
+        baseCalculoImposto = it['resultadoTotal'] - prejuizoACompensar
+        if (baseCalculoImposto <= 0) {
+            prejuizoAcumuladoMes = -baseCalculoImposto
+            baseCalculoImposto = 0
+            impostoDevido = 0
+        } else {
+            prejuizoAcumuladoMes = 0
+            impostoDevido = baseCalculoImposto * this.percentualImposto
+        }
+        ['prejuizoAcumuladoMes': prejuizoAcumuladoMes,
+         'baseCalculoImposto': baseCalculoImposto,
+         'impostoDevido': impostoDevido]
+    }
+
+    abstract BigDecimal getPercentualImposto()
 
 }

@@ -4,4 +4,5 @@ import br.com.carteira.entity.TipoAtivoEnum
 
 class RegrasImpostosAcoes implements RegrasImpostos{
     TipoAtivoEnum tipoAtivo = TipoAtivoEnum.a
+    BigDecimal percentualImposto = 0.15
 }
