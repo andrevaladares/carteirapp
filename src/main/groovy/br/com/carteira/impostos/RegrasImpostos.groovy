@@ -125,5 +125,5 @@ trait RegrasImpostos {
     }
 
     abstract BigDecimal getPercentualImposto()
-
+    abstract TipoAtivoEnum getTipoAtivo()
 }
