@@ -131,4 +131,21 @@ class ConsolidacaoImpostosAcoesIT {
         assert consolidacao['imposto_devido'] == 0.00
     }
 
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:operacoesAcoesComEspacoEntreConsolidacoes.sql"])
+    void 'carrega prejuizo acumulado quando ha espaco entre as consolidacoes' () {
+        consolidacaoImpostos.consolidarImpostos(YearMonth.of(2020, 4), TipoAtivoEnum.a)
+
+        GroovyRowResult consolidacao = consolidacaoImpostos.obterConsolidacao(YearMonth.of(2020, 4), TipoAtivoEnum.a)
+
+        assert consolidacao['tipo_ativo'] == 'a'
+        assert consolidacao['data'].toLocalDate() == LocalDate.of(2020, 4, 30)
+        assert consolidacao['resultado_mes'] == -1867.00
+        assert consolidacao['valor_total_vendas'] == 16000.00
+        assert consolidacao['prejuizo_acumulado_mes'] == 3867.00
+        assert consolidacao['base_calculo_imposto'] == 0.00
+        assert consolidacao['imposto_devido'] == 0.00
+
+    }
+
 }

@@ -42,7 +42,7 @@ trait RegrasImpostos {
         def qryPrejuizoMesAnterior = """
             select tipo_ativo, data, prejuizo_acumulado_mes
             from consolidacao_impostos_mes
-            where data = ${mesAno.minusMonths(1).atEndOfMonth()}
+            where data = (select max(data) from consolidacao_impostos_mes where tipo_ativo = ${tipoDeAtivo as String})
                 and tipo_ativo = ${tipoDeAtivo as String}
         """
         def prejuizosMesAnterior = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(qryPrejuizoMesAnterior)
@@ -65,9 +65,6 @@ trait RegrasImpostos {
     }
 
     Map calculaValoresImposto(GroovyRowResult it, BigDecimal prejuizoACompensar) {
-        def prejuizoAcumuladoMes
-        def impostoDevido
-        def baseCalculoImposto
 
         if (it['valorTotal'] <= 20000) {
             //Isento de imposto... Carrega o prejuizo acumulado pra frente

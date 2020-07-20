@@ -135,4 +135,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
-exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 1), TipoAtivoEnum.a)
+exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 2), TipoAtivoEnum.fii)
