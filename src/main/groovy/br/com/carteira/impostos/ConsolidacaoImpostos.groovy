@@ -17,7 +17,8 @@ class ConsolidacaoImpostos {
 
     DriverManagerDataSource dataSource
     def regrasImpostos = [
-            new RegrasImpostosAcoes()
+            new RegrasImpostosAcoes(),
+            new RegrasImpostosFIIs()
     ]
 
     @Autowired

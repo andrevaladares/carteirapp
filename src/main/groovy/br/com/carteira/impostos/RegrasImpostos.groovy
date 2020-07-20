@@ -18,9 +18,10 @@ trait RegrasImpostos {
 
         def prejuizoMesAnterior = obtemPrejuizoMesAnterior(mesAno, tipoDeAtivo)
 
+
         somasOperacoesMes.each {
             if(it['valorTotal']) {
-                def valoresImposto = this.calculaValoresImposto(it, prejuizoMesAnterior['prejuizo_acumulado_mes'] as BigDecimal)
+                def valoresImposto = calculaValoresImposto(it, prejuizoMesAnterior['prejuizo_acumulado_mes'] as BigDecimal)
 
                 def qryInsertConsolidacao = """
                 insert into consolidacao_impostos_mes (tipo_ativo, data, resultado_mes, valor_total_vendas,
@@ -70,7 +71,7 @@ trait RegrasImpostos {
         if (it['valorTotal'] <= 20000) {
             //Isento de imposto... Carrega o prejuizo acumulado pra frente
             return [
-                    'prejuizoAcumuladoMes': prejuizoACompensar,
+                    'prejuizoAcumuladoMes': it['resultadoTotal'] < 0 ? prejuizoACompensar + (-it['resultadoTotal'] as BigDecimal) : prejuizoACompensar,
                     'baseCalculoImposto': 0.00,
                     'impostoDevido': 0.00
             ]
@@ -94,9 +95,17 @@ trait RegrasImpostos {
             ]
         }
         //Prejuizo a compensar = 0
-        prejuizoAcumuladoMes = 0
-        baseCalculoImposto = it['resultadoTotal']
-        impostoDevido = baseCalculoImposto * 0.15
+        //Prejuizo a compensar = 0
+        if (it['resultadoTotal'] < 0) {
+            prejuizoAcumuladoMes = -it['resultadoTotal']
+            baseCalculoImposto = 0
+            impostoDevido = 0
+        }
+        else {
+            prejuizoAcumuladoMes = 0
+            baseCalculoImposto = it['resultadoTotal']
+            impostoDevido = baseCalculoImposto * 0.15
+        }
 
         return [
                 'prejuizoAcumuladoMes': prejuizoAcumuladoMes,

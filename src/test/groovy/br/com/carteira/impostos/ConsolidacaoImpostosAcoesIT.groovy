@@ -99,4 +99,36 @@ class ConsolidacaoImpostosAcoesIT {
         assert consolidacao['imposto_devido'] == 0.00
     }
 
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:operacoesAcoesAcumulamPrejuizoNoMes.sql"])
+    void 'gera consolidacao operacoes de compra e venda acumula prejuizo no mes' () {
+        consolidacaoImpostos.consolidarImpostos(YearMonth.of(2020, 1), TipoAtivoEnum.a)
+
+        GroovyRowResult consolidacao = consolidacaoImpostos.obterConsolidacao(YearMonth.of(2020, 1), TipoAtivoEnum.a)
+
+        assert consolidacao['tipo_ativo'] == 'a'
+        assert consolidacao['data'].toLocalDate() == LocalDate.of(2020, 1, 31)
+        assert consolidacao['resultado_mes'] == -1867.00
+        assert consolidacao['valor_total_vendas'] == 16000.00
+        assert consolidacao['prejuizo_acumulado_mes'] == 4867.00
+        assert consolidacao['base_calculo_imposto'] == 0.00
+        assert consolidacao['imposto_devido'] == 0.00
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:operacoesAcoesGeramPrejuizoNoMes.sql"])
+    void 'gera consolidacao operacoes de compra e venda gerando prejuizo no mes' () {
+        consolidacaoImpostos.consolidarImpostos(YearMonth.of(2020, 1), TipoAtivoEnum.a)
+
+        GroovyRowResult consolidacao = consolidacaoImpostos.obterConsolidacao(YearMonth.of(2020, 1), TipoAtivoEnum.a)
+
+        assert consolidacao['tipo_ativo'] == 'a'
+        assert consolidacao['data'].toLocalDate() == LocalDate.of(2020, 1, 31)
+        assert consolidacao['resultado_mes'] == -1867.00
+        assert consolidacao['valor_total_vendas'] == 16000.00
+        assert consolidacao['prejuizo_acumulado_mes'] == 1867.00
+        assert consolidacao['base_calculo_imposto'] == 0.00
+        assert consolidacao['imposto_devido'] == 0.00
+    }
+
 }
