@@ -19,7 +19,8 @@ class ConsolidacaoImpostos {
     def regrasImpostos = [
             new RegrasImpostosAcoes(),
             new RegrasImpostosFIIs(),
-            new RegrasImpostosFINs()
+            new RegrasImpostosFINs(),
+            new RegrasImpostosAcoesUs()
     ]
 
     @Autowired

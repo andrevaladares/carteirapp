@@ -106,9 +106,11 @@ class ExportarDados {
 
     }
 
-    void calcularImpostoAPagar(YearMonth mesAno, TipoAtivoEnum tipoDeAtivo) {
-        println "Calculando imposto a pagar para ${mesAno}"
-        geradorImpostos.consolidarImpostos(mesAno, tipoDeAtivo)
+    void calcularImpostoAPagar(YearMonth mesAno, List<TipoAtivoEnum> tiposDeAtivo) {
+        tiposDeAtivo.each {
+            println "Calculando imposto a pagar de ${it} para ${mesAno}"
+            geradorImpostos.consolidarImpostos(mesAno, it)
+        }
     }
 }
 
@@ -135,4 +137,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
-exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 3), TipoAtivoEnum.fii)
+exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 4), [TipoAtivoEnum.fii, TipoAtivoEnum.a])
