@@ -55,7 +55,9 @@ class SituacaoCarteiraService {
         }
         def tipoEhDebCriTesouroFundo = ativo.tipo in TipoAtivoEnum.getDebCriTesouroFundo()
         if (ativo.qtde != quantidadeInformadaEmCarteira && !tipoEhDebCriTesouroFundo) {
-            throw new QuantidadeTituloException("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: $ativo.ticker")
+            throw new QuantidadeTituloException("""A quantidade informada no arquivo precisa ser igual à 
+                                                    quantidade atual disponível para o título. 
+                                                    Titulo com falha: $ativo.ticker / $ativo.cnpjFundo / $ativo.nome""")
         }
         def tipoEhTesouroFundo = ativo.tipo in TipoAtivoEnum.getTesouroFundo()
         def valorAtual = new BigDecimal(linhaArquivo[4].replace(',', '.'))

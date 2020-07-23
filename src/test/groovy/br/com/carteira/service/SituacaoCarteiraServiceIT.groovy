@@ -107,7 +107,9 @@ class SituacaoCarteiraServiceIT {
             Assert.fail()
         }
         catch (QuantidadeTituloException e) {
-            Assert.assertEquals("A quantidade informada no arquivo precisa ser igual à quantidade atual disponível para o título. Titulo com falha: alup11", e.getMessage())
+            Assert.assertEquals("""A quantidade informada no arquivo precisa ser igual à 
+                                                    quantidade atual disponível para o título. 
+                                                    Titulo com falha: alup11 / null / Alupar""", e.getMessage())
         }
     }
 

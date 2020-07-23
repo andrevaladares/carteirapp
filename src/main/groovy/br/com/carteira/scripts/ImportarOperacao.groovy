@@ -127,11 +127,11 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 
 //========= Execute aqui o metodo que deseja
 
-//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200430.txt', LocalDate.of(2020, 4, 30), 5.25)
+importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200531.txt', LocalDate.of(2020, 5, 31), 5.4257)
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,4,30))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
 //importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20200527.txt')
-importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraCZZ_20200528.txt')
+//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraCZZ_20200528.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200527_notaInvestimnto_votorantimCambial_xp.txt')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
