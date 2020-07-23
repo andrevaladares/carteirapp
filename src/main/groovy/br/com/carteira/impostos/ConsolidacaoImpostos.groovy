@@ -33,6 +33,13 @@ class ConsolidacaoImpostos {
         regrasImpostos.find({it.tipoAtivo == tipoDeAtivo}).consolidarImpostos(mesAno, tipoDeAtivo, dataSource)
     }
 
+    @Transactional
+    void consolidarImpostos(YearMonth mesAno) {
+        TipoAtivoEnum.getTiposComIncidenciaImposto().each {tipoDeAtivo ->
+            regrasImpostos.find({it.tipoAtivo == tipoDeAtivo}).consolidarImpostos(mesAno, tipoDeAtivo, dataSource)
+        }
+    }
+
     GroovyRowResult obterConsolidacao(YearMonth mesAnoReferencia, TipoAtivoEnum tipoDeAtivo) {
         def query = '''
             select * from consolidacao_impostos_mes

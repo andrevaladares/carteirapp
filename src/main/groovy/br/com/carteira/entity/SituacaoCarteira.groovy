@@ -8,6 +8,8 @@ class SituacaoCarteira {
     Long idAtivo
     BigDecimal qtdeDisponivel
     BigDecimal valorInvestido
+    BigDecimal valorInvestidoDolares
     BigDecimal valorAtual
+    BigDecimal valorAtualDolares
 
 }

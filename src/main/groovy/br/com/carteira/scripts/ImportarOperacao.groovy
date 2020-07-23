@@ -21,7 +21,7 @@ class ImportarDados {
     @Autowired
     SituacaoCarteiraService situacaoCarteiraService
 
-    void importarOperacoes(String caminho, String arquivo){
+    void importarOperacoes(String caminho, String arquivo) {
         println 'Iniciando importação de operações'
         println '==============='
 
@@ -32,7 +32,7 @@ class ImportarDados {
 
     }
 
-    void importarNotaNegociacao(String caminho, String arquivo){
+    void importarNotaNegociacao(String caminho, String arquivo) {
         println 'Iniciando importação de operações'
         println '==============='
 
@@ -43,7 +43,7 @@ class ImportarDados {
 
     }
 
-    void importarNotaNegociacaoAcoesInternacionais(String caminho, String arquivo){
+    void importarNotaNegociacaoAcoesInternacionais(String caminho, String arquivo) {
         println 'Iniciando importação de operações'
         println '==============='
 
@@ -54,7 +54,7 @@ class ImportarDados {
 
     }
 
-    void importarNotaInvestimento(String caminho, String arquivo){
+    void importarNotaInvestimento(String caminho, String arquivo) {
         println 'Iniciando importação de Nota de Investimento'
         println '==============='
 
@@ -65,7 +65,7 @@ class ImportarDados {
 
     }
 
-    void importarOperacoesComeCotas(String cnpj, LocalDate dataOperacao, List<OperacaoComeCotasDTO> operacaoComeCotasDTOList){
+    void importarOperacoesComeCotas(String cnpj, LocalDate dataOperacao, List<OperacaoComeCotasDTO> operacaoComeCotasDTOList) {
         println 'Iniciando importação de Nota de Investimento'
         println '==============='
 
@@ -76,11 +76,11 @@ class ImportarDados {
 
     }
 
-    void importarSituacaoCarteira(String caminho, String arquivo, LocalDate dataReferencia){
+    void importarSituacaoCarteira(String caminho, String arquivo, LocalDate dataReferencia, BigDecimal valorDolarReferencia) {
         println 'Iniciando importação de situacao da carteira'
         println '==============='
 
-        situacaoCarteiraService.importarSituacaoAtivos(caminho, arquivo, dataReferencia)
+        situacaoCarteiraService.importarSituacaoAtivos(caminho, arquivo, dataReferencia, valorDolarReferencia)
 
         println '==============='
         println 'Encerrada importação de situação da carteira'
@@ -112,6 +112,11 @@ class ExportarDados {
             geradorImpostos.consolidarImpostos(mesAno, it)
         }
     }
+
+    void calcularImpostoAPagar(YearMonth mesAno) {
+        println "Calculando impostos a pagar para ${mesAno}"
+        geradorImpostos.consolidarImpostos(mesAno)
+    }
 }
 
 ApplicationContext context =
@@ -122,11 +127,11 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 
 //========= Execute aqui o metodo que deseja
 
-//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200430.txt', LocalDate.of(2020, 4, 30))
+//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200430.txt', LocalDate.of(2020, 4, 30), 5.25)
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,4,30))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20191211.txt')
-//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraSTNE_20200526.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20200527.txt')
+importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraCZZ_20200528.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200527_notaInvestimnto_votorantimCambial_xp.txt')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
@@ -137,4 +142,5 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
-exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 4), [TipoAtivoEnum.fii, TipoAtivoEnum.a])
+//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 4), [TipoAtivoEnum.fii, TipoAtivoEnum.a])
+//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 5))

@@ -35,7 +35,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def alupar = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'alup11', tipo: TipoAtivoEnum.a), 'asc')[0]
         def smal11 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'smal11', tipo: TipoAtivoEnum.fin), 'asc')[0]
@@ -67,7 +67,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def bova11 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'bova11', tipo: TipoAtivoEnum.fin), 'asc')[0]
 
@@ -85,7 +85,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def bova11 = ativoRepository.getByTicker('bova11')
 
@@ -103,7 +103,7 @@ class SituacaoCarteiraServiceIT {
             def dataReferencia = LocalDate.of(2020, 2, 28)
 
             situacaoCarteiraService.
-                    importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                    importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
             Assert.fail()
         }
         catch (QuantidadeTituloException e) {
@@ -119,7 +119,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def oz2 = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(ticker: 'oz2', tipo: TipoAtivoEnum.oz2), 'asc')[0]
 
@@ -137,7 +137,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def cri = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'CRI Direcional - ABR/2021', tipo: TipoAtivoEnum.cri), 'asc')[0]
         def deb = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'DEB LIGHT SERVICOS DE ELETRIC - OUT/2022', tipo: TipoAtivoEnum.deb), 'asc')[0]
@@ -159,7 +159,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def ativos = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(nome: 'Tesouro Selic 2025'), 'asc')
 
@@ -183,7 +183,7 @@ class SituacaoCarteiraServiceIT {
         def dataReferencia = LocalDate.of(2020, 2, 28)
 
         situacaoCarteiraService.
-                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia)
+                importarSituacaoAtivos(caminhoArquivo, nomeArquivo, dataReferencia, null)
 
         def ativos = ativoRepository.getAllByAtivoExample(Ativo.getInstanceWithAtributeMap(cnpjFundo: '3319016000150'), 'asc')
 

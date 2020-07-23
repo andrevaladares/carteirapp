@@ -29,21 +29,21 @@ class SituacaoCarteiraService {
     }
 
     @Transactional
-    void importarSituacaoAtivos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia) {
+    void importarSituacaoAtivos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia, BigDecimal valorDolarReferencia) {
         new File(caminhoArquivo, nomeArquivo)
                 .collect { it -> it.split('\\t') }
                 .findAll { it.length == 6 && it[0] != 'Papel' }
                 .each { it ->
                     def ativos = ativoRepository.getAllByIdentificadorTipoComSaldo(it[5], it[0])
                     ativos.each {ativo ->
-                        SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia, ativo)
+                        SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia, ativo, valorDolarReferencia)
                         incluir(situacaoCarteira)
 
                     }
                 }
     }
 
-    SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia, Ativo ativo) {
+    SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia, Ativo ativo, BigDecimal valorDolarReferencia) {
         if (ativo == null) {
             throw new QuantidadeTituloException("O ativo ${linhaArquivo[0]} não foi encontrado")
         }
@@ -62,13 +62,20 @@ class SituacaoCarteiraService {
         if(tipoEhTesouroFundo) {
             valorAtual = valorAtual / quantidadeInformadaEmCarteira * ativo.qtde
         }
+        def valorAtualDolares = null
+        if(ativo.tipo == TipoAtivoEnum.aus) {
+            valorAtualDolares = valorAtual
+            valorAtual = valorAtual * valorDolarReferencia
+        }
 
         new SituacaoCarteira(
                 data: dataReferencia,
                 idAtivo: ativo.id,
                 qtdeDisponivel: ativo.qtde,
                 valorInvestido: ativo.valorTotalInvestido,
-                valorAtual: valorAtual
+                valorInvestidoDolares: ativo.valorInvestidoDolares,
+                valorAtual: valorAtual,
+                valorAtualDolares: valorAtualDolares
         )
     }
 

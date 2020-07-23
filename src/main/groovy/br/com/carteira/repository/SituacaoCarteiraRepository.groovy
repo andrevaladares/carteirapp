@@ -23,9 +23,11 @@ class SituacaoCarteiraRepository {
 
     Long incluir(SituacaoCarteira situacaoCarteira) {
         def insertSql = """
-                insert into situacao_carteira (data, ativo, qtde_disponivel, valor_investido, valor_atual)
+                insert into situacao_carteira (data, ativo, qtde_disponivel, valor_investido, 
+                    valor_investido_dolares, valor_atual, valor_atual_dolares)
                 values ($situacaoCarteira.data, $situacaoCarteira.idAtivo, $situacaoCarteira.qtdeDisponivel, 
-                    $situacaoCarteira.valorInvestido, $situacaoCarteira.valorAtual)
+                    $situacaoCarteira.valorInvestido, $situacaoCarteira.valorInvestidoDolares, 
+                    $situacaoCarteira.valorAtual, $situacaoCarteira.valorAtualDolares)
             """
         def keys = new Sql(DataSourceUtils.getConnection(dataSource)).executeInsert insertSql
 
@@ -53,7 +55,9 @@ class SituacaoCarteiraRepository {
                 idAtivo: groovyRowResult['ativo'],
                 qtdeDisponivel: groovyRowResult['qtde_disponivel'],
                 valorInvestido: groovyRowResult['valor_investido'],
-                valorAtual: groovyRowResult['valor_atual']
+                valorInvestidoDolares: groovyRowResult['valor_investido_dolares'],
+                valorAtual: groovyRowResult['valor_atual'],
+                valorAtualDolares: groovyRowResult['valor_atual_dolares']
         )
     }
 

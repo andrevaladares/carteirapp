@@ -51,4 +51,8 @@ enum TipoAtivoEnum {
         [tis,tse,tps,fiv]
     }
 
+    static List<TipoAtivoEnum> getTiposComIncidenciaImposto(){
+        [a, aus, fii, fin]
+    }
+
 }
