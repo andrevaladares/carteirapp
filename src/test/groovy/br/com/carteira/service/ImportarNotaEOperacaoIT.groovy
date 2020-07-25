@@ -8,7 +8,6 @@ import br.com.carteira.repository.OperacaoRepository
 import br.com.carteira.repository.AtivoRepository
 import groovy.sql.GroovyRowResult
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -178,7 +177,7 @@ class ImportarNotaEOperacaoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosDolares.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosDolaresApenasDoBrasil.sql"])
     void "importa corretamente nota de negociacao de compra de acao estados unidos" () {
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaNegociacaoAcaoUs_teste.txt'
@@ -198,7 +197,7 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
         Assert.assertEquals(new BigDecimal('4.50'), notaNegociacaoGravada.valorDolarNaData)
 
-        def dolar = ativoRepository.getByTicker('us$')
+        def dolar = ativoRepository.getByTicker('br$')
         def acaoXP = ativoRepository.getByTicker('xp')
 
         def dataOperacoes = LocalDate.of(2019, 12, 13)
@@ -212,7 +211,7 @@ class ImportarNotaEOperacaoIT {
         assert acaoXP.valorInvestidoDolares == 1037.89
 
         //operações determinadas corretamente
-        def transferenciaSaidaDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')[0]
+        def transferenciaSaidaDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'br$')[0]
         assert transferenciaSaidaDolar['valor_total_operacao'] == 5448.92
         assert transferenciaSaidaDolar['tipo_operacao'] == TipoOperacaoEnum.ts as String
         assert transferenciaSaidaDolar['qtde'] == 1037.89
@@ -276,6 +275,118 @@ class ImportarNotaEOperacaoIT {
         assert operacaoVendaXP['valor_total_dolares'] == 345.96
         assert operacaoVendaXP['custo_medio_dolares'] == 34.66666667
         assert operacaoVendaXP['resultado_venda_dolares'] == -0.71
+
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosDolaresApenasDoExterior.sql"])
+    void "importa nota de compra de acao estados unidos apenas com dolar do exterior" () {
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaNegociacaoAcaoUs_teste.txt'
+
+        operacaoService.importarOperacoesNotaNegociacaoUs(caminhoArquivo, nomeArquivo)
+
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+
+        //Dados gerais da nota gravados corretamente
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+        Assert.assertEquals(new BigDecimal('4.50'), notaNegociacaoGravada.valorDolarNaData)
+
+        def dolar = ativoRepository.getByTicker('us$')
+        def acaoXP = ativoRepository.getByTicker('xp')
+
+        def dataOperacoes = LocalDate.of(2019, 12, 13)
+        //Saldos dos títulos determinados corretamente
+        assert dolar.tipo == TipoAtivoEnum.m
+        assert dolar.qtde == 962.11
+        assert dolar.valorTotalInvestido == 5051.08
+        assert acaoXP.tipo == TipoAtivoEnum.aus
+        assert acaoXP.qtde == 30
+        assert acaoXP.valorTotalInvestido == 4670.51
+        assert acaoXP.valorInvestidoDolares == 1037.89
+
+        //operações determinadas corretamente
+        def transferenciaSaidaDolar = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')[0]
+        assert transferenciaSaidaDolar['valor_total_operacao'] == 5448.92
+        assert transferenciaSaidaDolar['tipo_operacao'] == TipoOperacaoEnum.ts as String
+        assert transferenciaSaidaDolar['qtde'] == 1037.89
+        assert transferenciaSaidaDolar['ativo'] == dolar.id
+
+        def operacaoCompraXP = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'xp')[0]
+        assert operacaoCompraXP['valor_total_operacao'] == 4670.51
+        assert operacaoCompraXP['tipo_operacao'] == TipoOperacaoEnum.c as String
+        assert operacaoCompraXP['qtde'] == 30
+        assert operacaoCompraXP['ativo'] == acaoXP.id
+        assert operacaoCompraXP['valor_total_dolares'] == 1037.89
+
+    }
+
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosDolaresBrasil_e_Exterior.sql"])
+    void "importa nota de compra de acao estados unidos com dolar parte do brasil e parte do exterior" () {
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaNegociacaoAcaoUs_teste.txt'
+
+        operacaoService.importarOperacoesNotaNegociacaoUs(caminhoArquivo, nomeArquivo)
+
+        def notaNegociacaoGravada = notaNegociacaoRepository.fromNotaNegociacaoGroovyRow(notaNegociacaoRepository.listAll()[0])
+
+        //Dados gerais da nota gravados corretamente
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaLiquidacao)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.emolumentos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaOperacional)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.impostos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.irpfVendas)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.outrosCustos)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxaRegistroBmf)
+        Assert.assertEquals(new BigDecimal('0.00'), notaNegociacaoGravada.taxasBmfEmolFgar)
+        Assert.assertEquals(new BigDecimal('4.50'), notaNegociacaoGravada.valorDolarNaData)
+
+        def dolarDoBrasil = ativoRepository.getByTicker('br$')
+        def dolarDoExterior = ativoRepository.getByTicker('us$')
+        def acaoXP = ativoRepository.getByTicker('xp')
+
+        def dataOperacoes = LocalDate.of(2019, 12, 13)
+        //Saldos dos títulos determinados corretamente
+        assert dolarDoBrasil.tipo == TipoAtivoEnum.m
+        assert dolarDoBrasil.qtde == 962.11
+        assert dolarDoBrasil.valorTotalInvestido == 5051.08
+        assert dolarDoExterior.tipo == TipoAtivoEnum.m
+        assert dolarDoExterior.qtde == 0
+        assert dolarDoExterior.valorTotalInvestido == 0
+        assert acaoXP.tipo == TipoAtivoEnum.aus
+        assert acaoXP.qtde == 30
+        assert acaoXP.valorTotalInvestido == 4670.51
+        assert acaoXP.valorInvestidoDolares == 1037.89
+
+        //operações determinadas corretamente
+        def transferenciaSaidaDolarBrasil = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'br$')[0]
+        assert transferenciaSaidaDolarBrasil['valor_total_operacao'] == 198.92
+        assert transferenciaSaidaDolarBrasil['tipo_operacao'] == TipoOperacaoEnum.ts as String
+        assert transferenciaSaidaDolarBrasil['qtde'] == 37.89
+        assert transferenciaSaidaDolarBrasil['ativo'] == dolarDoBrasil.id
+        assert transferenciaSaidaDolarBrasil['nota_negociacao'] == notaNegociacaoGravada.id
+
+        def transferenciaSaidaDolarExterior = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'us$')[0]
+        assert transferenciaSaidaDolarExterior['valor_total_operacao'] == 5250.00
+        assert transferenciaSaidaDolarExterior['tipo_operacao'] == TipoOperacaoEnum.ts as String
+        assert transferenciaSaidaDolarExterior['qtde'] == 1000
+        assert transferenciaSaidaDolarExterior['ativo'] == dolarDoExterior.id
+        assert transferenciaSaidaDolarExterior['nota_negociacao'] == notaNegociacaoGravada.id
+
+        def operacaoCompraXP = operacaoRepository.getByDataOperacaoTicker(dataOperacoes, 'xp')[0]
+        assert operacaoCompraXP['valor_total_operacao'] == 4670.51
+        assert operacaoCompraXP['tipo_operacao'] == TipoOperacaoEnum.c as String
+        assert operacaoCompraXP['qtde'] == 30
+        assert operacaoCompraXP['ativo'] == acaoXP.id
+        assert operacaoCompraXP['valor_total_dolares'] == 1037.89
 
     }
 

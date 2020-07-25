@@ -16,7 +16,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Component
-class AtivosUsComponentService implements ComponentServiceTrait{
+class AtivosUsComponentService implements ComponentServiceTrait {
 
     AtivoRepository ativoRepository
     OperacaoRepository operacaoRepository
@@ -56,41 +56,8 @@ class AtivosUsComponentService implements ComponentServiceTrait{
     @Override
     List<Operacao> incluir(Operacao operacaoOriginal) {
         def operacoesGeradas = []
-        //Operacao com os dolares
-        Ativo dolar = ativoRepository.getByTicker('us$')
-        Operacao operacaoDolar = new Operacao(
-                idNotaNegociacao: operacaoOriginal.idNotaNegociacao,
-                data: operacaoOriginal.data,
-                ativo: dolar,
-                qtde: operacaoOriginal.valorOperacaoDolares, //valores de operações em dolar alterando o saldo de dolares
-        )
-        if(operacaoOriginal.tipoOperacao == TipoOperacaoEnum.c) {
-            //Em caso de compra da ação US, é necessária uma transferência de saída de dolares
-            if (operacaoDolar.ativo == null || operacaoDolar.ativo.qtde == 0){
-                throw new OperacaoInvalidaException('Não é permitido comprar ações US sem dolares disponíveis em carteira')
-            }
-            operacaoDolar.tipoOperacao = TipoOperacaoEnum.ts
-            def custoMedioDolarAtual = dolar.valorTotalInvestido / dolar.qtde
-            operacaoDolar.valorTotalOperacao = operacaoDolar.qtde * custoMedioDolarAtual
-            operacaoDolar.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolar)
-        }
-        else {
-            //Em caso de venda de ação US, devo gerar um crédito de dolares equivalente ao valor total recebido pela venda
-            if(operacaoDolar.ativo == null) {
-                operacaoDolar.ativo = Ativo.getInstanceWithAtributeMap(
-                        ticker: 'us$',
-                        tipo: TipoAtivoEnum.aus,
-                        nome: 'dolar',
-                        qtde: 0,
-                        valorTotalInvestido: 0,
-                        dataEntrada: LocalDate.now()
-                )
-            }
-            operacaoDolar.tipoOperacao = TipoOperacaoEnum.te
-            def custoMedioDolarAtual =  operacaoDolar.ativo.qtde != 0 ? operacaoDolar.ativo.valorTotalInvestido / operacaoDolar.ativo.qtde : 0
-            operacaoDolar.valorTotalOperacao = operacaoDolar.qtde * custoMedioDolarAtual
-            operacaoDolar.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolar)
-        }
+
+        List<Operacao> operacaoDolarList = gerarTransferenciasDeDolares(operacaoOriginal)
 
         //Operacao com a acao
         def ativo = ativoRepository.getByTicker(operacaoOriginal.ativo.ticker.toLowerCase())
@@ -108,9 +75,95 @@ class AtivosUsComponentService implements ComponentServiceTrait{
 
         operacaoAcao.id = operacaoRepository.incluir(operacaoAcao)
         operacoesGeradas << operacaoAcao
-        operacaoDolar.id = operacaoRepository.incluir(operacaoDolar)
-        ativoRepository.atualizar(operacaoDolar.ativo)
-        operacoesGeradas << operacaoDolar
+        operacaoDolarList.each {
+            operacaoRepository.incluir(it)
+            ativoRepository.atualizar(it.ativo)
+        }
+        operacoesGeradas.addAll(operacaoDolarList)
+
+        return operacoesGeradas
+    }
+
+    private List<Operacao> gerarTransferenciasDeDolares(Operacao operacaoOriginal) {
+        def operacaoList = []
+        Ativo dolarDoExterior = ativoRepository.getByTicker('us$')
+        Ativo dolarDoBrasil = ativoRepository.getByTicker('br$')
+        Operacao operacaoDolarExterior
+        Operacao operacaoDolarBrasil
+        if (operacaoOriginal.tipoOperacao == TipoOperacaoEnum.c) {
+            //Em caso de compra da ação US, é necessária uma transferência de saída de dolares. Tenta primeiro usar
+            // dolares orinados do exterior (melhor para impostos) e usa dolares transferidos do Brasil quando
+            // necessário
+
+            validarQtdesDolaresVsAcaoComprada(dolarDoExterior, dolarDoBrasil, operacaoOriginal)
+            def sobraOperacaoDolar = 0.0
+            def qtdeDolaresExteriorOperacao
+            if (operacaoOriginal.valorOperacaoDolares <= dolarDoExterior.qtde) {
+                qtdeDolaresExteriorOperacao = operacaoOriginal.valorOperacaoDolares
+                //valores de operações em dolar alterando o saldo de dolares
+            } else {
+                qtdeDolaresExteriorOperacao = dolarDoExterior.qtde
+                sobraOperacaoDolar = operacaoOriginal.valorOperacaoDolares - dolarDoExterior.qtde
+
+            }
+            if (qtdeDolaresExteriorOperacao > 0) {
+                operacaoDolarExterior = new Operacao(
+                        idNotaNegociacao: operacaoOriginal.idNotaNegociacao,
+                        data: operacaoOriginal.data,
+                        ativo: dolarDoExterior,
+                        qtde: qtdeDolaresExteriorOperacao,
+                        tipoOperacao: TipoOperacaoEnum.ts
+                )
+                def custoMedioDolarExteriorAtual = dolarDoExterior.valorTotalInvestido / dolarDoExterior.qtde
+                operacaoDolarExterior.valorTotalOperacao = operacaoDolarExterior.qtde * custoMedioDolarExteriorAtual
+                operacaoDolarExterior.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolarExterior)
+
+                operacaoList << operacaoDolarExterior
+
+            }
+
+            if (sobraOperacaoDolar > 0) {
+                operacaoDolarBrasil = new Operacao(
+                        idNotaNegociacao: operacaoOriginal.idNotaNegociacao,
+                        data: operacaoOriginal.data,
+                        ativo: dolarDoBrasil,
+                        qtde: sobraOperacaoDolar,
+                        tipoOperacao: TipoOperacaoEnum.ts
+                )
+                def custoMedioDolarBrasilAtual = dolarDoBrasil.valorTotalInvestido / dolarDoBrasil.qtde
+                operacaoDolarBrasil.valorTotalOperacao = operacaoDolarBrasil.qtde * custoMedioDolarBrasilAtual
+                operacaoDolarBrasil.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolarBrasil)
+
+                operacaoList << operacaoDolarBrasil
+            }
+
+        } else {
+            //Em caso de venda de ação US, devo gerar um crédito de dolares do tipo originário do exterior
+            // equivalente ao valor total recebido pela venda
+            operacaoDolarExterior = new Operacao(
+                    idNotaNegociacao: operacaoOriginal.idNotaNegociacao,
+                    data: operacaoOriginal.data,
+                    ativo: dolarDoExterior,
+                    qtde: operacaoOriginal.valorOperacaoDolares, //valores de operações em dolar alterando o saldo de dolares
+                    tipoOperacao: TipoOperacaoEnum.te
+            )
+            if (operacaoDolarExterior.ativo == null) {
+                operacaoDolarExterior.ativo = Ativo.getInstanceWithAtributeMap(
+                        ticker: 'us$',
+                        tipo: TipoAtivoEnum.aus,
+                        nome: 'dolar',
+                        qtde: 0,
+                        valorTotalInvestido: 0,
+                        dataEntrada: LocalDate.now(),
+                )
+            }
+            def custoMedioDolarAtual = operacaoDolarExterior.ativo.qtde != 0 ? operacaoDolarExterior.ativo.valorTotalInvestido / operacaoDolarExterior.ativo.qtde : 0
+            operacaoDolarExterior.valorTotalOperacao = operacaoDolarExterior.qtde * custoMedioDolarAtual
+            operacaoDolarExterior.ativo.atualizarAtivoAPartirDaOperacao(operacaoDolarExterior)
+
+            operacaoList << operacaoDolarExterior
+        }
+        operacaoList
     }
 
     /**
@@ -127,8 +180,7 @@ class AtivosUsComponentService implements ComponentServiceTrait{
             operacao.custoMedioDolares = operacao.ativo.obterCustoMedioUnitarioDolares()
             operacao.resultadoVenda = operacao.ativo.obterResultadoVenda(operacao.custoMedioOperacao, operacao.valorTotalOperacao, operacao.qtde)
             operacao.resultadoVendaDolares = operacao.valorOperacaoDolares - (operacao.custoMedioDolares * operacao.qtde)
-        }
-        else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
+        } else if (operacao.tipoOperacao == TipoOperacaoEnum.c && operacao.ativo.qtde < 0) {
             //Reducao de um short
             operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitario()
             operacao.custoMedioOperacao = operacao.ativo.obterCustoMedioUnitarioDolares()
@@ -139,4 +191,15 @@ class AtivosUsComponentService implements ComponentServiceTrait{
         [operacao]
     }
 
+    void validarQtdesDolaresVsAcaoComprada(Ativo dolarExterior, Ativo dolarBrasil, Operacao operacaoOriginal) {
+        if ((dolarExterior == null || dolarExterior.qtde == 0) && (dolarBrasil == null || dolarBrasil.qtde == 0)) {
+            throw new OperacaoInvalidaException('Não é permitido comprar ações US sem dolares disponíveis em carteira')
+        }
+        def qtdeDolarExterior = dolarExterior != null ? dolarExterior.qtde : 0.0
+        def qtdeDolarBrasil = dolarBrasil != null ? dolarBrasil.qtde : 0.0
+
+        if ((qtdeDolarExterior + qtdeDolarBrasil) < operacaoOriginal.valorOperacaoDolares) {
+            throw new OperacaoInvalidaException('Não é permitido comprar ações US sem dolares disponíveis em carteira')
+        }
+    }
 }
