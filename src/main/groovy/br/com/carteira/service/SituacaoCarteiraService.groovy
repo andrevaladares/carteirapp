@@ -91,11 +91,12 @@ class SituacaoCarteiraService {
         def nomeArquivo = "situacaoCarteira${dataReferencia}.csv"
 
         situacaoCarteira = situacaoCarteira.collect {it ->
-            TipoAtivoEnum tipoAtivoEnum = it['tipo']
+            TipoAtivoEnum tipoAtivoEnum = it['tipo'] as TipoAtivoEnum
             def identificador = tipoAtivoEnum.getIdEmSituacaoCarteira()
-            def valorInvestido = it['valor_investido']
-            def valorAtual = it['valor_atual']
+            def valorInvestido = it['valor_investido'] as BigDecimal
+            def valorAtual = it['valor_atual'] as BigDecimal
             def alocacao = it['valor_atual'] / valorTotalAtual
+            def rent = it['valor_atual'] / valorInvestido - 1
             new ExportacaoSituacaoDTO(
                     ativo: it[identificador],
                     tipo: tipoAtivoEnum,
@@ -103,22 +104,28 @@ class SituacaoCarteiraService {
                     dataSituacao: it['data'].toLocalDate(),
                     qtde: it['qtde_disponivel'],
                     valorInvestido: valorInvestido,
+                    valorInvestidoDolares: it['valor_investido_dolares'],
                     valorAtual: valorAtual,
+                    valorAtualDolares: it['valor_atual_dolares'],
+                    rentabilidade: rent,
                     alocacaoAtual: alocacao
             )}.groupBy {it['ativo']}
                 .collectEntries {[(it.key): ['tipo': it.value['tipo'][0],
                                              'dataEntrada': it.value.min {it['dataEntrada']}['dataEntrada'],
                                              'dataSituacao': it.value['dataSituacao'][0],
-                                             'qtde': it.value.sum {it['qtde']},
+                                             'qtde': (it.value.sum {it['qtde']} as String).replace('.', ','),
                                              'valorInvestido': (it.value.sum {it['valorInvestido']} as String).replace('.', ','),
+                                             'valorInvestidoDolares': (it.value.sum {it['valorInvestidoDolares']} as String).replace('.', ','),
                                              'valorAtual': (it.value.sum {it['valorAtual']} as String).replace('.', ','),
+                                             'valorAtualDolares': (it.value.sum {it['valorAtualDolares']} as String)?.replace('.', ','),
+                                             'rentabilidade': (it.value.sum {it['rentabilidade']} as String)?.replace('.', ','),
                                              'alocacaoAtual': (it.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
                 ]]}
 
         new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter('utf-8') { writer ->
-            writer.writeLine('ativo;tipo;dataEntrada;dataSituacao;qtde;valorInvestido;valorAtual;alocacaoAtual(%)')
+            writer.writeLine('ativo;tipo;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade;alocacaoAtual(%)')
             situacaoCarteira.each { it ->
-                writer.writeLine("${it.key};${it.value.tipo};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorAtual};${it.value.alocacaoAtual}")
+                writer.writeLine("${it.key};${it.value.tipo};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
             }
         }
     }

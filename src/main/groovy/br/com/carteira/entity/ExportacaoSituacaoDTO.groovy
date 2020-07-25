@@ -9,7 +9,9 @@ class ExportacaoSituacaoDTO {
     LocalDate dataSituacao
     BigDecimal qtde
     BigDecimal valorInvestido
+    BigDecimal valorInvestidoDolares
     BigDecimal valorAtual
+    BigDecimal valorAtualDolares
     BigDecimal rentabilidade
     BigDecimal alocacaoAtual
 }
