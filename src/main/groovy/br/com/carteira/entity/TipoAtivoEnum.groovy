@@ -48,7 +48,11 @@ enum TipoAtivoEnum {
     }
 
     static List<TipoAtivoEnum> getTesouroFundo(){
-        [tis,tse,tps,fiv]
+        [fiv] + getTesouro()
+    }
+
+    static List<TipoAtivoEnum> getTesouro(){
+        [tis,tse,tps]
     }
 
     static List<TipoAtivoEnum> getTiposComIncidenciaImposto(){

@@ -1,0 +1,8 @@
+Dados da nota
+Data da movimentação	25/12/2019
+CNPJ corretora	2332886000104
+Nome corretora	XP
+Regime resgate	fifo
+Dados das operações
+tipo	cnpj fundo	nome ativo	tipo ativo	Valor operação	Qtde cotas	Valor da cota
+v		Tesouro Selic 2025	tse	19000,00	3,000000	4634,14634146342

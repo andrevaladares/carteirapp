@@ -26,14 +26,14 @@ class OperacoesFundoInvestimento implements OperacoesAtivo {
             data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo"""
 
 
-        if(ativo.tipo == TipoAtivoEnum.tis) {
+        if(ativo.tipo in TipoAtivoEnum.getTesouro()) {
             query += """ where nome = $ativo.nome"""
         }
         else if(ativo.tipo == TipoAtivoEnum.fiv){
             query += """ where cnpj_fundo = $ativo.cnpjFundo"""
         }
         else {
-            throw new OperacaoInvalidaException("nesse ponto a operacao de update só pode ocorrer para fundo de investimento ou tyesouro direto")
+            throw new OperacaoInvalidaException("nesse ponto a operacao de update só pode ocorrer para fundo de investimento ou tesouro direto")
         }
         query += """ and data_entrada = $ativo.dataEntrada and tipo = ${ativo.tipo as String}"""
 

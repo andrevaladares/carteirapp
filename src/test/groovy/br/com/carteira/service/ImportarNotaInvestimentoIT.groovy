@@ -193,4 +193,35 @@ class ImportarNotaInvestimentoIT {
         assert operacoes[1]['resultado_venda'] == 632.25
     }
 
+    @Test
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroSelicFifo.sql"])
+    void "realiza corretamente venda de tesouro selic fifo"(){
+        def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
+        def nomeArquivo = 'notaInvestimentoVendaTesouroSelic.txt'
+
+        operacaoService.importarOperacoesNotaInvestimento(caminhoArquivo, nomeArquivo)
+
+        def ativoExemplo = Ativo.getInstanceWithAtributeMap(nome: 'Tesouro Selic 2025')
+
+        def listOfAtivos = ativoRepository.getAllByAtivoExample(ativoExemplo, 'asc')
+
+        def dataOperacoes = LocalDate.of(2019, 12, 25)
+
+        assert listOfAtivos.size() == 1
+        assert listOfAtivos[0].qtde == 0.8
+        assert listOfAtivos[0].valorTotalInvestido == 640
+
+        //Valor de operações calculados corretamente em função dos custos
+        List<GroovyRowResult> operacoes = operacaoRepository.getByDataOperacaoNomeAtivo(dataOperacoes, 'Tesouro Selic 2025')
+        assert operacoes.size() == 2
+        assert operacoes[0]['qtde'] == 2.3
+        assert operacoes[0]['valor_total_operacao'] == 14566.67
+        assert operacoes[0]['custo_medio_operacao'] == 2608.69565217
+        assert operacoes[0]['resultado_venda'] == 8566.67
+        assert operacoes[1]['qtde'] == 0.7
+        assert operacoes[1]['valor_total_operacao'] == 4433.33
+        assert operacoes[1]['custo_medio_operacao'] == 800
+        assert operacoes[1]['resultado_venda'] == 3873.33
+    }
+
 }
