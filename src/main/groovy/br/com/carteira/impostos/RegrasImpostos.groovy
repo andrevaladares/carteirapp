@@ -57,8 +57,8 @@ trait RegrasImpostos {
             inner join ativo at on op.ativo = at.id
             where at.tipo = '${tipoDeAtivo as String}'
                   and month(op.data) = :mes and year(op.data) = :ano
-                  and op.custo_medio_operacao is not null
-                  and op.resultado_venda is not null
+                  and op.custo_medio_operacao is not null and op.custo_medio_operacao <> 0
+                  and op.resultado_venda is not null and op.resultado_venda <> 0
         """
         def somasOperacoesMes = new Sql(DataSourceUtils.getConnection(dataSource)).
                 rows(['mes': mesAno.monthValue, 'ano': mesAno.year], qryValoresConsolidadosMes)

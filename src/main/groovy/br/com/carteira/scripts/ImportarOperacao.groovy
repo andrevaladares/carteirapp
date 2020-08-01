@@ -130,9 +130,9 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 //importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200531.txt', LocalDate.of(2020, 5, 31), 5.4257)
 //exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,5,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoXP_Ouro_20200622.txt')
-//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'NotaNegociacaoAvenueCompraCZZ_20200528.txt')
-importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoXPTesouro_20200603.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoDolarAvenue20200626.txt')
+//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaNegociacaoAcoesAvenue20200626.txt')
+//importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'notaInvestimentoBTGFundoSelic_20200625.txt')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 4,3), qtdeComeCotas: new BigDecimal(15.38454166)),
@@ -143,4 +143,4 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
 ])
 */
 //exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 4), [TipoAtivoEnum.fii, TipoAtivoEnum.a])
-//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 5))
+exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 6))

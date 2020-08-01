@@ -20,7 +20,8 @@ class ConsolidacaoImpostos {
             new RegrasImpostosAcoes(),
             new RegrasImpostosFIIs(),
             new RegrasImpostosFINs(),
-            new RegrasImpostosAcoesUs()
+            new RegrasImpostosAcoesUs(),
+            new RegrasImpostosOuro()
     ]
 
     @Autowired
