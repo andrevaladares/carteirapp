@@ -6,10 +6,10 @@ class SituacaoCarteira {
     Long id
     LocalDate data
     Long idAtivo
-    BigDecimal qtdeDisponivel
-    BigDecimal valorInvestido
-    BigDecimal valorInvestidoDolares
-    BigDecimal valorAtual
-    BigDecimal valorAtualDolares
+    BigDecimal qtdeDisponivel = 0
+    BigDecimal valorInvestido = 0
+    BigDecimal valorInvestidoDolares = 0
+    BigDecimal valorAtual = 0
+    BigDecimal valorAtualDolares = 0
 
 }

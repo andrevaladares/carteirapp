@@ -64,7 +64,7 @@ class SituacaoCarteiraService {
         if(tipoEhTesouroFundo) {
             valorAtual = valorAtual / quantidadeInformadaEmCarteira * ativo.qtde
         }
-        def valorAtualDolares = null
+        def valorAtualDolares = 0
         if(ativo.tipo == TipoAtivoEnum.aus) {
             valorAtualDolares = valorAtual
             valorAtual = valorAtual * valorDolarReferencia
