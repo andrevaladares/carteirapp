@@ -2,7 +2,6 @@ package br.com.carteira.service.serviceComponents
 
 import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.Operacao
-import br.com.carteira.entity.RegimeResgateEnum
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.ArquivoInvalidoException
@@ -201,5 +200,34 @@ class AtivosUsComponentService implements ComponentServiceTrait {
         if ((qtdeDolarExterior + qtdeDolarBrasil) < operacaoOriginal.valorOperacaoDolares) {
             throw new OperacaoInvalidaException('Não é permitido comprar ações US sem dolares disponíveis em carteira')
         }
+    }
+
+    void incluirDividendo(LocalDate dataDividendo, String tickerAtivoGerador, BigDecimal valorDividendo) {
+        def ativoGerador = ativoRepository.getByTicker(tickerAtivoGerador)
+        //dividendo gera dolares originados dos investimentos internacionais
+        def ativoFoco = ativoRepository.getByTicker('us$')
+
+        if(!ativoGerador) {
+            throw new OperacaoInvalidaException("""Erro ao tentar realizar operação de dividendo para ativo inexistente.
+             Ativo: $tickerAtivoGerador
+            """)
+        }
+        def operacaoDividendo = new Operacao(
+                ativo: ativoFoco,
+                ativoGerador: ativoGerador,
+                data: dataDividendo,
+                qtde: valorDividendo,
+                tipoOperacao: TipoOperacaoEnum.div,
+                custoMedioOperacao: 0,
+                custoMedioDolares: 0,
+                valorOperacaoDolares: 0,
+                valorTotalOperacao: 0,
+                resultadoVenda: 0,
+                resultadoVendaDolares: 0
+        )
+        operacaoRepository.incluir(operacaoDividendo)
+        //Adiciona os dolares recebidos
+        ativoFoco.qtde+=valorDividendo
+        ativoRepository.atualizar(ativoFoco)
     }
 }

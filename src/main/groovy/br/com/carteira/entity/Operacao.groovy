@@ -9,6 +9,7 @@ class Operacao {
     TipoOperacaoEnum tipoOperacao
     LocalDate data
     Ativo ativo
+    Ativo ativoGerador
     BigDecimal qtde = 0.0
     BigDecimal valorTotalOperacao = 0.0
     BigDecimal custoMedioOperacao = 0.0

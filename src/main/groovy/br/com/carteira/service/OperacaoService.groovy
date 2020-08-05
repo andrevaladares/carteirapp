@@ -169,4 +169,9 @@ class OperacaoService {
     List<Operacao> incluiOperacoesComeCotas(String cnpjFundo, LocalDate dataOperacaoComeCotas, List<OperacaoComeCotasDTO> operacaoComeCotasDTO) {
         fundosInvestimentosComponentService.incluiOperacoesComeCotas(cnpjFundo, dataOperacaoComeCotas, operacaoComeCotasDTO)
     }
+
+    @Transactional
+    void importarDividendoAtivoUs(LocalDate dataDividendo, String identificadorAtivoGerador, BigDecimal valorDividendo) {
+        ativosUsComponentService.incluirDividendo(dataDividendo, identificadorAtivoGerador, valorDividendo)
+    }
 }
