@@ -43,7 +43,8 @@ trait OperacoesAtivo {
         """
             update ativo set nome = $ativo.nome, tipo = ${ativo.tipo as String},
             setor = $ativo.setor, qtde = $ativo.qtde, valor_total_investido = $ativo.valorTotalInvestido,
-            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo, valor_investido_dolares = $ativo.valorInvestidoDolares
+            data_entrada = $ativo.dataEntrada, cnpj_fundo = $ativo.cnpjFundo, valor_investido_dolares = $ativo.valorInvestidoDolares,
+            book = $ativo.book
             where ticker = $ativo.ticker and tipo = ${ativo.tipo as String} 
         """
     }

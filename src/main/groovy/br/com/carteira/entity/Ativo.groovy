@@ -14,6 +14,7 @@ class Ativo {
     BigDecimal valorInvestidoDolares = 0.0
     LocalDate dataEntrada
     String cnpjFundo
+    String book
     OperacoesAtivo operacoesAtivo
 
     private Ativo() {

@@ -3,6 +3,7 @@ package br.com.carteira.scripts
 import br.com.carteira.entity.OperacaoComeCotasDTO
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.impostos.ConsolidacaoImpostos
+import br.com.carteira.service.AtivoService
 import br.com.carteira.service.OperacaoService
 import br.com.carteira.service.SituacaoCarteiraService
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +21,8 @@ class ImportarDados {
     OperacaoService operacaoService
     @Autowired
     SituacaoCarteiraService situacaoCarteiraService
+    @Autowired
+    AtivoService ativoService
 
     void importarOperacoes(String caminho, String arquivo) {
         println 'Iniciando importação de operações'
@@ -90,6 +93,10 @@ class ImportarDados {
     void importarDividendoAtivoUs(LocalDate dataDividendo, String identificadorAtivoGerador, BigDecimal valorDividendo) {
         operacaoService.importarDividendoAtivoUs(dataDividendo, identificadorAtivoGerador, valorDividendo)
     }
+
+    void atribuirBook(String nomeBook, TipoAtivoEnum tipoDoAtivo, String identificadorAtivo) {
+        ativoService.atribuirBook(nomeBook, tipoDoAtivo, identificadorAtivo)
+    }
 }
 
 @Component
@@ -131,12 +138,14 @@ ExportarDados exportarDados = context.getBean(ExportarDados.class)
 
 //========= Execute aqui o metodo que deseja
 
-//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200630.txt', LocalDate.of(2020, 6, 30), 5.4754)
-//exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,6,30))
+//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'situacaoCarteiraCompleta20200731.txt', LocalDate.of(2020, 7, 31), 5.2027)
+exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', LocalDate.of(2020,7,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200728_NotaCorretagem_avenue_dolares.txt')
+//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200525_NotaCorretagem_xp.txt')
 //importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200714_NotaCorretagem_avenue_Square.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200728_NotaInvestimento_btg.txt')
+//importarDados.importarDividendoAtivoUs(LocalDate.of(2020, 7, 16), 'ess', 7.88)
+//importarDados.atribuirBook('fii', TipoAtivoEnum.fii, 'brcr11')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2019, 4,3), qtdeComeCotas: new BigDecimal(15.38454166)),
@@ -146,6 +155,6 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
         new OperacaoComeCotasDTO(dataAplicacao: LocalDate.of(2020, 4,30), qtdeComeCotas: new BigDecimal(1.49287666))
 ])
 */
-//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 4), [TipoAtivoEnum.fii, TipoAtivoEnum.a])
-//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 6))
-importarDados.importarDividendoAtivoUs(LocalDate.of(2020, 7, 16), 'ess', 7.88)
+//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 7), [TipoAtivoEnum.a])
+//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 7))
+//O valor tem que ser líquido de impostos, quando for o caso
