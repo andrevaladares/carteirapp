@@ -62,7 +62,10 @@ class SituacaoCarteiraRepository {
     }
 
     List<GroovyRowResult> listaTodosPorDataReferencia(LocalDate dataReferencia) {
-        def sql = "select * from situacao_carteira sc inner join ativo a on sc.ativo = a.id where sc.data = :dataReferencia"
+        def sql = """select * from situacao_carteira sc inner join ativo a on sc.ativo = a.id 
+                        where sc.data = :dataReferencia
+                        order by a.book, a.tipo, a.ticker, a.nome, a.data_entrada
+                  """
 
         new Sql(DataSourceUtils.getConnection(dataSource)).rows(['dataReferencia': dataReferencia], sql)
     }

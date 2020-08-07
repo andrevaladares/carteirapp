@@ -100,6 +100,7 @@ class SituacaoCarteiraService {
             new ExportacaoSituacaoDTO(
                     ativo: it[identificador],
                     tipo: tipoAtivoEnum,
+                    bookAtivo: it['book'],
                     dataEntrada: it['data_entrada'].toLocalDate(),
                     dataSituacao: it['data'].toLocalDate(),
                     qtde: it['qtde_disponivel'],
@@ -111,6 +112,7 @@ class SituacaoCarteiraService {
                     alocacaoAtual: alocacao
             )}.groupBy {it['ativo']}
                 .collectEntries {[(it.key): ['tipo': it.value['tipo'][0],
+                                             'book': it.value['bookAtivo'][0],
                                              'dataEntrada': it.value.min {it['dataEntrada']}['dataEntrada'],
                                              'dataSituacao': it.value['dataSituacao'][0],
                                              'qtde': (it.value.sum {it['qtde']} as String).replace('.', ','),
@@ -122,10 +124,10 @@ class SituacaoCarteiraService {
                                              'alocacaoAtual': (it.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
                 ]]}
 
-        new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter('utf-8') { writer ->
-            writer.writeLine('ativo;tipo;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade;alocacaoAtual(%)')
+        new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter() { writer ->
+            writer.writeLine('ativo;tipo;book;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade;alocacaoAtual(%)')
             situacaoCarteira.each { it ->
-                writer.writeLine("${it.key};${it.value.tipo};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
+                writer.writeLine("${it.key};${it.value.tipo};${it.value.book};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
             }
         }
     }

@@ -5,6 +5,7 @@ import java.time.LocalDate
 class ExportacaoSituacaoDTO {
     String ativo
     TipoAtivoEnum tipo
+    String bookAtivo
     LocalDate dataEntrada
     LocalDate dataSituacao
     BigDecimal qtde
