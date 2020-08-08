@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import java.time.LocalDate
+import java.util.Map.Entry
 
 @Service
 @Transactional(readOnly = true)
@@ -86,51 +87,73 @@ class SituacaoCarteiraService {
     }
 
     void geraSituacaoCarteira(String caminho, LocalDate dataReferencia) {
-        def situacaoCarteira = situacaoCarteiraRepository.listaTodosPorDataReferencia(dataReferencia)
-        def valorTotalAtual = situacaoCarteira.sum({ it -> it['valor_atual'] })
+        //trata books padrão
+        String[] booksAExcluir = ["extra", "emergência"]
+        def situacaoCarteira = situacaoCarteiraRepository.listaTodosPorDataReferenciaComExcecaoDe(dataReferencia, booksAExcluir)
+        def valorTotalAtual = situacaoCarteira.sum({ it -> it['valor_atual'] }) as BigDecimal
         def nomeArquivo = "situacaoCarteira${dataReferencia}.csv"
 
-        situacaoCarteira = situacaoCarteira.collect {it ->
-            TipoAtivoEnum tipoAtivoEnum = it['tipo'] as TipoAtivoEnum
-            def identificador = tipoAtivoEnum.getIdEmSituacaoCarteira()
-            def valorInvestido = it['valor_investido'] as BigDecimal
-            def valorAtual = it['valor_atual'] as BigDecimal
-            def alocacao = it['valor_atual'] / valorTotalAtual
-            def rent = it['valor_atual'] / valorInvestido - 1
-            new ExportacaoSituacaoDTO(
-                    ativo: it[identificador],
-                    tipo: tipoAtivoEnum,
-                    bookAtivo: it['book'],
-                    dataEntrada: it['data_entrada'].toLocalDate(),
-                    dataSituacao: it['data'].toLocalDate(),
-                    qtde: it['qtde_disponivel'],
-                    valorInvestido: valorInvestido,
-                    valorInvestidoDolares: it['valor_investido_dolares'],
-                    valorAtual: valorAtual,
-                    valorAtualDolares: it['valor_atual_dolares'],
-                    rentabilidade: rent,
-                    alocacaoAtual: alocacao
-            )}.groupBy {it['ativo']}
-                .collectEntries {[(it.key): ['tipo': it.value['tipo'][0],
-                                             'book': it.value['bookAtivo'][0],
-                                             'dataEntrada': it.value.min {it['dataEntrada']}['dataEntrada'],
-                                             'dataSituacao': it.value['dataSituacao'][0],
-                                             'qtde': (it.value.sum {it['qtde']} as String).replace('.', ','),
-                                             'valorInvestido': (it.value.sum {it['valorInvestido']} as String).replace('.', ','),
-                                             'valorInvestidoDolares': (it.value.sum {it['valorInvestidoDolares']} as String).replace('.', ','),
-                                             'valorAtual': (it.value.sum {it['valorAtual']} as String).replace('.', ','),
-                                             'valorAtualDolares': (it.value.sum {it['valorAtualDolares']} as String)?.replace('.', ','),
-                                             'rentabilidade': (it.value.sum {it['rentabilidade']} as String)?.replace('.', ','),
-                                             'alocacaoAtual': (it.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
-                ]]}
+        situacaoCarteira = situacaoCarteira.collect {geraExportacaoDTO(it, valorTotalAtual)}
+                .groupBy {it['ativo']}
+                .collectEntries {geraMapaValores(it, valorTotalAtual)}
 
-        new File('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', nomeArquivo).withWriter() { writer ->
+        //trata books extras
+        booksAExcluir = ['fii', 'ações', 'metais', 'tático', 'renda fixa', 'moedas', 'internacional']
+        def situacaoExtras = situacaoCarteiraRepository.listaTodosPorDataReferenciaComExcecaoDe(dataReferencia, booksAExcluir)
+        valorTotalAtual = situacaoExtras.sum({ it -> it['valor_atual'] }) as BigDecimal
+        situacaoExtras = situacaoExtras.collect {  geraExportacaoDTO(it, valorTotalAtual)}
+                .groupBy {it['ativo']}
+                .collectEntries {geraMapaValores(it, valorTotalAtual)}
+
+        new File(caminho, nomeArquivo).withWriter() { writer ->
             writer.writeLine('ativo;tipo;book;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade;alocacaoAtual(%)')
             situacaoCarteira.each { it ->
                 writer.writeLine("${it.key};${it.value.tipo};${it.value.book};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
             }
+            writer.writeLine('')
+            writer.writeLine('')
+            situacaoExtras.each { it ->
+                writer.writeLine("${it.key};${it.value.tipo};${it.value.book};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
+            }
         }
     }
+
+    Map geraMapaValores(Entry<Object, List<ExportacaoSituacaoDTO>> valoresAtivo, BigDecimal valorTotalAtual) {
+        [(valoresAtivo.key): ['tipo'                 : valoresAtivo.value['tipo'][0],
+                              'book'                 : valoresAtivo.value['bookAtivo'][0],
+                              'dataEntrada'          : valoresAtivo.value.min {it['dataEntrada']}['dataEntrada'],
+                              'dataSituacao'         : valoresAtivo.value['dataSituacao'][0],
+                              'qtde'                 : (valoresAtivo.value.sum {it['qtde']} as String).replace('.', ','),
+                              'valorInvestido'       : (valoresAtivo.value.sum {it['valorInvestido']} as String).replace('.', ','),
+                              'valorInvestidoDolares': (valoresAtivo.value.sum {it['valorInvestidoDolares']} as String).replace('.', ','),
+                              'valorAtual'           : (valoresAtivo.value.sum {it['valorAtual']} as String).replace('.', ','),
+                              'valorAtualDolares'    : (valoresAtivo.value.sum {it['valorAtualDolares']} as String)?.replace('.', ','),
+                              'rentabilidade'        : (valoresAtivo.value.sum {it['rentabilidade']} as String)?.replace('.', ','),
+                              'alocacaoAtual'        : (valoresAtivo.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
+        ]]
+    }
+
+    ExportacaoSituacaoDTO geraExportacaoDTO(GroovyRowResult groovyRowResult, BigDecimal valorTotalAtual) {
+        TipoAtivoEnum tipoAtivoEnum = groovyRowResult['tipo'] as TipoAtivoEnum
+        def identificador = tipoAtivoEnum.getIdEmSituacaoCarteira()
+        def valorInvestido = groovyRowResult['valor_investido'] as BigDecimal
+        def valorAtual = groovyRowResult['valor_atual'] as BigDecimal
+        def alocacao = groovyRowResult['valor_atual'] / valorTotalAtual
+        def rent = groovyRowResult['valor_atual'] / valorInvestido - 1
+        new ExportacaoSituacaoDTO(
+                ativo: groovyRowResult[identificador],
+                tipo: tipoAtivoEnum,
+                bookAtivo: groovyRowResult['book'],
+                dataEntrada: groovyRowResult['data_entrada'].toLocalDate(),
+                dataSituacao: groovyRowResult['data'].toLocalDate(),
+                qtde: groovyRowResult['qtde_disponivel'],
+                valorInvestido: valorInvestido,
+                valorInvestidoDolares: groovyRowResult['valor_investido_dolares'],
+                valorAtual: valorAtual,
+                valorAtualDolares: groovyRowResult['valor_atual_dolares'],
+                rentabilidade: rent,
+                alocacaoAtual: alocacao
+        )    }
 
     private String defineRentabilidade(GroovyRowResult situacaoRowResult) {
         def rentabilidade = String.valueOf((situacaoRowResult['valor_atual'] / situacaoRowResult['valor_investido']) - 1).replace('.', ',')

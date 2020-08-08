@@ -61,12 +61,32 @@ class SituacaoCarteiraRepository {
         )
     }
 
-    List<GroovyRowResult> listaTodosPorDataReferencia(LocalDate dataReferencia) {
-        def sql = """select * from situacao_carteira sc inner join ativo a on sc.ativo = a.id 
+    List<GroovyRowResult> listaTodosPorDataReferenciaComExcecaoDe(LocalDate dataReferencia, String[] booksAExcluir) {
+        def booksAExcluirMapa = montaMapaStrings(booksAExcluir)
+        def sql = """
+                        select * from situacao_carteira sc inner join ativo a on sc.ativo = a.id 
                         where sc.data = :dataReferencia
-                        order by a.book, a.tipo, a.ticker, a.nome, a.data_entrada
                   """
+        if(booksAExcluirMapa) {
+            sql += """
+                        and a.book not in (${booksAExcluirMapa.keySet().collect{":$it"}.join(',')})
+                  """
+        }
+        sql += """
+                        order by a.book, a.tipo, a.ticker, a.nome, a.data_entrada
+               """
 
-        new Sql(DataSourceUtils.getConnection(dataSource)).rows(['dataReferencia': dataReferencia], sql)
+        def mapaParametros = ['dataReferencia': dataReferencia]
+        mapaParametros.putAll(booksAExcluirMapa)
+
+        new Sql(DataSourceUtils.getConnection(dataSource)).rows(sql, mapaParametros)
+    }
+
+    Map montaMapaStrings(String[] strings) {
+        def contador = 0
+        strings.collectEntries({
+            contador++
+            ['str' + contador, it]
+        })
     }
 }

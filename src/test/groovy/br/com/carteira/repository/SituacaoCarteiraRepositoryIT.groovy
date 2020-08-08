@@ -24,7 +24,7 @@ class SituacaoCarteiraRepositoryIT {
 
     @Test
     void "consolida corretamente os registros de situacao do mesmo ativo"(){
-        def carteira = situacaoCarteiraRepository.listaTodosPorDataReferencia(LocalDate.of(2020, 2, 28))
+        def carteira = situacaoCarteiraRepository.listaTodosPorDataReferenciaComExcecaoDe(LocalDate.of(2020, 2, 28))
         def valorTotalAtual = carteira.sum({ it -> it['valor_atual'] })
         carteira = carteira.collect {it ->
             TipoAtivoEnum tipoAtivoEnum = it['tipo']
