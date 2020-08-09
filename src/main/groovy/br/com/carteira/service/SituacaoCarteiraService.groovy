@@ -111,7 +111,7 @@ class SituacaoCarteiraService {
                 .collectEntries {geraMapaValores(it, valorTotalAtual)}
 
         new File(caminho, nomeArquivo).withWriter() { writer ->
-            writer.writeLine('ativo;tipo;book;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade;alocacaoAtual(%)')
+            writer.writeLine('ativo;tipo;book;dataEntrada;dataSituacao;qtde;valorInvestido;valorInvestidoDolares;valorAtual;valorAtualDolares;rentabilidade(%);alocacaoAtual(%)')
             situacaoCarteira.each { it ->
                 writer.writeLine("${it.key};${it.value.tipo};${it.value.book};${it.value.dataEntrada};${it.value.dataSituacao};${it.value.qtde};${it.value.valorInvestido};${it.value.valorInvestidoDolares};${it.value.valorAtual};${it.value.valorAtualDolares};${it.value.rentabilidade};${it.value.alocacaoAtual}")
             }
@@ -124,6 +124,7 @@ class SituacaoCarteiraService {
     }
 
     Map geraMapaValores(Entry<Object, List<ExportacaoSituacaoDTO>> valoresAtivo, BigDecimal valorTotalAtual) {
+        def rentabilidade = valoresAtivo.value.sum {it['valorAtual']} / valoresAtivo.value.sum {it['valorInvestido']} - 1
         [(valoresAtivo.key): ['tipo'                 : valoresAtivo.value['tipo'][0],
                               'book'                 : valoresAtivo.value['bookAtivo'][0],
                               'dataEntrada'          : valoresAtivo.value.min {it['dataEntrada']}['dataEntrada'],
@@ -133,7 +134,7 @@ class SituacaoCarteiraService {
                               'valorInvestidoDolares': (valoresAtivo.value.sum {it['valorInvestidoDolares']} as String).replace('.', ','),
                               'valorAtual'           : (valoresAtivo.value.sum {it['valorAtual']} as String).replace('.', ','),
                               'valorAtualDolares'    : (valoresAtivo.value.sum {it['valorAtualDolares']} as String)?.replace('.', ','),
-                              'rentabilidade'        : (valoresAtivo.value.sum {it['rentabilidade']} as String)?.replace('.', ','),
+                              'rentabilidade'        : (rentabilidade as String)?.replace('.', ','),
                               'alocacaoAtual'        : (valoresAtivo.value.sum {it['valorAtual']} / valorTotalAtual as String).replace('.', ',')
         ]]
     }
@@ -144,7 +145,6 @@ class SituacaoCarteiraService {
         def valorInvestido = groovyRowResult['valor_investido'] as BigDecimal
         def valorAtual = groovyRowResult['valor_atual'] as BigDecimal
         def alocacao = groovyRowResult['valor_atual'] / valorTotalAtual
-        def rent = groovyRowResult['valor_atual'] / valorInvestido - 1
         new ExportacaoSituacaoDTO(
                 ativo: groovyRowResult[identificador],
                 tipo: tipoAtivoEnum,
@@ -156,14 +156,7 @@ class SituacaoCarteiraService {
                 valorInvestidoDolares: groovyRowResult['valor_investido_dolares'],
                 valorAtual: valorAtual,
                 valorAtualDolares: groovyRowResult['valor_atual_dolares'],
-                rentabilidade: rent,
                 alocacaoAtual: alocacao
-        )    }
-
-    private String defineRentabilidade(GroovyRowResult situacaoRowResult) {
-        def rentabilidade = String.valueOf((situacaoRowResult['valor_atual'] / situacaoRowResult['valor_investido']) - 1).replace('.', ',')
-
-        rentabilidade
+        )
     }
-
 }
