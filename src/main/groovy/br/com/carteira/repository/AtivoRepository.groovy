@@ -28,6 +28,11 @@ class AtivoRepository {
         return resultado
     }
 
+    List listAllComSaldo() {
+        List resultado = new Sql(DataSourceUtils.getConnection(dataSource)).rows('select * from ativo where qtde <> 0')
+        return resultado
+    }
+
     @SuppressWarnings("GroovyAssignabilityCheck")
     Long incluir(Ativo ativo) {
         ativo.ticker = ativo.ticker ? ativo.ticker.toLowerCase() : null

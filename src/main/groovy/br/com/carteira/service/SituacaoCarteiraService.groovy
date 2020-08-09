@@ -31,6 +31,7 @@ class SituacaoCarteiraService {
 
     @Transactional
     void importarSituacaoAtivos(String caminhoArquivo, String nomeArquivo, LocalDate dataReferencia, BigDecimal valorDolarReferencia) {
+        def contadorAtivosProcessados = 0
         new File(caminhoArquivo, nomeArquivo)
                 .collect { it -> it.split('\\t') }
                 .findAll { it.length == 6 && it[0] != 'Papel' }
@@ -39,9 +40,13 @@ class SituacaoCarteiraService {
                     ativos.each {ativo ->
                         SituacaoCarteira situacaoCarteira = montaSituacao(it, dataReferencia, ativo, valorDolarReferencia)
                         incluir(situacaoCarteira)
-
+                        contadorAtivosProcessados++
                     }
                 }
+        def ativosNaBaseComSaldo = ativoRepository.listAllComSaldo()
+        if (ativosNaBaseComSaldo.size()!=contadorAtivosProcessados) {
+            println("ATENÇÃO: A QTDE DE ATIVOS COM SALDO DIFERE DA QTDE ATIVOS PROCESSADOS AGORA")
+        }
     }
 
     SituacaoCarteira montaSituacao(String[] linhaArquivo, LocalDate dataReferencia, Ativo ativo, BigDecimal valorDolarReferencia) {
