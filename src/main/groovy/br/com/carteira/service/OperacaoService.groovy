@@ -6,6 +6,7 @@ import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.OperacaoComeCotasDTO
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
+import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.ArquivoInvalidoException
 import br.com.carteira.repository.NotaInvestimentoRepository
 import br.com.carteira.repository.NotaNegociacaoRepository
@@ -171,7 +172,40 @@ class OperacaoService {
     }
 
     @Transactional
-    void importarDividendoAtivoUs(LocalDate dataDividendo, String identificadorAtivoGerador, BigDecimal valorDividendo) {
-        ativosUsComponentService.incluirDividendo(dataDividendo, identificadorAtivoGerador, valorDividendo)
+    void lancarDividendo(String tickerMoedaFoco, LocalDate dataDividendo, String identificadorAtivoGerador, BigDecimal valorDividendo) {
+        ativosEmGeralComponentService.incluirDividendo(tickerMoedaFoco, dataDividendo, identificadorAtivoGerador, valorDividendo)
+    }
+
+    @Transactional
+    void desdobrarAcao(LocalDate data, String ticker, Integer multiplicador) {
+        def ativo = ativoRepository.getByTicker(ticker)
+        ativo.qtde*=multiplicador
+        def operacao = new Operacao(
+                data: data,
+                ativo: ativo,
+                qtde: multiplicador,
+                tipoOperacao: TipoOperacaoEnum.d
+        )
+        operacaoRepository.incluir(operacao)
+        ativoRepository.atualizar(ativo)
+    }
+
+    @Transactional
+    void agruparAcao(LocalDate data, String ticker, Integer divisor) {
+        def ativo = ativoRepository.getByTicker(ticker)
+        ativo.qtde/=divisor
+        def operacao = new Operacao(
+                data: data,
+                ativo: ativo,
+                qtde: divisor,
+                tipoOperacao: TipoOperacaoEnum.a
+        )
+        operacaoRepository.incluir(operacao)
+        ativoRepository.atualizar(ativo)
+    }
+
+    @Transactional
+    void lancarJuroTesouro(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
+        ativosEmGeralComponentService.incluirJuroTesouro(data, nomeTituloTesouro, valor)
     }
 }

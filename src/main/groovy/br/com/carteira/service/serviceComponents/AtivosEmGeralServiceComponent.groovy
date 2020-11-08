@@ -2,10 +2,15 @@ package br.com.carteira.service.serviceComponents
 
 import br.com.carteira.entity.Ativo
 import br.com.carteira.entity.Operacao
+import br.com.carteira.entity.TipoAtivoEnum
+import br.com.carteira.entity.TipoOperacaoEnum
+import br.com.carteira.exception.OperacaoInvalidaException
 import br.com.carteira.repository.AtivoRepository
 import br.com.carteira.repository.OperacaoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+
+import java.time.LocalDate
 
 @Component
 class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
@@ -36,5 +41,61 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         operacaoRepository.incluir(operacoesAtualizadas[0])
 
         [operacao]
+    }
+
+    void incluirDividendo(String tickerMoedaFoco, LocalDate dataDividendo, String tickerAtivoGerador, BigDecimal valorDividendo) {
+        def ativoGerador = ativoRepository.getByTicker(tickerAtivoGerador)
+        def ativoMoedaFoco = ativoRepository.getByTicker(tickerMoedaFoco)
+
+        if(!ativoGerador) {
+            throw new OperacaoInvalidaException("""Erro ao tentar realizar operação de dividendo para ativo inexistente.
+             Ativo: $tickerAtivoGerador
+            """)
+        }
+        def operacaoDividendo = new Operacao(
+                ativo: ativoMoedaFoco,
+                ativoGerador: ativoGerador,
+                data: dataDividendo,
+                qtde: valorDividendo,
+                tipoOperacao: TipoOperacaoEnum.div,
+                custoMedioOperacao: 0,
+                custoMedioDolares: 0,
+                valorOperacaoDolares: 0,
+                valorTotalOperacao: 0,
+                resultadoVenda: 0,
+                resultadoVendaDolares: 0
+        )
+        operacaoRepository.incluir(operacaoDividendo)
+        //Adiciona os valores recebidos na moeda informada
+        ativoMoedaFoco.qtde+=valorDividendo
+        ativoRepository.atualizar(ativoMoedaFoco)
+    }
+
+    void incluirJuroTesouro(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
+        def tituloGerador = ativoRepository.getByNome(nomeTituloTesouro)
+        def ativoMoedaFoco = ativoRepository.getByTicker('brl')
+
+        if(!tituloGerador || !TipoAtivoEnum.getTesouro().contains(tituloGerador.getTipo())) {
+            throw new OperacaoInvalidaException("""Erro ao tentar realizar operação de juros para ativo invalido.
+             Ativo: $nomeTituloTesouro
+            """)
+        }
+        def operacao = new Operacao(
+                ativo: ativoMoedaFoco,
+                ativoGerador: tituloGerador,
+                data: data,
+                qtde: valor,
+                tipoOperacao: TipoOperacaoEnum.j,
+                custoMedioOperacao: 0,
+                custoMedioDolares: 0,
+                valorOperacaoDolares: 0,
+                valorTotalOperacao: 0,
+                resultadoVenda: 0,
+                resultadoVendaDolares: 0
+        )
+        operacaoRepository.incluir(operacao)
+        //Adiciona os valores recebidos na moeda informada
+        ativoMoedaFoco.qtde+=valor
+        ativoRepository.atualizar(ativoMoedaFoco)
     }
 }

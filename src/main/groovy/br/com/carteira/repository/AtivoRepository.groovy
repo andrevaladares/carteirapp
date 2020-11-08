@@ -1,7 +1,7 @@
 package br.com.carteira.repository
 
-import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.Ativo
+import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.exception.ConsultaInvalidaException
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -57,6 +57,12 @@ class AtivoRepository {
     Ativo getByTicker(String ticker) {
         def query = 'select * from ativo where ticker = :ticker'
         def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['ticker': ticker.toLowerCase()], query)
+        return fromAtivoGroovyRow(resultado)
+    }
+
+    Ativo getByNome(String nome) {
+        def query = 'select * from ativo where nome = :nome'
+        def resultado = new Sql(DataSourceUtils.getConnection(dataSource)).firstRow(['nome': nome], query)
         return fromAtivoGroovyRow(resultado)
     }
 

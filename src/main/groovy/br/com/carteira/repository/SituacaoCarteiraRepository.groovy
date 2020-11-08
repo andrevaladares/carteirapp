@@ -69,7 +69,7 @@ class SituacaoCarteiraRepository {
                   """
         if(booksAExcluirMapa) {
             sql += """
-                        and a.book not in (${booksAExcluirMapa.keySet().collect{":$it"}.join(',')})
+                        and (a.book is null or a.book not in (${booksAExcluirMapa.keySet().collect{":$it"}.join(',')}))
                   """
         }
         sql += """

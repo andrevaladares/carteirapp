@@ -35,4 +35,5 @@ class AtivoService {
             println("Ativo $it.ticker/$it.nome/$it.cnpjFundo foi adicionado ao book: $nomeBook")
         }
     }
+
 }

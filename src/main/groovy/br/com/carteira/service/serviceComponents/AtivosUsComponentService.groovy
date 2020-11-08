@@ -202,32 +202,4 @@ class AtivosUsComponentService implements ComponentServiceTrait {
         }
     }
 
-    void incluirDividendo(LocalDate dataDividendo, String tickerAtivoGerador, BigDecimal valorDividendo) {
-        def ativoGerador = ativoRepository.getByTicker(tickerAtivoGerador)
-        //dividendo gera dolares originados dos investimentos internacionais
-        def ativoFoco = ativoRepository.getByTicker('us$')
-
-        if(!ativoGerador) {
-            throw new OperacaoInvalidaException("""Erro ao tentar realizar operação de dividendo para ativo inexistente.
-             Ativo: $tickerAtivoGerador
-            """)
-        }
-        def operacaoDividendo = new Operacao(
-                ativo: ativoFoco,
-                ativoGerador: ativoGerador,
-                data: dataDividendo,
-                qtde: valorDividendo,
-                tipoOperacao: TipoOperacaoEnum.div,
-                custoMedioOperacao: 0,
-                custoMedioDolares: 0,
-                valorOperacaoDolares: 0,
-                valorTotalOperacao: 0,
-                resultadoVenda: 0,
-                resultadoVendaDolares: 0
-        )
-        operacaoRepository.incluir(operacaoDividendo)
-        //Adiciona os dolares recebidos
-        ativoFoco.qtde+=valorDividendo
-        ativoRepository.atualizar(ativoFoco)
-    }
 }
