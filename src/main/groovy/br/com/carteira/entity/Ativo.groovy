@@ -91,4 +91,5 @@ class Ativo {
         this.valorInvestidoDolares / this.qtde
 
     }
+
 }

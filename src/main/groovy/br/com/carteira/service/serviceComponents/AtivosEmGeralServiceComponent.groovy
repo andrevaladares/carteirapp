@@ -39,11 +39,13 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
             operacoesAtualizadas[0].ativo.id = ativoRepository.incluir(operacao.ativo)
         }
         operacaoRepository.incluir(operacoesAtualizadas[0])
+        atualizaCaixa(operacao)
 
         [operacao]
     }
 
-    void incluirDividendo(String tickerMoedaFoco, LocalDate dataDividendo, String tickerAtivoGerador, BigDecimal valorDividendo) {
+    void movimentarRecurso(String tickerMoedaFoco, LocalDate dataDividendo, String tickerAtivoGerador,
+                           BigDecimal valorMovimentacao, TipoOperacaoEnum tipoOperacao) {
         def ativoGerador = ativoRepository.getByTicker(tickerAtivoGerador)
         def ativoMoedaFoco = ativoRepository.getByTicker(tickerMoedaFoco)
 
@@ -56,8 +58,8 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
                 ativo: ativoMoedaFoco,
                 ativoGerador: ativoGerador,
                 data: dataDividendo,
-                qtde: valorDividendo,
-                tipoOperacao: TipoOperacaoEnum.div,
+                qtde: valorMovimentacao,
+                tipoOperacao: tipoOperacao,
                 custoMedioOperacao: 0,
                 custoMedioDolares: 0,
                 valorOperacaoDolares: 0,
@@ -67,7 +69,15 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         )
         operacaoRepository.incluir(operacaoDividendo)
         //Adiciona os valores recebidos na moeda informada
-        ativoMoedaFoco.qtde+=valorDividendo
+        if(tipoOperacao == TipoOperacaoEnum.div) {
+            ativoMoedaFoco.qtde+=valorMovimentacao
+        }
+        else if (tipoOperacao == TipoOperacaoEnum.tx) {
+            ativoMoedaFoco.qtde-=valorMovimentacao
+        }
+        else {
+            throw new OperacaoInvalidaException('Movimentação de recursos precisa ser por dividento (div) ou taxas (tx)')
+        }
         ativoRepository.atualizar(ativoMoedaFoco)
     }
 
@@ -97,5 +107,19 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         //Adiciona os valores recebidos na moeda informada
         ativoMoedaFoco.qtde+=valor
         ativoRepository.atualizar(ativoMoedaFoco)
+    }
+
+    void atualizaCaixa(Operacao operacao) {
+        def brasilReal = ativoRepository.getByTicker('brl')
+        if(operacao.tipoOperacao == TipoOperacaoEnum.v) {
+            brasilReal.qtde -= operacao.valorTotalOperacao
+        }
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.c) {
+            brasilReal.qtde += operacao.valorTotalOperacao
+        }
+        else {
+            throw new OperacaoInvalidaException('Ativo comum deve sofrer apenas operação de compra ou venda')
+        }
+        ativoRepository.atualizar(brasilReal)
     }
 }

@@ -173,7 +173,12 @@ class OperacaoService {
 
     @Transactional
     void lancarDividendo(String tickerMoedaFoco, LocalDate dataDividendo, String identificadorAtivoGerador, BigDecimal valorDividendo) {
-        ativosEmGeralComponentService.incluirDividendo(tickerMoedaFoco, dataDividendo, identificadorAtivoGerador, valorDividendo)
+        ativosEmGeralComponentService.movimentarRecurso(tickerMoedaFoco, dataDividendo, identificadorAtivoGerador, valorDividendo, TipoOperacaoEnum.div)
+    }
+
+    @Transactional
+    void lancarTaxas(String tickerMoedaFoco, LocalDate data, String identificadorAtivoGerador, BigDecimal valorTaxa) {
+        ativosEmGeralComponentService.movimentarRecurso(tickerMoedaFoco, data, identificadorAtivoGerador, valorTaxa, TipoOperacaoEnum.tx)
     }
 
     @Transactional

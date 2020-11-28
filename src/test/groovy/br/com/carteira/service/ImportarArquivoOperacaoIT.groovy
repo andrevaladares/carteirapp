@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
-@Sql(scripts = ["classpath:limpaDados.sql"])
+@Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosInsereDinheiro.sql"])
 class ImportarArquivoOperacaoIT {
 
     @Autowired

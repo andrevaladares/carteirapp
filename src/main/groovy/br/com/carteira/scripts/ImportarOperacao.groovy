@@ -143,6 +143,10 @@ class AtuarSobreOsDados {
         operacaoService.lancarDividendo(tickerMoedaFoco, dataDividendo, identificadorAtivoGerador, valorDividendo)
     }
 
+    void lancarTaxas(String tickerMoedaFoco, LocalDate data, String identificadorAtivoGerador, BigDecimal valorTaxa) {
+        operacaoService.lancarTaxas(tickerMoedaFoco, data, identificadorAtivoGerador, valorTaxa)
+    }
+
     void lancarJurosTesouroDireto(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
         operacaoService.lancarJuroTesouro(data, nomeTituloTesouro, valor)
     }
@@ -159,14 +163,15 @@ AtuarSobreOsDados atuarSobreOsDados = context.getBean(AtuarSobreOsDados.class)
 //========= Execute aqui o metodo que deseja
 
 //importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202008', 'situacaoCarteiraCompleta_202008.txt', LocalDate.of(2020, 8, 31), 5.4707)
-exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202008', LocalDate.of(2020,8,31))
+//exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202008', LocalDate.of(2020,8,31))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
 //importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202008', '20200812_XP.txt')
 //importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', '20200714_NotaCorretagem_avenue_Square.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202008', '20200803_Vitreo_VitreoPrata.txt')
 //O valor tem que ser líquido de impostos, o  for o caso (quando aparecer o imposto discriminado)
 //atuarSobreOsDados.lancarDividendoAtivoUs(LocalDate.of(2020, 8, ), 'aapl', 1.32)
-//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 8, 26), 'itub4', 11.69)
+//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 9, 30), 'vale3', 110.21)
+atuarSobreOsDados.lancarTaxas('brl', LocalDate.of(2020, 9, 21), 'oz2', 68.45)
 //Lançamento líquido já de impostos e taxas
 //atuarSobreOsDados.lancarJurosTesouroDireto(LocalDate.of(2020, 8, 17), 'Tesouro IPCA+ com Juros Semestrais 2050', 514.62)
 //importarDados.atribuirBook('renda fixa', TipoAtivoEnum.tis, 'Tesouro IPCA+ com Juros Semestrais 2055')
