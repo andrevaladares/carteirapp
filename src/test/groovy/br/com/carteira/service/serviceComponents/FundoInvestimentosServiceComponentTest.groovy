@@ -32,6 +32,10 @@ class FundoInvestimentosServiceComponentTest {
     @Test
     void 'toda operacao de compra (aplicacao) gera novo item no estoque de ativos'(){
         def operacao = obterOperacaoDeCompra()
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000)
+        )
+
         fundoInvestimentoServiceComponent.incluir(operacao)
 
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).incluir(operacao.ativo)
@@ -68,6 +72,9 @@ class FundoInvestimentosServiceComponentTest {
         def operacao = obterOperacaoDeVenda()
         def ativosRetornados = obterListaAtivosRetornados()
         Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000)
+        )
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
@@ -87,6 +94,9 @@ class FundoInvestimentosServiceComponentTest {
         def operacao = obterOperacaoDeVenda150Unidades()
         def ativosRetornados = obterListaAtivosRetornados()
         Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000)
+        )
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 

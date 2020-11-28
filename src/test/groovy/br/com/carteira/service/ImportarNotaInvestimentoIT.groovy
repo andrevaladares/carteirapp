@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:testContext.xml")
-@Sql(scripts = ["classpath:limpaDados.sql"])
+@Sql(scripts = ["classpath:limpaDados.sql", "classpath:ativosInsereDinheiro.sql"])
 class ImportarNotaInvestimentoIT {
 
     @Autowired
@@ -59,7 +59,7 @@ class ImportarNotaInvestimentoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoCambial.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoCambial.sql", "classpath:ativosInsereDinheiro.sql"])
     void "importa corretamente uma nota de venda de fundo cambial e suas operacoes"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaInvestimentoCambialVenda_teste.txt'
@@ -80,7 +80,7 @@ class ImportarNotaInvestimentoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql", "classpath:ativosInsereDinheiro.sql"])
     void "realiza corretamente operacao de venda de fundo lifo"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaInvestimentoVendaLifo.txt'
@@ -109,7 +109,7 @@ class ImportarNotaInvestimentoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaFundoLifoFifo.sql", "classpath:ativosInsereDinheiro.sql"])
     void "realiza corretamente operacao de venda de fundo fifo"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaInvestimentoVendaFifo.txt'
@@ -163,7 +163,7 @@ class ImportarNotaInvestimentoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroFifo.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroFifo.sql", "classpath:ativosInsereDinheiro.sql"])
     void "realiza corretamente venda de tesouro direto fifo"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaInvestimentoVendaTesouro.txt'
@@ -194,7 +194,7 @@ class ImportarNotaInvestimentoIT {
     }
 
     @Test
-    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroSelicFifo.sql"])
+    @Sql(scripts = ["classpath:limpaDados.sql", "classpath:dadosTesteVendaTesouroSelicFifo.sql", "classpath:ativosInsereDinheiro.sql"])
     void "realiza corretamente venda de tesouro selic fifo"(){
         def caminhoArquivo = 'c:\\projetos\\carteirApp\\src\\test\\resources'
         def nomeArquivo = 'notaInvestimentoVendaTesouroSelic.txt'

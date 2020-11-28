@@ -5,6 +5,7 @@ import br.com.carteira.entity.Operacao
 import br.com.carteira.entity.TipoAtivoEnum
 import br.com.carteira.entity.TipoOperacaoEnum
 import br.com.carteira.exception.ArquivoInvalidoException
+import br.com.carteira.exception.OperacaoInvalidaException
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -102,4 +103,17 @@ trait ComponentServiceTrait {
         valorTotalOperacao
     }
 
+    void atualizaCaixa(Operacao operacao) {
+        def brasilReal = ativoRepository.getByTicker('brl')
+        if(operacao.tipoOperacao == TipoOperacaoEnum.v) {
+            brasilReal.qtde += operacao.valorTotalOperacao
+        }
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.c) {
+            brasilReal.qtde -= operacao.valorTotalOperacao
+        }
+        else {
+            throw new OperacaoInvalidaException('Ativo comum deve sofrer apenas operação de compra ou venda')
+        }
+        ativoRepository.atualizar(brasilReal)
+    }
 }

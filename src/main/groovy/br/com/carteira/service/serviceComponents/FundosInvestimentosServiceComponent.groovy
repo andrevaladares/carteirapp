@@ -92,6 +92,7 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
                 }
             }
         }
+        atualizaCaixa(operacao)
         operacoesGeradas
     }
 
