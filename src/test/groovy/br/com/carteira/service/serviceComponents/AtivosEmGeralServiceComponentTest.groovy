@@ -81,19 +81,15 @@ class AtivosEmGeralServiceComponentTest {
                 qtde: 2000,
                 valorTotalInvestido: 30000
         )
-        def ativoDinheiro = Ativo.getInstanceWithAtributeMap(
-                ticker: 'brl',
-                qtde: 1500
-        )
         Mockito.when(ativoRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(result)
-        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(ativoDinheiro)
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 2000)
+        )
 
         ativosEmGeralServiceComponent.incluir(operacao)
-        ativoDinheiro.qtde-=operacao.valorTotalOperacao
 
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacao)
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacao.ativo)
-        Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(ativoDinheiro)
     }
 
     @Test
@@ -104,36 +100,29 @@ class AtivosEmGeralServiceComponentTest {
                 qtde: 2000,
                 valorTotalInvestido: 30000
         )
-        def ativoDinheiro = Ativo.getInstanceWithAtributeMap(
-                ticker: 'brl',
-                qtde: 1500
-        )
         Mockito.when(ativoRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(result)
-        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(ativoDinheiro)
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 2000)
+        )
 
         ativosEmGeralServiceComponent.incluir(operacao)
-        ativoDinheiro.qtde-=operacao.valorTotalOperacao
 
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacao)
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacao.ativo)
-        Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(ativoDinheiro)
     }
 
     @Test
     void "inclui titulo a partir da operacao caso ainda nao exista"() {
         def operacao = obterOperacaoDeCompra()
         Mockito.when(ativoRepositoryMock.getByTicker(operacao.ativo.ticker)).thenReturn(null)
-
-        def ativoDinheiro = Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 5000)
-        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(ativoDinheiro)
+        Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 2000)
+        )
 
         ativosEmGeralServiceComponent.incluir(operacao)
 
-        ativoDinheiro.qtde-=operacao.valorTotalOperacao
-
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacao)
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).incluir(operacao.ativo)
-        Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(ativoDinheiro)
 
     }
 

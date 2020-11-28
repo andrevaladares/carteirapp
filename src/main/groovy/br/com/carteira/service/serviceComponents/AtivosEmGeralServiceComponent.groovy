@@ -112,10 +112,10 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
     void atualizaCaixa(Operacao operacao) {
         def brasilReal = ativoRepository.getByTicker('brl')
         if(operacao.tipoOperacao == TipoOperacaoEnum.v) {
-            brasilReal.qtde -= operacao.valorTotalOperacao
+            brasilReal.qtde += operacao.valorTotalOperacao
         }
         else if (operacao.tipoOperacao == TipoOperacaoEnum.c) {
-            brasilReal.qtde += operacao.valorTotalOperacao
+            brasilReal.qtde -= operacao.valorTotalOperacao
         }
         else {
             throw new OperacaoInvalidaException('Ativo comum deve sofrer apenas operação de compra ou venda')

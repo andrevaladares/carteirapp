@@ -68,6 +68,10 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(new BigDecimal('1069.52'), operacaoCompra['valor_total_operacao'])
         def operacaoVenda = operacoesAper3.find {it['tipo_operacao'] == 'v'}
         Assert.assertEquals(new BigDecimal('270.00'), operacaoVenda['valor_total_operacao'])
+
+        //Saldo da conta corrente está correto
+        def ativoDinheiro = ativoRepository.getByTicker('brl')
+        assert ativoDinheiro.qtde == 915.69050000
     }
 
     @Test
