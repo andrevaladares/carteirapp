@@ -160,7 +160,7 @@ class OperacaoService {
             //Só tem vendas
             qtdeParaDivisao = listaOperacoes
                     .findAll { it[0] == 'v' }
-                    .sum { it[4] as BigDecimal } as BigDecimal
+                    .sum { it[4].replace(',', '.') as BigDecimal } as BigDecimal
         }
 
         valorTotalTaxas.divide(qtdeParaDivisao, 4, RoundingMode.HALF_UP)
