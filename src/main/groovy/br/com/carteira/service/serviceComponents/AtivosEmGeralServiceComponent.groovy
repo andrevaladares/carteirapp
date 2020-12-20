@@ -70,7 +70,7 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
                 custoMedioOperacao: 0,
                 custoMedioDolares: 0,
                 valorOperacaoDolares: 0,
-                valorTotalOperacao: 0,
+                valorTotalOperacao: valorMovimentacao,
                 resultadoVenda: 0,
                 resultadoVendaDolares: 0
         )
@@ -78,9 +78,11 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         //Adiciona os valores recebidos na moeda informada
         if(tipoOperacao == TipoOperacaoEnum.div) {
             ativoMoedaFoco.qtde+=valorMovimentacao
+            ativoMoedaFoco.valorTotalInvestido+=valorMovimentacao
         }
         else if (tipoOperacao == TipoOperacaoEnum.tx) {
             ativoMoedaFoco.qtde-=valorMovimentacao
+            ativoMoedaFoco.valorTotalInvestido-=valorMovimentacao
         }
         else {
             throw new OperacaoInvalidaException('Movimentação de recursos precisa ser por dividento (div) ou taxas (tx)')
