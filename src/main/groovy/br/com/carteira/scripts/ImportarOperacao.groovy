@@ -147,7 +147,7 @@ class AtuarSobreOsDados {
         operacaoService.lancarTaxas(tickerMoedaFoco, data, identificadorAtivoGerador, valorTaxa)
     }
 
-    void lancarJurosTesouroDireto(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
+    void lancarJurosRendaFixa(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
         operacaoService.lancarJuroAtivoRendaFixa(data, nomeTituloTesouro, valor)
     }
 }
@@ -169,10 +169,10 @@ AtuarSobreOsDados atuarSobreOsDados = context.getBean(AtuarSobreOsDados.class)
 //importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', '20200917_notaAvenue_meli.txt')
 //importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', '20200918_NotaInvestimento_TesouroSelicXP.txt')
 //O valor tem que ser líquido de impostos, o  for o caso (quando aparecer o imposto discriminado)
-//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 10, 7), 'B3SA3', 16.67)
+//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 10, 15), 'VILG11', 28.5)
 //atuarSobreOsDados.lancarTaxas('brl', LocalDate.of(2020, 9, 21), 'oz2', 68.45)
 //Lançamento líquido já de impostos e taxas
-atuarSobreOsDados.lancarJurosTesouroDireto(LocalDate.of(2020, 8, 17), 'Tesouro IPCA+ com Juros Semestrais 2050', 514.62)
+atuarSobreOsDados.lancarJurosRendaFixa(LocalDate.of(2020, 10, 9), 'CRI Direcional - ABR/2021', 140.44)
 //importarDados.atribuirBook('renda fixa', TipoAtivoEnum.tse, 'Tesouro Selic 2025')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
