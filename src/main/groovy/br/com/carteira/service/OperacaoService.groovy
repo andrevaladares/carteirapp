@@ -210,7 +210,7 @@ class OperacaoService {
     }
 
     @Transactional
-    void lancarJuroTesouro(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
-        ativosEmGeralComponentService.incluirJuroTesouro(data, nomeTituloTesouro, valor)
+    void lancarJuroAtivoRendaFixa(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
+        ativosEmGeralComponentService.incluirJuroRendaFixa(data, nomeTituloTesouro, valor)
     }
 }

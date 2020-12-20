@@ -90,31 +90,32 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
         ativoRepository.atualizar(ativoMoedaFoco)
     }
 
-    void incluirJuroTesouro(LocalDate data, String nomeTituloTesouro, BigDecimal valor) {
-        def tituloGerador = ativoRepository.getByNome(nomeTituloTesouro)
+    void incluirJuroRendaFixa(LocalDate data, String nomeTituloRendaFixa, BigDecimal valor) {
+        def ativoGerador = ativoRepository.getByNome(nomeTituloRendaFixa)
         def ativoMoedaFoco = ativoRepository.getByTicker('brl')
 
-        if(!tituloGerador || !TipoAtivoEnum.getTesouro().contains(tituloGerador.getTipo())) {
+        if(!ativoGerador || !TipoAtivoEnum.getDebCriTesouroFundo().contains(ativoGerador.getTipo())) {
             throw new OperacaoInvalidaException("""Erro ao tentar realizar operação de juros para ativo invalido.
-             Ativo: $nomeTituloTesouro
+             Ativo: $nomeTituloRendaFixa
             """)
         }
         def operacao = new Operacao(
                 ativo: ativoMoedaFoco,
-                ativoGerador: tituloGerador,
+                ativoGerador: ativoGerador,
                 data: data,
                 qtde: valor,
                 tipoOperacao: TipoOperacaoEnum.j,
                 custoMedioOperacao: 0,
                 custoMedioDolares: 0,
                 valorOperacaoDolares: 0,
-                valorTotalOperacao: 0,
+                valorTotalOperacao: valor,
                 resultadoVenda: 0,
                 resultadoVendaDolares: 0
         )
         operacaoRepository.incluir(operacao)
         //Adiciona os valores recebidos na moeda informada
         ativoMoedaFoco.qtde+=valor
+        ativoMoedaFoco.valorTotalInvestido+=valor
         ativoRepository.atualizar(ativoMoedaFoco)
     }
 
