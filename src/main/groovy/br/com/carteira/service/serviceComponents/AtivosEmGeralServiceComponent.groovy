@@ -26,22 +26,29 @@ class AtivosEmGeralServiceComponent implements ComponentServiceTrait{
 
     List<Operacao> incluir(Operacao operacao) {
         def ativo = ativoRepository.getByTicker(operacao.ativo.ticker.toLowerCase())
-        def operacoesAtualizadas
+        def operacaoReais = gerarTransferenciasReais(operacao)
+        def operacoesAtualizadasAtivo
         if (ativo != null) {
             operacao.ativo = ativo
-            operacoesAtualizadas = complementarOperacao(operacao)
-            Ativo tituloParaAtualizacao = operacao.ativo.atualizarAtivoAPartirDaOperacao(operacao)
-            ativoRepository.atualizar(tituloParaAtualizacao)
+            operacoesAtualizadasAtivo = complementarOperacao(operacao)
+            operacoesAtualizadasAtivo << operacaoReais
+
+            operacoesAtualizadasAtivo.each {
+                operacaoRepository.incluir(it)
+                Ativo tituloParaAtualizacao = it.ativo.atualizarAtivoAPartirDaOperacao(it)
+                ativoRepository.atualizar(tituloParaAtualizacao)
+            }
         } else {
             operacao.ativo = criarAtivoAPartirDaOperacao(operacao)
-            operacoesAtualizadas = complementarOperacao(operacao)
+            operacoesAtualizadasAtivo = complementarOperacao(operacao)
             //Para ativos em geral uma operação de venda ou compra não se desdobra em mais de uma
-            operacoesAtualizadas[0].ativo.id = ativoRepository.incluir(operacao.ativo)
+            operacoesAtualizadasAtivo[0].ativo.id = ativoRepository.incluir(operacao.ativo)
+            def ativoReais = operacaoReais.ativo.atualizarAtivoAPartirDaOperacao(operacaoReais)
+            ativoRepository.atualizar(ativoReais)
+            operacaoRepository.incluir(operacoesAtualizadasAtivo[0])
+            operacaoRepository.incluir(operacaoReais)
         }
-        operacaoRepository.incluir(operacoesAtualizadas[0])
-        atualizaCaixa(operacao)
-
-        [operacao]
+        operacoesAtualizadasAtivo
     }
 
     void movimentarRecurso(String tickerMoedaFoco, LocalDate dataDividendo, String tickerAtivoGerador,

@@ -103,17 +103,26 @@ trait ComponentServiceTrait {
         valorTotalOperacao
     }
 
-    void atualizaCaixa(Operacao operacao) {
-        def brasilReal = ativoRepository.getByTicker('brl')
-        if(operacao.tipoOperacao == TipoOperacaoEnum.v) {
-            brasilReal.qtde += operacao.valorTotalOperacao
+    Operacao gerarTransferenciasReais(Operacao operacao) {
+        def ativoReais = ativoRepository.getByTicker('brl')
+        def operacaoReais = new Operacao(
+                data: operacao.data,
+                ativo: ativoReais,
+                ativoGerador: operacao.ativo,
+                qtde: operacao.valorTotalOperacao,
+                valorTotalOperacao: operacao.valorTotalOperacao,
+        )
+
+        if(operacao.tipoOperacao == TipoOperacaoEnum.c) {
+            operacaoReais.tipoOperacao = TipoOperacaoEnum.ts
         }
-        else if (operacao.tipoOperacao == TipoOperacaoEnum.c) {
-            brasilReal.qtde -= operacao.valorTotalOperacao
+        else if (operacao.tipoOperacao == TipoOperacaoEnum.v) {
+            operacaoReais.tipoOperacao = TipoOperacaoEnum.te
         }
         else {
             throw new OperacaoInvalidaException('Ativo comum deve sofrer apenas operação de compra ou venda')
         }
-        ativoRepository.atualizar(brasilReal)
+        operacaoReais
     }
+
 }

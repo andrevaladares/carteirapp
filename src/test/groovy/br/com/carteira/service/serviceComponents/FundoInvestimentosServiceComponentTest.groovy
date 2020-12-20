@@ -73,20 +73,30 @@ class FundoInvestimentosServiceComponentTest {
         def ativosRetornados = obterListaAtivosRetornados()
         Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
         Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
-                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000)
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000, valorTotalInvestido: 4000)
         )
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
-        assert operacoesRetornadas.size() == 1
+        assert operacoesRetornadas.size() == 2
         assert operacoesRetornadas[0].qtde == 15
         assert operacoesRetornadas[0].valorTotalOperacao == 300
         assert operacoesRetornadas[0].custoMedioOperacao == 10
         assert operacoesRetornadas[0].resultadoVenda == 150
         assert operacoesRetornadas[0].ativo.qtde == 85
         assert operacoesRetornadas[0].ativo.valorTotalInvestido == 850
+
+        assert operacoesRetornadas[1].qtde == 300
+        assert operacoesRetornadas[1].valorTotalOperacao == 300
+        assert operacoesRetornadas[1].custoMedioOperacao == 0
+        assert operacoesRetornadas[1].resultadoVenda == 0
+        assert operacoesRetornadas[1].ativo.qtde == 4300
+        assert operacoesRetornadas[1].ativo.valorTotalInvestido == 4300
+
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacoesRetornadas[0])
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacoesRetornadas[0].ativo)
+        Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacoesRetornadas[1])
+        Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacoesRetornadas[1].ativo)
     }
 
     @Test
@@ -95,12 +105,12 @@ class FundoInvestimentosServiceComponentTest {
         def ativosRetornados = obterListaAtivosRetornados()
         Mockito.when(ativoRepositoryMock.getAllByAtivoExample(operacao.ativo, 'asc')).thenReturn(ativosRetornados)
         Mockito.when(ativoRepositoryMock.getByTicker('brl')).thenReturn(
-                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000)
+                Ativo.getInstanceWithAtributeMap(ticker: 'brl', qtde: 4000, valorTotalInvestido: 4000)
         )
 
         def operacoesRetornadas = fundoInvestimentoServiceComponent.incluir(operacao)
 
-        assert operacoesRetornadas.size() == 2
+        assert operacoesRetornadas.size() == 3
         assert operacoesRetornadas[0].qtde == 100
         assert operacoesRetornadas[0].valorTotalOperacao == 600
         assert operacoesRetornadas[0].custoMedioOperacao == 10
@@ -115,11 +125,21 @@ class FundoInvestimentosServiceComponentTest {
         assert operacoesRetornadas[1].ativo.qtde == 0
         assert operacoesRetornadas[1].ativo.valorTotalInvestido == 0
 
+        assert operacoesRetornadas[2].qtde == 900
+        assert operacoesRetornadas[2].valorTotalOperacao == 900
+        assert operacoesRetornadas[2].custoMedioOperacao == 0
+        assert operacoesRetornadas[2].resultadoVenda == 0
+        assert operacoesRetornadas[2].ativo.qtde == 4900
+        assert operacoesRetornadas[2].ativo.valorTotalInvestido == 4900
+
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacoesRetornadas[0])
         Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacoesRetornadas[1])
+        Mockito.verify(operacaoRepositoryMock, Mockito.times(1)).incluir(operacoesRetornadas[2])
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacoesRetornadas[0].ativo)
         Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacoesRetornadas[1].ativo)
+        Mockito.verify(ativoRepositoryMock, Mockito.times(1)).atualizar(operacoesRetornadas[2].ativo)
     }
+
     @Test
     void 'aplicacao de come cotas ao fundo'() {
         def ativosRetornados = obterListaAtivosRetornados()

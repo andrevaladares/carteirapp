@@ -32,7 +32,7 @@ class ImportarArquivoOperacaoIT {
         operacaoService.importarArquivoOperacao(caminhoArquivo, nomeArquivo)
 
         def operacoes = operacaoRepository.findAll()
-        Assert.assertEquals(3, operacoes.size())
+        Assert.assertEquals(6, operacoes.size())
 
         def aper3f = tituloRepository.getByTicker('aper3f')
         def also3f = tituloRepository.getByTicker('also3f')

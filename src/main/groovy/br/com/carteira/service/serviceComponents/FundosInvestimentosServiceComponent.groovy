@@ -72,7 +72,8 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             //Em caso de compra (aplicação) é sempre criada uma única operação
             operacao.ativo = criarAtivoAPartirDaOperacao(operacao)
             operacao.ativo.id = ativoRepository.incluir(operacao.ativo)
-            operacoesGeradas << operacaoRepository.incluir(operacao)
+            operacaoRepository.incluir(operacao)
+            operacoesGeradas << operacao
         }
         else {
             def ordenacao = operacao.notaInvestimento.regimeResgate == RegimeResgateEnum.fifo ? 'asc' : 'desc'
@@ -92,8 +93,12 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
                 }
             }
         }
-        atualizaCaixa(operacao)
-        operacoesGeradas
+        def operacaoDinheiro = gerarTransferenciasReais(operacao)
+        def ativoReais = operacaoDinheiro.ativo.atualizarAtivoAPartirDaOperacao(operacaoDinheiro)
+        ativoRepository.atualizar(ativoReais)
+        operacaoRepository.incluir(operacaoDinheiro)
+
+        operacoesGeradas << operacaoDinheiro
     }
 
     Ativo criarAtivoAPartirDaOperacao(Operacao operacao) {
@@ -118,6 +123,8 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
             throw new OperacaoInvalidaException("não é permitido vender mais que o estoque disponível do ativo. Cnpj do Ativo: $operacao.ativo.cnpjFundo. qtde venda: $operacao.qtde. Qtde disponível: ${qtdeTotalAtivo}")
         }
 
+        def qtdeOperacao = operacao.qtde
+        def valorTotalOperacao = operacao.valorTotalOperacao
         for (Ativo ativo:ativos){
             def novaOperacao = new Operacao(
                     notaInvestimento: operacao.notaInvestimento,
@@ -126,25 +133,25 @@ class FundosInvestimentosServiceComponent implements ComponentServiceTrait{
                     ativo: ativo,
                     custoMedioOperacao: ativo.obterCustoMedioUnitario(),
             )
-            if(ativo.qtde >= operacao.qtde) {
-                novaOperacao.qtde = operacao.qtde
-                novaOperacao.valorTotalOperacao = operacao.valorTotalOperacao
+            if(ativo.qtde >= qtdeOperacao) {
+                novaOperacao.qtde = qtdeOperacao
+                novaOperacao.valorTotalOperacao = valorTotalOperacao
                 novaOperacao.custoMedioOperacao = ativo.obterCustoMedioUnitario()
-                novaOperacao.resultadoVenda = ativo.obterResultadoVenda(ativo.obterCustoMedioUnitario(), operacao.valorTotalOperacao, operacao.qtde)
+                novaOperacao.resultadoVenda = ativo.obterResultadoVenda(ativo.obterCustoMedioUnitario(), valorTotalOperacao, qtdeOperacao)
 
                 operacoesObtidas << novaOperacao
                 break
             }
             else {
-                def valorTotalProporcional = operacao.valorTotalOperacao.divide(operacao.qtde, 8, RoundingMode.HALF_UP) * ativo.qtde
+                def valorTotalProporcional = valorTotalOperacao.divide(qtdeOperacao, 8, RoundingMode.HALF_UP) * ativo.qtde
                 novaOperacao.qtde = ativo.qtde
                 novaOperacao.valorTotalOperacao = valorTotalProporcional
                 novaOperacao.custoMedioOperacao = ativo.obterCustoMedioUnitario()
                 novaOperacao.resultadoVenda = ativo.obterResultadoVenda(ativo.obterCustoMedioUnitario(), valorTotalProporcional, ativo.qtde)
 
                 operacoesObtidas << novaOperacao
-                operacao.qtde-=ativo.qtde
-                operacao.valorTotalOperacao-=valorTotalProporcional
+                qtdeOperacao-=ativo.qtde
+                valorTotalOperacao-=valorTotalProporcional
             }
         }
 

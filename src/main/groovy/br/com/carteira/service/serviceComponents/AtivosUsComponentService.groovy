@@ -111,7 +111,8 @@ class AtivosUsComponentService implements ComponentServiceTrait {
                         data: operacaoOriginal.data,
                         ativo: dolarDoExterior,
                         qtde: qtdeDolaresExteriorOperacao,
-                        tipoOperacao: TipoOperacaoEnum.ts
+                        tipoOperacao: TipoOperacaoEnum.ts,
+                        ativoGerador: operacaoOriginal.ativo
                 )
                 def custoMedioDolarExteriorAtual = dolarDoExterior.valorTotalInvestido / dolarDoExterior.qtde
                 operacaoDolarExterior.valorTotalOperacao = operacaoDolarExterior.qtde * custoMedioDolarExteriorAtual
@@ -127,7 +128,8 @@ class AtivosUsComponentService implements ComponentServiceTrait {
                         data: operacaoOriginal.data,
                         ativo: dolarDoBrasil,
                         qtde: sobraOperacaoDolar,
-                        tipoOperacao: TipoOperacaoEnum.ts
+                        tipoOperacao: TipoOperacaoEnum.ts,
+                        ativoGerador: operacaoOriginal.ativo
                 )
                 def custoMedioDolarBrasilAtual = dolarDoBrasil.valorTotalInvestido / dolarDoBrasil.qtde
                 operacaoDolarBrasil.valorTotalOperacao = operacaoDolarBrasil.qtde * custoMedioDolarBrasilAtual
@@ -144,7 +146,8 @@ class AtivosUsComponentService implements ComponentServiceTrait {
                     data: operacaoOriginal.data,
                     ativo: dolarDoExterior,
                     qtde: operacaoOriginal.valorOperacaoDolares, //valores de operações em dolar alterando o saldo de dolares
-                    tipoOperacao: TipoOperacaoEnum.te
+                    tipoOperacao: TipoOperacaoEnum.te,
+                    ativoGerador: operacaoOriginal.ativo
             )
             if (operacaoDolarExterior.ativo == null) {
                 operacaoDolarExterior.ativo = Ativo.getInstanceWithAtributeMap(
