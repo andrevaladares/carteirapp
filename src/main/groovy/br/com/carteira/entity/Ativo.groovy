@@ -51,16 +51,20 @@ class Ativo {
     Ativo atualizarAtivoOperacaoComum(Operacao operacao) {
         if (operacao.tipoOperacao in [TipoOperacaoEnum.v, TipoOperacaoEnum.ts]) {
             def valorInvestidoEquivalente = (valorTotalInvestido.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde).setScale(8, RoundingMode.HALF_UP)
-            def valorInvestidoEquivalenteDolares = valorInvestidoDolares.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde
+            if(isInternacional()) {
+                def valorInvestidoEquivalenteDolares = valorInvestidoDolares.divide(qtde, 8, RoundingMode.HALF_UP) * operacao.qtde
+                valorInvestidoDolares -= valorInvestidoEquivalenteDolares
+            }
             qtde -= operacao.qtde
             valorTotalInvestido -= valorInvestidoEquivalente
-            valorInvestidoDolares -= valorInvestidoEquivalenteDolares
 
         } else {
             //Aqui pode ser um compra ou transferência de entrada
             qtde += operacao.qtde
             valorTotalInvestido += operacao.valorTotalOperacao
-            valorInvestidoDolares += operacao.valorOperacaoDolares
+            if (isInternacional()) {
+                valorInvestidoDolares += operacao.valorOperacaoDolares
+            }
         }
 
         return this
@@ -92,4 +96,7 @@ class Ativo {
 
     }
 
+    boolean isInternacional() {
+        tipo == TipoAtivoEnum.aus || ticker in ['br$', 'us$']
+    }
 }

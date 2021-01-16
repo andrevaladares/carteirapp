@@ -162,17 +162,17 @@ AtuarSobreOsDados atuarSobreOsDados = context.getBean(AtuarSobreOsDados.class)
 
 //========= Execute aqui o metodo que deseja
 
-//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', 'situacaoCarteiraCompleta.txt', LocalDate.of(2020, 9, 30), 5.6401)
-//exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', LocalDate.of(2020,9,30))
+//importarDados.importarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202010', 'situacaoCompleta.txt', LocalDate.of(2020, 10, 30), 5.7712)
+//exportarDados.exportarSituacaoCarteira('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202010', LocalDate.of(2020,10,30))
 //importarDados.importarOperacoes('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras', 'operacoesAcoesFIIs_ate_012020_2.txt')
-//importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', '20200914_NotaCorretagem_XP_ipo_petz.txt')
-//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', '20200917_notaAvenue_meli.txt')
-//importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202009', '20200918_NotaInvestimento_TesouroSelicXP.txt')
+importarDados.importarNotaNegociacao('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202011', 'NotaXPOuro_30112020.txt')
+//importarDados.importarNotaNegociacaoAcoesInternacionais('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202010', 'comprasAvenue20200710.txt')
+//importarDados.importarNotaInvestimento('C:\\Users\\AndreValadares\\Documents\\OperacoesFinanceiras\\202010', 'tesouroSelic.txt')
 //O valor tem que ser líquido de impostos, o  for o caso (quando aparecer o imposto discriminado)
-//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 10, 15), 'VILG11', 28.5)
-//atuarSobreOsDados.lancarTaxas('brl', LocalDate.of(2020, 9, 21), 'oz2', 68.45)
+//atuarSobreOsDados.lancarDividendo('brl', LocalDate.of(2020, 11, 30), 'ALUP11', 99.0)
+//atuarSobreOsDados.lancarTaxas('brl', LocalDate.of(2020, 11, 16), 'oz2', 59.58)
 //Lançamento líquido já de impostos e taxas
-atuarSobreOsDados.lancarJurosRendaFixa(LocalDate.of(2020, 10, 9), 'CRI Direcional - ABR/2021', 140.44)
+//atuarSobreOsDados.lancarJurosRendaFixa(LocalDate.of(2020, 10, 15), 'DEB LIGHT SERVICOS DE ELETRIC - OUT/2022', 1147.33)
 //importarDados.atribuirBook('renda fixa', TipoAtivoEnum.tse, 'Tesouro Selic 2025')
 /*
 importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05, 29), [
@@ -184,6 +184,6 @@ importarDados.importarOperacoesComeCotas('29562673000117', LocalDate.of(2019, 05
 ])
 */
 //exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 7), [TipoAtivoEnum.a])
-//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 9))
-//atuarSobreOsDados.desdobrarAcao(LocalDate.of(2020,8,31),'aapl', 4)
+//exportarDados.calcularImpostoAPagar(YearMonth.of(2020, 10))
+//atuarSobreOsDados.desdobrarAcao(LocalDate.of(2020,10,14),'mglu3', 4)
 //atuarSobreOsDados.agruparAcao(LocalDate.of(2020,8,13), 'hbor3', 5)

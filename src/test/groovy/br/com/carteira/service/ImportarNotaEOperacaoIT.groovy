@@ -88,11 +88,11 @@ class ImportarNotaEOperacaoIT {
         Assert.assertEquals(dataOperacoes, aper3f.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, aper3f.tipo)
         Assert.assertEquals(-40.00000000, aper3f.qtde)
-        Assert.assertEquals(new BigDecimal('-1069.52'), aper3f.valorTotalInvestido)
+        Assert.assertEquals(new BigDecimal('-1026.47'), aper3f.valorTotalInvestido)
         Assert.assertEquals(dataOperacoes, bpan4.dataEntrada)
         Assert.assertEquals(TipoAtivoEnum.a, bpan4.tipo)
         Assert.assertEquals(-300.00000000, bpan4.qtde)
-        Assert.assertEquals(new BigDecimal('-1215.26'), bpan4.valorTotalInvestido)
+        Assert.assertEquals(new BigDecimal('-892.40'), bpan4.valorTotalInvestido)
     }
 
     @Test
