@@ -92,9 +92,14 @@ trait ComponentServiceTrait {
     BigDecimal defineValorTotalOperacao(String[] linhaAberta, BigDecimal valorUnitarioTaxas, boolean notaPossuiCompras) {
         def valorTotalOperacao
         def quantidade = new BigDecimal(linhaAberta[4].replace(',', '.'))
-        if (linhaAberta[0] == 'c' || !notaPossuiCompras) {
-            //compra sempre adiciona taxas ao valor da operação. Venda em nota que não possui compras também
+        if (linhaAberta[0] == 'c') {
+            //compra sempre adiciona taxas ao valor da operação
             valorTotalOperacao = new BigDecimal(linhaAberta[5].replace(',', '.')).add(valorUnitarioTaxas * (quantidade as BigDecimal))
+        }
+        else if (!notaPossuiCompras) {
+            //Nota que só possui venda tem as taxas subtraídas dos valores de venda
+            valorTotalOperacao = new BigDecimal(linhaAberta[5].replace(',', '.')) - valorUnitarioTaxas * (quantidade as BigDecimal)
+
         }
         else {
             //venda em nota que possui compras não adiciona as taxas ao valor total da operação
